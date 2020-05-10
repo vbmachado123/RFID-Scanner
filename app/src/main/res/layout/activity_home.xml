@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="telas.HomeActivity">
+
+        <LinearLayout
+            android:padding="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:padding="8dp"
+                android:textSize="22sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/textoEscolher"/>
+
+            <ListView
+                android:id="@+id/lvDispositivosEnxergados"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"/>
+
+            <Button
+                android:layout_marginTop="8dp"
+                android:id="@+id/btConectar"
+                android:textColor="@android:color/white"
+                android:background="@color/button_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/textoBtConectar"
+                android:enabled="false"/>
+
+        </LinearLayout>
+</RelativeLayout>

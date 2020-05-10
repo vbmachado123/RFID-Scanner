@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RFID Scanner</string>
+    <string name="textoBtConectar">Conectar  Leitor</string>
+    <string name="textoEscolher">Selecione o dispositivo do RFID</string>
+</resources>
