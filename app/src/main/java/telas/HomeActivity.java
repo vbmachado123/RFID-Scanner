@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +30,7 @@ import com.example.rfidscanner.R;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import bluetooth.Bluetooth;
 
@@ -36,10 +39,14 @@ import static bluetooth.Bluetooth.startFindDevices;
 
 public class HomeActivity extends Activity implements AdapterView.OnItemClickListener {
 
+    private static final String TAG = "Dispositivo";
     private static final int SOLICITA_ACESSO_LOCALIZACAO = 1;
     private static final int SOLICITA_BLUETOOTH = 2;
     private ListView listaDispositivos;
     private Button botaoConectar;
+    private UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");;
+
+    private Context context = this;
 
     private BluetoothAdapter bluetoothAdapter;
     private ArrayAdapter<String> listAdapter;
@@ -76,7 +83,6 @@ public class HomeActivity extends Activity implements AdapterView.OnItemClickLis
                 }
             }
         });
-
         verificaLocalizacao();
     }
 
@@ -95,7 +101,6 @@ public class HomeActivity extends Activity implements AdapterView.OnItemClickLis
         } else {
             return true;
         }
-
     }
 
     private void verificaEstadoBluetooth() {
@@ -153,6 +158,8 @@ public class HomeActivity extends Activity implements AdapterView.OnItemClickLis
                     bluetoothAdapter.cancelDiscovery();
                     Toast.makeText(context, "RFID Scanner detected: " + device.getAddress(), Toast.LENGTH_SHORT).show();
                     scannerDevice = device;
+                   ConnectThread connect = new ConnectThread(scannerDevice);
+                   connect.run();
                 }
                 listAdapter.notifyDataSetChanged();
 
@@ -167,7 +174,94 @@ public class HomeActivity extends Activity implements AdapterView.OnItemClickLis
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //Iniciar conexão com o dispositivo
+        new ConnectThread(scannerDevice);
+    }
 
-        scannerDevice.getAddress();
+    private class ConnectThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final BluetoothDevice mmDevice;
+
+        public ConnectThread(BluetoothDevice device) {
+            // Use a temporary object that is later assigned to mmSocket
+            // because mmSocket is final.
+            Log.i(TAG,  device.getAddress() + "localizado");
+
+            BluetoothSocket tmp = null;
+            mmDevice = device;
+
+            try {
+                // Get a BluetoothSocket to connect with the given BluetoothDevice.
+                // MY_UUID is the app's UUID string, also used in the server code.
+                tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+                Log.i(TAG,  "tentando conectar");
+            } catch (IOException e) {
+                Log.e(TAG, "Socket's create() method failed", e);
+            }
+            mmSocket = tmp;
+        }
+
+        public void run() {
+            // Cancel discovery because it otherwise slows down the connection.
+            bluetoothAdapter.cancelDiscovery();
+            Log.i(TAG,  "run() foi chamado");
+            try {
+                // Connect to the remote device through the socket. This call blocks
+                // until it succeeds or throws an exception.
+                mmSocket.connect();
+                Log.i(TAG, mmDevice.getName() + " Conectado");
+            } catch (IOException connectException) {
+                Log.e(TAG, mmDevice.getName() + " Erro ao conectar: " + connectException);
+                // Unable to connect; close the socket and return.
+                try {
+                    mmSocket.close();
+                } catch (IOException closeException) {
+                    Log.e(TAG, "Could not close the client socket", closeException);
+                }
+                return;
+            }
+
+            // The connection attempt succeeded. Perform work associated with
+            // the connection in a separate thread.
+            manageMyConnectedSocket(mmSocket);
+        }
+
+        // Closes the client socket and causes the thread to finish.
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Could not close the client socket", e);
+            }
+        }
+    }
+
+    private void manageMyConnectedSocket(BluetoothSocket mmSocket) {
+        Log.i(TAG, "--------------------------------");
+        Log.i(TAG, mmSocket.toString());
+        Log.i(TAG, "--------------------------------");
+
+        try {
+            String saida = String.valueOf(mmSocket.getOutputStream());
+            Log.i(TAG, "--------------------------------");
+            Log.i(TAG, "Saida: " + saida);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Activity activity = (Activity)context;
+        if (activity.isFinishing()){
+            //Activity deu ruim
+            Log.i(TAG, "Activity parou de responder");
+                try {
+                //show dialog
+                    Log.i(TAG, "Sei lá");
+                }
+                catch (WindowManager.BadTokenException ex) {
+                    ex.printStackTrace();
+                    Log.e(TAG, "Erro:  " + ex);
+                }
+        } else {
+
+        }
     }
 }
