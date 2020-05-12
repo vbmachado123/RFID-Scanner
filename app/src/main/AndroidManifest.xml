@@ -13,8 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="telas.MainActivity"></activity>
-        <activity android:name="telas.HomeActivity">
+        <activity android:name="telas.ListaDispositivos"
+            android:theme="@android:style/Theme.Dialog"
+            android:label="Dispositivos pareados"/>
+        <activity android:name="telas.HomeActivity"></activity>
+        <activity android:name="telas.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
