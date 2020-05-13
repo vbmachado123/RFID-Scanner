@@ -1,26 +1,38 @@
 package telas;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.example.rfidscanner.R;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int SOLICITA_BLUETOOTH = 1, SOLICITA_CONEXAO = 2;
+    private Context context = this;
+    private ConnectThread connectThread;
+
+    private static final int SOLICITA_BLUETOOTH = 1, SOLICITA_CONEXAO = 2, MESSAGE_READ = 3;
     private static final String TAG = "Bluetooth";
     private static String MAC = null;
 
@@ -28,11 +40,15 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice device = null;
     private BluetoothSocket socket = null;
 
+    private StringBuilder dadosBluetooth = new StringBuilder();
+
     private Button btConexao;
     private boolean conexao = false;
+    private Handler handler;
 
     private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +93,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        handler = new Handler(){
+
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                if(msg.what == MESSAGE_READ) {
+                    Log.i(TAG, "> Mensagem recebida");
+                    String recebido = (String) msg.obj;
+                    dadosBluetooth.append(recebido);
+
+                    Log.i(TAG, "> Mensagem recebida: " + msg.obj);
+                }
+            }
+        };
     }
 
     @Override
@@ -100,7 +130,10 @@ public class MainActivity extends AppCompatActivity {
                         socket.connect();
                         Log.i(TAG, "> Conexão criada");
                         conexao = true;
-                        new ConnectThread(device);
+
+                        connectThread = new ConnectThread(socket);
+                        connectThread.start();
+
                         btConexao.setText("Desconectar");
                     }catch (IOException e) {
                         conexao = false;
@@ -115,34 +148,58 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class ConnectThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
 
-        public ConnectThread(BluetoothDevice device) {
-            // Use a temporary object that is later assigned to mmSocket
-            // because mmSocket is final.
+       private InputStream inputStream;
+       private OutputStream outputStream;
+
+        public ConnectThread(BluetoothSocket mSocket) {
+
+            Log.i(TAG, "> ConnectThread foi chamado");
+
             Log.i(TAG,  device.getAddress() + "localizado");
 
             BluetoothSocket tmp = null;
-            mmDevice = device;
+
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
 
             try {
-                // Get a BluetoothSocket to connect with the given BluetoothDevice.
-                // MY_UUID is the app's UUID string, also used in the server code.
                 tmp = device.createInsecureRfcommSocketToServiceRecord(uuid);
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
                 Log.i(TAG,  "tentando conectar");
             } catch (IOException e) {
                 Log.e(TAG, "Socket's create() method failed", e);
             }
-            mmSocket = tmp;
 
-            try {
-                Log.i(TAG, "> Input: " +  socket.getInputStream());
-                Log.i(TAG, "> Output: " +  socket.getOutputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
+                socket = tmp;
+                inputStream = tmpIn;
+                outputStream = tmpOut;
+        }
+
+        public void run() {
+            Log.i(TAG,  "run() foi chamado");
+            while (true){
+                try {
+                    byte[] buffer = new byte[1024];
+                    int bytes;
+                    bytes = inputStream.read(buffer);
+
+                    String dadosBt = new String(buffer, 0, bytes);
+
+                    handler.obtainMessage(MESSAGE_READ, bytes, -1, dadosBt)
+                            .sendToTarget();
+                } catch (IOException connectException) {
+                    break;
+                }
             }
         }
-    }
 
+        public void enviar(String enviar) {
+            byte[] msg = enviar.getBytes();
+            try{
+                outputStream.write(msg);
+            } catch (IOException e) { }
+        }
+    }
 }
