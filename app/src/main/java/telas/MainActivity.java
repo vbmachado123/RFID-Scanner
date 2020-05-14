@@ -25,6 +25,11 @@ import com.example.rfidscanner.R;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private StringBuilder dadosBluetooth = new StringBuilder();
 
-    private Button btConexao;
+    private Button btConexao, btEnviar;
     private boolean conexao = false;
     private Handler handler;
 
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "> Iniciando a MainActivity");
 
         btConexao = (Button) findViewById(R.id.btnConexao);
+        btEnviar = (Button) findViewById(R.id.btnEnviar);
 
         Log.i(TAG, "> Verificando o bluetooth");
         adapter = BluetoothAdapter.getDefaultAdapter();
@@ -94,19 +100,64 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btEnviar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String enviar = "12345678900";
+                Log.i(TAG, "> Enviando ao scanner: " + enviar);
+                connectThread.enviar(enviar);
+            }
+        });
+
         handler = new Handler(){
 
             @Override
             public void handleMessage(@NonNull Message msg) {
                 if(msg.what == MESSAGE_READ) {
-                    Log.i(TAG, "> Mensagem recebida");
                     String recebido = (String) msg.obj;
-                    dadosBluetooth.append(recebido);
-
-                    Log.i(TAG, "> Mensagem recebida: " + msg.obj);
+                    if(recebido.length() > 19) {
+                       limparTexto(recebido);
+                    }
                 }
             }
         };
+    }
+
+      private void limparTexto(String recebido) {
+        /* RECUPERANDO A DATA */
+        SimpleDateFormat dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        Date dataAtual = calendar.getTime();
+        String dataFinal = dataFormatada.format(dataAtual);
+
+        String[] textoRemover = new String[]{" ", "\n", "\t", "P:", "OK:", "P: ", "OK: ", "\\s"};
+
+        String textoTag = "";
+        String textoExibe = "";
+
+        for(int i = 0; i < textoRemover.length; i++){
+            textoTag =  recebido.replaceAll(textoRemover[i],"");
+
+            if( !textoTag.contains("E:"))
+                textoExibe = textoTag;
+            else
+                textoExibe = "Erro, tente novamente";
+        }
+        String tFinal = textoExibe;
+        dadosBluetooth.append(tFinal);
+
+        if(tFinal.length() >= 19) {
+            if(tFinal.contains(textoRemover[3]) || tFinal.contains(textoRemover[4])) {
+                tFinal =  recebido.replaceAll(textoRemover[3],"");
+                tFinal =  recebido.replaceAll(textoRemover[4],"");
+            } else {
+                dadosBluetooth.append(tFinal);
+                Log.i(TAG, "> Mensagem recebida: " + dadosBluetooth + " as " + dataFinal);
+                Log.i(TAG, "-------------------");
+            }
+        }
     }
 
     @Override
@@ -199,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
             byte[] msg = enviar.getBytes();
             try{
                 outputStream.write(msg);
+                Log.i(TAG, "> Enviado ao scanner: " + enviar);
             } catch (IOException e) { }
         }
     }
