@@ -1,0 +1,28 @@
+{
+    "logs": [
+        {
+            "outputFile": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v14/values-v14.xml",
+            "map": [
+                {
+                    "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/values-v14/styles.xml",
+                    "from": {
+                        "startLines": "11,17",
+                        "startColumns": "4,4",
+                        "startOffsets": "288,448",
+                        "endLines": "14,20",
+                        "endColumns": "12,12",
+                        "endOffsets": "438,640"
+                    },
+                    "to": {
+                        "startLines": "2,6",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,207",
+                        "endLines": "5,9",
+                        "endColumns": "12,12",
+                        "endOffsets": "202,396"
+                    }
+                }
+            ]
+        }
+    ]
+}

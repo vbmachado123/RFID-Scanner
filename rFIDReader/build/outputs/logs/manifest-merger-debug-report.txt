@@ -1,0 +1,141 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:1-58:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:1-58:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:1-58:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:1-58:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:1-58:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:1-58:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:1-58:12
+	package
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:2:11-46
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+	android:versionName
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:4:5-30
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:4:31-89
+	android:versionCode
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:3:5-28
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+uses-permission#android.permission.INTERNET
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:6:2-64
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:6:19-61
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:7:2-76
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:7:19-73
+uses-permission#android.permission.CHANGE_NETWORK_STATE
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:8:2-75
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:8:19-73
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:9:2-73
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:9:19-70
+uses-permission#android.permission.CHANGE_WIFI_STATE
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:10:2-72
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:10:19-70
+uses-permission#android.permission.CHANGE_WIFI_MULTICAST_STATE
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:11:2-82
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:11:19-80
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:12:5-81
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:12:22-78
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:13:5-80
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:13:22-77
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:14:2-71
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:14:19-68
+uses-permission#android.permission.BLUETOOTH
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:15:2-65
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:15:19-62
+uses-feature#android.hardware.bluetooth
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:19:2-60
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:19:16-57
+uses-feature#android.hardware.usb.host
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:20:2-58
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:20:16-56
+uses-sdk
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:22:5-24:41
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:22:5-24:41
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:22:5-24:41
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:22:5-24:41
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:22:5-24:41
+	android:targetSdkVersion
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:24:9-38
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:23:9-35
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml
+application
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:26:5-56:19
+	android:label
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:29:9-41
+	android:largeHeap
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:31:9-33
+	android:icon
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:28:9-43
+	android:allowBackup
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:27:9-35
+	android:theme
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:30:9-40
+activity#com.thingmagic.rfidreader.ReaderActivity
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:33:9-51:20
+	android:clearTaskOnLaunch
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:36:13-45
+	android:launchMode
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:37:13-48
+	android:hardwareAccelerated
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:38:13-48
+	android:configChanges
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:35:13-122
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:34:13-43
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:39:13-43:29
+action#android.intent.action.MAIN
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:40:17-69
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:40:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:42:17-77
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:42:27-74
+intent-filter#action:name:android.hardware.usb.action.USB_DEVICE_ATTACHED+action:name:android.hardware.usb.action.USB_DEVICE_DETACHED
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:44:12-47:29
+action#android.hardware.usb.action.USB_DEVICE_ATTACHED
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:45:17-90
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:45:25-87
+action#android.hardware.usb.action.USB_DEVICE_DETACHED
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:46:17-90
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:46:25-87
+meta-data#android.hardware.usb.action.USB_DEVICE_ATTACHED
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:48:13-50:57
+	android:resource
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:50:17-54
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:49:17-79
+activity#com.thingmagic.rfidreader.SettingsActivity
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:52:10-55:20
+	android:label
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:53:13-45
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/AndroidManifest.xml:54:13-45

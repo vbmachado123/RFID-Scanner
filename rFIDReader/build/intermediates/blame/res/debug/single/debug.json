@@ -1,0 +1,174 @@
+[
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_jadaklogo.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/jadaklogo.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_readers_search_diolog.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/readers_search_diolog.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_header_background.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/header_background.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_rounded_edittext.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/rounded_edittext.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_main_menu_btn_press.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/main_menu_btn_press.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_ic_launcher.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_clean_title_background_img.9.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/clean_title_background_img.9.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/color_k_secondary_text_dark.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/color/k_secondary_text_dark.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_background.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/background.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_firmware.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/firmware.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/xml_device_filter.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/xml/device_filter.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_performance_metrics.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/performance_metrics.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_thingmagic_logo_trans.gif.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/thingmagic_logo_trans.gif"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_settings_read_options.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/settings_read_options.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_favicon.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/favicon.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_reader_search.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/reader_search.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_clean_cache_back_btn_image.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/clean_cache_back_btn_image.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_diolog_alert.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/diolog_alert.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_title_background_img.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/title_background_img.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_group_layout.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/group_layout.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_thingmagic_logo.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/thingmagic_logo.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_main_menu_btn_selector.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/main_menu_btn_selector.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/color_k_primary_text_dark.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/color/k_primary_text_dark.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_main_btn_background.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/main_btn_background.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_table_style.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/table_style.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_thingmagic_title_logo.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/thingmagic_title_logo.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_history_title_below_bg.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/history_title_below_bg.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_field_clear.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/field_clear.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_clean_cache_back_btn_normal.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/clean_cache_back_btn_normal.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_clean_cache_back_btn_press.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/clean_cache_back_btn_press.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_edit_text_style.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/edit_text_style.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_company_logo.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/company_logo.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_tag_result_view.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/tag_result_view.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_row.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/row.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_activity_settings.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/activity_settings.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_activity_reader.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/activity_reader.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-ldpi_ic_launcher.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-ldpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-hdpi_main_menu_btn_normal.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-hdpi/main_menu_btn_normal.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-xhdpi_ic_launcher.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/menu_activity_reader.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/menu/activity_reader.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable_thingmagic_icon.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable/thingmagic_icon.png"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/layout_connect.xml.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/layout/connect.xml"
+    },
+    {
+        "merged": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/res/merged/debug/drawable-mdpi_ic_launcher.png.flat",
+        "source": "/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/src/main/res/drawable-mdpi/ic_launcher.png"
+    }
+]

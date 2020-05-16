@@ -4,37 +4,137 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/grey340"
     tools:context="telas.HomeActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <LinearLayout
             android:padding="8dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <TextView
-                android:padding="8dp"
-                android:textSize="22sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimary"
-                android:text="@string/textoEscolher"/>
-
-            <ListView
-                android:id="@+id/lvDispositivosEnxergados"
+                android:textAlignment="textEnd"
+                android:text="@string/versao"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"/>
+                android:layout_height="wrap_content"/>
 
-            <Button
-                android:layout_marginTop="8dp"
-                android:id="@+id/btConectar"
-                android:textColor="@android:color/white"
-                android:background="@color/button_color"
-                android:layout_width="match_parent"
+            <TableRow
+                android:layout_marginTop="20dp"
+                android:id="@+id/trConectar"
+                android:orientation="horizontal"
                 android:layout_height="wrap_content"
-                android:text="@string/textoBtConectar"
-                android:enabled="false"/>
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_bluetooth"/>
+
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoConectar"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_marginTop="@dimen/distancia"
+                android:id="@+id/trLeitura"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_leitura"/>
+
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoLeitura"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_marginTop="@dimen/distancia"
+                android:id="@+id/trGravacao"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_save"/>
+
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoGravacao"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_marginTop="@dimen/distancia"
+                android:id="@+id/trInventario"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_inventario"/>
+
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoInventario"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </TableRow>
+
+
+            <TableRow
+                android:layout_marginTop="@dimen/distancia"
+                android:id="@+id/trConfiguracao"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_settings"/>
+
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoConfiguracao"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </TableRow>
+
 
         </LinearLayout>
+    </ScrollView>
 </RelativeLayout>
