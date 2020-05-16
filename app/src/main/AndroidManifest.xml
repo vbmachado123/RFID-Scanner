@@ -16,8 +16,8 @@
         <activity android:name="telas.ListaDispositivos"
             android:theme="@android:style/Theme.Dialog"
             android:label="Dispositivos pareados"/>
-        <activity android:name="telas.HomeActivity"></activity>
-        <activity android:name="telas.MainActivity">
+        <activity android:name="telas.MainActivity"></activity>
+        <activity android:name="telas.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,7 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#217C24</color>
-    <color name="colorPrimaryDark">#163A18</color>
-    <color name="colorAccent">#B9FD6A</color>
+    <color name="colorPrimary">@color/teal800</color>
+    <color name="colorPrimaryDark">#949494</color>
+    <color name="colorAccent">#4CAF50</color>
     <color name="button_color">#4CAF50</color>
+
+    <!-- #35B5E5 -->
+    <color name="branco">#ffffff</color>
+    <color name="preto">#000</color>
+    <color name="vermelho">#FF0000</color>
+    <color name="branco2">#FFFFFF</color>
+    <color name="cinza_escuro">#333333</color>
+    <color name="branco_transparente">#00FFFFFF</color>
+
+    <color name="green400">#62be66</color>
+    <color name="greenA700">#00C853</color>
+    <color name="white">#ffffff</color>
+
+    <color name="grey320">#f9f9f9</color>
+    <color name="grey340">#f1f1f1</color>
+    <color name="grey300">#FAFAFA</color>
+    <color name="grey900">#212121</color>
+
+    <color name="grey600">#565656</color>
+    <color name="grey700">#535353</color>
+    <color name="grey50">#FFFFFF</color>
+    <color name="grey100">#F5F5F5</color>
+    <color name="grey60">#f7f7f7</color>
+    <color name="grey40">#fafafa</color>
+    <color name="grey200">#EEEEEE</color>
+
+    <color name="grey800">#686868</color>
+
+    <color name="redA700">#D50000</color>
+
+    <color name="teal700">#00796B</color>
+    <color name="teal800">#00695C</color>
+    <color name="teal900">#004D40</color>
+
 </resources>

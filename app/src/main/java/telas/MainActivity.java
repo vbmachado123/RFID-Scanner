@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Context context = this;
     private ConnectThread connectThread;
 
+
     private static final int SOLICITA_BLUETOOTH = 1, SOLICITA_CONEXAO = 2, MESSAGE_READ = 3;
     private static final String TAG = "Bluetooth";
     private static String MAC = null;
@@ -115,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(@NonNull Message msg) {
                 if(msg.what == MESSAGE_READ) {
                     String recebido = (String) msg.obj;
+                    Log.i(TAG, "> Mensagem recebida: " + recebido );
                     if(recebido.length() > 19) {
                        limparTexto(recebido);
                     }
@@ -148,13 +150,15 @@ public class MainActivity extends AppCompatActivity {
         String tFinal = textoExibe;
         dadosBluetooth.append(tFinal);
 
+        String t1 = "" , t2 = "";
         if(tFinal.length() >= 19) {
             if(tFinal.contains(textoRemover[3]) || tFinal.contains(textoRemover[4])) {
-                tFinal =  recebido.replaceAll(textoRemover[3],"");
-                tFinal =  recebido.replaceAll(textoRemover[4],"");
+                t1 =  tFinal.replaceAll(textoRemover[3],"");
+                t2 =  t1.replaceAll(textoRemover[4],"");
+                tFinal = t2;
             } else {
                 dadosBluetooth.append(tFinal);
-                Log.i(TAG, "> Mensagem recebida: " + dadosBluetooth + " as " + dataFinal);
+                Log.i(TAG, "> Mensagem recebida: " + recebido + " as " + dataFinal);
                 Log.i(TAG, "-------------------");
             }
         }

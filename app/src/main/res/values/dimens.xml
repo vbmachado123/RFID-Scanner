@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tamanhoIcon">40dp</dimen>
+    <dimen name="tamanhoTextoHome">26sp</dimen>
+    <dimen name="distancia">30dp</dimen>
+</resources>

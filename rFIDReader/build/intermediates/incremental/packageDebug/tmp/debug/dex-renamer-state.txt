@@ -1,0 +1,4 @@
+#Thu May 14 16:34:05 BRT 2020
+base.0=/home/victor/AndroidStudioProjects/RFIDScanner/rFIDReader/build/intermediates/dex/debug/out/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
