@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">RFID Scanner</string>
+    <string name="app_name">SOS RFID</string>
+    <string name="versao">Versão: 1.0.0</string>
+
     <string name="textoBtConectar">Conectar  Leitor</string>
     <string name="textoEscolher">Selecione o dispositivo do RFID</string>
     <string name="textoConectar">Conectar</string>
@@ -7,5 +9,4 @@
     <string name="textoGravacao">Gravação</string>
     <string name="textoConfiguracao">Configurações</string>
     <string name="textoInventario">Inventário</string>
-    <string name="versao">Versão: 1.0.0</string>
 </resources>
