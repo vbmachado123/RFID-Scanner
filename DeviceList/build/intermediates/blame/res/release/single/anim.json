@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_fade_in.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_fade_in.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_fade_out.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_fade_out.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_shrink_fade_out_from_bottom.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_shrink_fade_out_from_bottom.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_slide_out_top.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_slide_out_top.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_slide_in_bottom.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_slide_in_bottom.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_grow_fade_in_from_bottom.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_grow_fade_in_from_bottom.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_popup_enter.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_popup_enter.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_slide_in_top.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_slide_in_top.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_slide_out_bottom.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_slide_out_bottom.xml"
+    },
+    {
+        "merged": "E:\\Dev\\Android\\FAMS\\DeviceList\\build\\intermediates\\res\\merged\\release\\anim\\abc_popup_exit.xml",
+        "source": "C:\\Users\\mwildani\\.android\\build-cache\\fb287c108c8027aa335880e009910838036d3285\\output\\res\\anim\\abc_popup_exit.xml"
+    }
+]

@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/teal900</item>
+        <item name="titleTextColor">@color/branco</item>
+        <item name="subtitleTextColor">@color/branco2</item>
+        <item name="colorControlNormal">@color/branco2</item>
     </style>
 
 </resources>
