@@ -39,7 +39,7 @@ public class SplashScreen extends AppCompatActivity {
 
         //Setando a resolução do gif
         try{
-            InputStream inputStream = getAssets().open("carrega1.gif");
+            InputStream inputStream = getAssets().open("carrega3.gif");
             byte[] bytes = IOUtils.toByteArray(inputStream);
             gifSos.setBytes(bytes);
             gifSos.startAnimation();
