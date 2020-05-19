@@ -9,4 +9,8 @@
     <string name="textoGravacao">Gravação</string>
     <string name="textoConfiguracao">Configurações</string>
     <string name="textoInventario">Inventário</string>
+
+    <string name="connect_reader_menu_item_text">Conectar Leitor</string>
+    <string name="change_reader_menu_item_text">Mudar Leitor</string>
+    <string name="disconnect_reader_menu_item_text">Disconectar Leitor</string>
 </resources>

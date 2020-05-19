@@ -1,15 +1,19 @@
 package telas;
 
-import android.content.ContentValues;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TableRow;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
 import com.example.rfidscanner.R;
 
@@ -18,7 +22,9 @@ public class HomeActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TableRow trConectar, trLeitura, trGravacao, trInventario, trConfiguracoes;
     private Context Context;
+    private boolean conexao;
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,9 +33,12 @@ public class HomeActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if(!conexao)
+            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
+        else
+            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+
         validaCampo();
-
-
     }
 
     private void validaCampo() {
@@ -42,7 +51,13 @@ public class HomeActivity extends AppCompatActivity {
         trConectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(HomeActivity.this, "Conectar pressionado", Toast.LENGTH_SHORT).show();
+               if(conexao){ //conexao ativa -> desconectar
+                   conexao = false;
+                   toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
+               } else { //conexao desativada -> conectar usando a api rfid
+                   conexao = true;
+                   toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+               }
             }
         });
 
@@ -82,4 +97,5 @@ public class HomeActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_home, menu);
         return true;
     }
+
 }

@@ -13,6 +13,8 @@
             <option value="$PROJECT_DIR$/DeviceList" />
             <option value="$PROJECT_DIR$/Rfid.AsciiProtocol-Library" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/mercurylib" />
+            <option value="$PROJECT_DIR$/mlib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

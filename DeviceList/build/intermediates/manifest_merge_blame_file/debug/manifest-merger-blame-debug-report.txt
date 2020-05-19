@@ -6,7 +6,7 @@
 6
 7    <uses-sdk
 7-->/home/victor/AndroidStudioProjects/RFIDScanner/DeviceList/src/main/AndroidManifest.xml:7:5-9:41
-8        android:minSdkVersion="20"
+8        android:minSdkVersion="11"
 8-->/home/victor/AndroidStudioProjects/RFIDScanner/DeviceList/src/main/AndroidManifest.xml:8:9-35
 9        android:targetSdkVersion="25" />
 9-->/home/victor/AndroidStudioProjects/RFIDScanner/DeviceList/src/main/AndroidManifest.xml:9:9-38
