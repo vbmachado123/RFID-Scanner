@@ -36,6 +36,8 @@ dependencies {
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.2.0"
     implementation project(':Rfid.AsciiProtocol-Library')
     implementation project(':DeviceList')
+    testImplementation project(':mlib')
+    testImplementation project(':mercurylib')
     implementation 'com.felipecsl:gifimageview:2.1.0'
     implementation 'commons-io:commons-io:2.4'
     implementation 'androidx.appcompat:appcompat:1.1.0'
