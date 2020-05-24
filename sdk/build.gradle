@@ -1,0 +1,120 @@
+apply plugin: 'java-library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+sourceCompatibility = "8"
+targetCompatibility = "8"
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+/*this is a workaround for "JUnit tests missing resources in classpath when run from Android Studio" issue
+see https://developer.android.com/studio/known-issues, https://issuetracker.google.com/issues/36988115
+*/
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/java/test"
+}
+
+processTestResources.dependsOn copyTestResources
+
+//we keep SONATYPE_PASSWORD and signing.password in local.properties file
+File localProperties = file('./local.properties')
+if (localProperties.exists()) {
+    Properties p = new Properties()
+    p.load(new FileInputStream(localProperties))
+    p.each { name, value ->
+        ext[name] = value
+    }
+}
+
+def javaBuildType = "android" != project.properties['buildType']
+
+ext {
+   // web3j_subversion =  "4.1.0-android"
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+group = "com.ambrosus.sdk"
+archivesBaseName =  javaBuildType ? "core" : "core-android"
+version = "2.1.0"
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: SONATYPE_USERNAME, password: SONATYPE_PASSWORD)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: SONATYPE_USERNAME, password: SONATYPE_PASSWORD)
+            }
+
+            pom.project {
+                name "Ambrosus Development Kit for " + (javaBuildType ? "Java" : "Android")
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'The Ambrosus SDK makes it easy for developers to get and push data to the Ambrosus Hermes nodes with Ambrosus Node API (https://ambrosus.docs.apiary.io/)'
+                url 'https://github.com/ambrosus/sdk-java'
+
+                scm {
+                    connection 'scm:git:git://github.com/ambrosus/sdk-java.git'
+                    developerConnection 'scm:git:ssh://github.com:ambrosus/sdk-java.git'
+                    url 'https://github.com/ambrosus/sdk-java'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'https://github.com/ambrosus/sdk-javascript/blob/master/LICENSE'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'DzmitryKavaliou'
+                        name 'Dzmitry Kavaliou'
+                        email 'dzmitry.kavaliou@.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation "org.web3j:core:4.1.0-android"
+
+    implementation 'com.android.support:support-annotations:28.0.0'
+
+    //tests
+    testImplementation 'junit:junit:4.12'
+
+    testImplementation "org.powermock:powermock-module-junit4:1.7.4"
+    testImplementation "org.powermock:powermock-api-mockito2:1.7.4"
+}

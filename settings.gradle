@@ -1,3 +1,3 @@
-rootProject.name='RFID Scanner'
-include ':app', ':DeviceList', ':Rfid.AsciiProtocol-Library', ':mlib', ':mercurylib'
-
+include ':app', ':sdk'
+include ':Rfid.AsciiProtocol-Library'
+include ':DeviceList'
