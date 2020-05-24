@@ -6,6 +6,11 @@
     <string name="textoEscolher">Selecione o dispositivo do RFID</string>
     <string name="textoConectar">Conectar</string>
     <string name="textoLeitura">Leitura</string>
+    <string name="textoCarregar">Carregar</string>
+    <string name="textoFazerInventario">Fazer Inventário</string>
+    <string name="textoLer">Ler</string>
+    <string name="textoLocalizar">Localizar</string>
+    <string name="textoExpandir">Expandir Lista</string>
     <string name="textoGravacao">Gravação</string>
     <string name="textoConfiguracao">Configurações</string>
     <string name="textoInventario">Inventário</string>

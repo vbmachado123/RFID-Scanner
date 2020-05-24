@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey340"
+    tools:context="telas.InventarioActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/logobranco" />
+
+            <TextView
+                android:textColor="@color/branco"
+                android:gravity="center_vertical"
+                android:paddingLeft="8dp"
+                android:textSize="28sp"
+                android:text="Inventário"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <ScrollView
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:padding="8dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:layout_marginTop="20dp"
+                android:id="@+id/trCarregar"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_file_upload"/>
+
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoCarregar"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_marginTop="@dimen/distancia"
+                android:id="@+id/trFazerInventario"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_leitura"/>
+
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoFazerInventario"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </TableRow>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

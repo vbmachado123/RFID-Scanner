@@ -7,17 +7,34 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+   <!-- <uses-sdk
+        android:minSdkVersion="20"
+        android:targetSdkVersion="25"/>-->
+
     <application
-        tools:replace="android:icon"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name="telas.HomeActivity"
-            android:launchMode="singleTask"></activity>
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
+        <activity android:name="telas.ConfiguracaoActivity"></activity>
+        <activity android:name="telas.InventarioActivity" />
+        <activity android:name="telas.GravacaoActivity" />
+        <activity android:name="telas.LeituraActivity" />
+        <activity
+            android:name="telas.HomeActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
 
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <activity android:name="com.uk.tsl.rfid.TSLDeviceApplication" />
         <activity android:name="telas.MainActivity" />
         <activity android:name="telas.SplashScreen">
             <intent-filter>
@@ -26,12 +43,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <intent-filter>
-            <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-        </intent-filter>
-        <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-        android:resource="@xml/device_filter" />
-
     </application>
 
 </manifest>
