@@ -16,9 +16,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.*;
+import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
 import java.io.Reader;
 
+import me.aflak.bluetooth.Bluetooth;
+import me.aflak.bluetooth.interfaces.BluetoothCallback;
 import model.Inventario;
 
 public class HomeActivity extends AppCompatActivity {
@@ -27,7 +30,9 @@ public class HomeActivity extends AppCompatActivity {
     private TableRow trConectar, trLeitura, trGravacao, trInventario, trConfiguracoes;
     private Context Context;
     private boolean conexao;
-    
+    private Bluetooth bluetooth;
+    private BluetoothCallback bluetoothCallback;
+
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,9 @@ public class HomeActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        bluetooth = new Bluetooth(this);
+        bluetooth.setBluetoothCallback(bluetoothCallback);
 
         if(!conexao)
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
@@ -55,7 +63,8 @@ public class HomeActivity extends AppCompatActivity {
 
         trConectar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { //listar
+                
                if(conexao){ //conexao ativa -> desconectar
                    conexao = false;
                    toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
