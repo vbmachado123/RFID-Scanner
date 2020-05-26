@@ -179,7 +179,6 @@ public class DeviceListActivity extends Activity {
         }
 
         // Request discover from BluetoothAdapter
-
         mBtAdapter.startDiscovery();
     }
 

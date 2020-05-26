@@ -29,7 +29,7 @@
                 android:textColor="@color/branco"
                 android:gravity="center_vertical"
                 android:paddingLeft="8dp"
-                android:textSize="28sp"
+                android:textSize="@dimen/tamanhoTextoToolBar"
                 android:text="@string/textoGravacao"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

@@ -17,7 +17,6 @@ string disconnect
 string discoverable
 string insecure_change
 string insecure_connect
-string keluar
 string none_found
 string none_paired
 string not_connected
