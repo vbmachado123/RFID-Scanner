@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.rfidscanner">
-    <!-- USO DO BLUETOOTH -->
+
+    <uses-feature android:name="android.hardware.bluetooth" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-   <!-- <uses-sdk
-        android:minSdkVersion="20"
-        android:targetSdkVersion="25"/>-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +19,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name="telas.ConfiguracaoActivity"></activity>
+        <activity
+            android:name="telas.ListaDispositivosActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Dialog"></activity>
+        <activity android:name="telas.ListaDispositivos"
+            android:theme="@style/Theme.AppCompat"/>
+        <activity android:name="telas.ConfiguracaoActivity" />
         <activity android:name="telas.InventarioActivity" />
         <activity android:name="telas.GravacaoActivity" />
         <activity android:name="telas.LeituraActivity" />

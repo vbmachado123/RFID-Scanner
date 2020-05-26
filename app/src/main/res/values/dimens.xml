@@ -3,4 +3,5 @@
     <dimen name="tamanhoIcon">40dp</dimen>
     <dimen name="tamanhoTextoHome">26sp</dimen>
     <dimen name="distancia">30dp</dimen>
+    <dimen name="tamanhoTextoToolBar">20sp</dimen>
 </resources>

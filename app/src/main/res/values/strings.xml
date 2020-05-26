@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SOS RFID</string>
+    <string name="app_name">SOS RFiD</string>
     <string name="versao">Versão: 1.0.0</string>
 
     <string name="textoBtConectar">Conectar  Leitor</string>

@@ -28,7 +28,7 @@
                 android:textColor="@color/branco"
                 android:gravity="center_vertical"
                 android:paddingLeft="8dp"
-                android:textSize="28sp"
+                android:textSize="@dimen/tamanhoTextoToolBar"
                 android:text="Home"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
@@ -68,6 +68,7 @@
                     android:src="@drawable/ic_bluetooth"/>
 
                 <TextView
+                    android:id="@+id/tvConectar"
                     android:paddingLeft="@dimen/distancia"
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
@@ -90,6 +91,7 @@
                     android:src="@drawable/ic_leitura"/>
 
                 <TextView
+                    android:id="@+id/tvLeitura"
                     android:paddingLeft="@dimen/distancia"
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
@@ -112,6 +114,7 @@
                     android:src="@drawable/ic_save"/>
 
                 <TextView
+                    android:id="@+id/tvGravacao"
                     android:paddingLeft="@dimen/distancia"
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
