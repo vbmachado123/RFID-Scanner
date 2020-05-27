@@ -32,11 +32,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/* CODIGO MODELO DE CONEXÃO AO DISPOSITIVO
+* REALIZA A CONEXAO E A LEITURA DAS TAGS
+* UTILIZANDO A API BLUETOOTH NATIVA DO ANDROID */
+
 public class MainActivity extends AppCompatActivity {
 
     private Context context = this;
     private ConnectThread connectThread;
-
 
     private static final int SOLICITA_BLUETOOTH = 1, SOLICITA_CONEXAO = 2, MESSAGE_READ = 3;
     private static final String TAG = "Bluetooth";

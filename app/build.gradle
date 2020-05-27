@@ -42,6 +42,7 @@ dependencies {
     implementation project(path: ':Rfid.AsciiProtocol-Library')
     implementation project(path: ':DeviceList')
     implementation project(path: ':sdk')
+    implementation 'com.karumi:dexter:6.0.2' /* PARA AS PERMISSÕES */
     implementation 'me.aflak.libraries:bluetooth:1.3.9'
     implementation 'com.felipecsl:gifimageview:2.1.0'
     implementation 'commons-io:commons-io:2.4'
