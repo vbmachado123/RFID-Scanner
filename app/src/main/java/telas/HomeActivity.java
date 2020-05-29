@@ -7,9 +7,11 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +36,7 @@ import com.uk.tsl.rfid.asciiprotocol.responders.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class HomeActivity extends AppCompatActivity {
@@ -47,16 +50,21 @@ public class HomeActivity extends AppCompatActivity {
     private BluetoothDevice device = null;
     private BluetoothSocket socket = null;
     private BluetoothReaderService readerService;
+    private AsciiCommander commander, asciiCommander;
+    private LoggerResponder responder;
+    private SynchronousDispatchResponder dispatchResponder;
+    private TransponderResponder transponderResponder;
 
     private static final int SOLICITA_BLUETOOTH = 1, SOLICITA_CONEXAO = 2, MESSAGE_READ = 3;
     private static String MAC = null;
     private static final String TAG = "Bluetooth", TAGLEITURA = "Teste";
     private TextView tvConectar, tvLeitura, tvGravacao;
 
-    private AsciiCommander commander;
-    private LoggerResponder responder;
     Handler handler = null; //Temporario
-    private ConnectThread connectThread;
+    OutputStream outputStream;
+    InputStream inputStream;
+
+    private ConnectedThread connectThread;
     private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     @SuppressLint({"ResourceAsColor", "NewApi"})
@@ -70,15 +78,10 @@ public class HomeActivity extends AppCompatActivity {
 
         /* api RFiD */
         commander = new AsciiCommander(this);
+        asciiCommander = new AsciiCommander(context);
 
-       readerService = new BluetoothReaderService(
-               handler = new Handler(){
-                   @Override
-                   public void handleMessage(@NonNull Message msg) {
-                       Toast.makeText(context, responder.toString(), Toast.LENGTH_SHORT).show();
-               }
-    });
-
+        dispatchResponder = new SynchronousDispatchResponder();
+        transponderResponder = new TransponderResponder();
         responder = new LoggerResponder();
 
         adapter = BluetoothAdapter.getDefaultAdapter();
@@ -93,11 +96,27 @@ public class HomeActivity extends AppCompatActivity {
         /* VERIFICANDO SE POSSUI CONEXÃO ATIVA COM O LEITOR */
         if(!conexao)
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
-        else
+        else {
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+            Log.i(TAGLEITURA, commander.getLastCommandLine());
+        }
 
         validaCampo();
 
+        handler = new Handler(){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                String recebido = (String) msg.obj;
+                Log.i(TAG, "> Mensagem recebida: " + recebido );
+                if(msg.what == MESSAGE_READ) {
+                    recebido = (String) msg.obj;
+                    Log.i(TAG, "> Mensagem recebida: " + recebido );
+                    Toast.makeText(context, "" + recebido, Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        readerService = new BluetoothReaderService(handler);
+        Log.i(TAGLEITURA, transponderResponder.getEpc());
     }
 
     private void validaCampo() {
@@ -129,8 +148,14 @@ public class HomeActivity extends AppCompatActivity {
         trLeitura.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (conexao == true) acessaActivity(LeituraActivity.class);
-                else Toast.makeText(context, "Conecte com o leitor para prosseguir", Toast.LENGTH_SHORT).show();
+                if (conexao == true) {
+                  //  commander.disconnect(); //Encerrando conexão
+                    Intent it = new Intent(HomeActivity.this, LeituraActivity.class);
+                    it.putExtra("address", MAC);
+                    /*acessaActivity(LeituraActivity.class);*/
+                    startActivity(it);
+                } else
+                    Toast.makeText(context, "Conecte com o leitor para prosseguir", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -179,15 +204,45 @@ public class HomeActivity extends AppCompatActivity {
     private void validaConexao() {
         device = adapter.getRemoteDevice(MAC);
         commander.connect(device);
+
         conexao = true;
 
+        StringBuilder recebido = new StringBuilder();
+
         try {
-            socket = device.createRfcommSocketToServiceRecord(uuid);
-            readerService.connected(socket, device, CONNECTIVITY_SERVICE);
-            //socket.connect();
-            //  connectThread = new ConnectThread(socket);
-            // connectThread.start();
-            commander.addResponder(responder);
+            socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
+
+            if(commander.hasConnectedSuccessfully()){
+                asciiCommander = commander;
+
+                asciiCommander.addResponder(responder);
+
+                commander.addSynchronousResponder();
+
+                readerService.connect(device, true);
+                readerService.connected(socket, device, CONNECTIVITY_SERVICE);
+
+                transponderResponder.getTransponderReceivedHandler();
+                Log.i(TAGLEITURA, transponderResponder.getEpc());
+            /*    byte[] buffer = new byte[1024];
+                int bytes = 0;
+                buffer = transponderResponder.getReadData();
+                String dadosBt = new String(buffer, 0, bytes);*/
+
+
+                if(transponderResponder.getReadData() != null)
+                    Log.i(TAGLEITURA, transponderResponder.getReadData().toString());
+
+                if(commander.getConnectedDeviceName() == null) {
+                    Toast.makeText(context, "Conectado com sucesso: " + device.getName()
+                            /*asciiCommander.getConnectedDeviceName() */ , Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Conectado com sucesso: " + /*device.getName()*/
+                            asciiCommander.getConnectedDeviceName()  , Toast.LENGTH_SHORT).show();
+                    Log.i(TAGLEITURA, asciiCommander.getConnectionState().toString());
+                    Log.i(TAGLEITURA, asciiCommander.getLastCommandLine());
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -195,8 +250,6 @@ public class HomeActivity extends AppCompatActivity {
         toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
         tvConectar.setText("Desconectar");
 
-        Toast.makeText(context, "Conectado com sucesso: " + device.getName()
-                /*commander.getConnectedDeviceName()*/  , Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -211,54 +264,44 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(it);
     }
 
-    private class ConnectThread extends Thread {
+    private class ConnectedThread extends Thread {
+        InputStream inputStream=null;
+        int avilableBytes=0;
 
-        private InputStream inputStream;
-        private OutputStream outputStream;
-
-        public ConnectThread(BluetoothSocket mSocket) {
-            BluetoothSocket tmp = null;
-
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
-            try {
-                tmp = device.createInsecureRfcommSocketToServiceRecord(uuid);
-                tmpIn = socket.getInputStream();
-                tmpOut = socket.getOutputStream();
-                Log.i(TAG,  "tentando conectar");
-            } catch (IOException e) {
-                Log.e(TAG, "Socket's create() method failed", e);
+        public ConnectedThread(BluetoothSocket socket){
+            InputStream temp=null;
+            try{
+                temp=socket.getInputStream();
+            }catch (IOException e){
+                e.printStackTrace();
             }
-
-            socket = tmp;
-            inputStream = tmpIn;
-            outputStream = tmpOut;
+            inputStream=temp;
         }
 
         public void run() {
-            while (true){
-                try {
-                    byte[] buffer = new byte[1024];
-                    int bytes;
-                    bytes = inputStream.read(buffer);
-
-                    String dadosBt = new String(buffer, 0, bytes);
-
-                    handler.obtainMessage(MESSAGE_READ, bytes, -1, dadosBt)
-                            .sendToTarget();
-                } catch (IOException connectException) {
-                    break;
-                }
-            }
-        }
-
-        public void enviar(String enviar) {
-            byte[] msg = enviar.getBytes();
             try{
-                outputStream.write(msg);
-                Log.i(TAG, "> Enviado ao scanner: " + enviar);
-            } catch (IOException e) { }
+                int bytes;
+                while (true){
+                    try{
+                        avilableBytes=inputStream.available();
+                        byte[] buffer=new byte[avilableBytes];
+                        if (avilableBytes>0){
+                            bytes=inputStream.read(buffer);
+                            final String readMessage=new String(buffer);
+                            if (bytes>=3){
+                                handler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage).sendToTarget();
+                            }
+                            else {
+                                SystemClock.sleep(100);
+                            }
+                        }
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }
