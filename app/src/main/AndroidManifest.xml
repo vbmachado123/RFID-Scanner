@@ -3,13 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.rfidscanner">
 
+    <uses-feature android:name="android.hardware.camera2" />
     <uses-feature android:name="android.hardware.bluetooth" />
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -22,15 +33,29 @@
         <activity
             android:name="telas.ListaDispositivosActivity"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Dialog"></activity>
+            android:theme="@style/Theme.AppCompat.Dialog"
+            tools:ignore="MissingClass"></activity>
         <activity android:name="telas.ListaDispositivos"
             android:theme="@style/Theme.AppCompat"/>
-        <activity android:name="telas.ConfiguracaoActivity" />
-        <activity android:name="telas.InventarioActivity" />
-        <activity android:name="telas.GravacaoActivity" />
-        <activity android:name="telas.LeituraActivity" />
+        <activity android:name="telas.ConfiguracaoActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name="telas.InventarioActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:screenOrientation="portrait"/>
+
+        <service android:name="services.BluetoothService" />
+
+        <activity android:name="telas.GravacaoActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name="telas.LeituraActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="telas.HomeActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -40,7 +65,8 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
         </activity>
-        <activity android:name="com.uk.tsl.rfid.TSLDeviceApplication" />
+        <activity android:name="com.uk.tsl.rfid.TSLDeviceApplication"
+            tools:ignore="MissingClass" />
         <activity android:name="telas.MainActivity" />
         <activity android:name="telas.SplashScreen">
             <intent-filter>

@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
@@ -30,6 +31,8 @@ public class LeituraActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leitura);
 
@@ -45,7 +48,7 @@ public class LeituraActivity extends AppCompatActivity {
         MAC = extras.getString("address");
 
         device = adapter.getRemoteDevice(MAC);
-        commander.connect(device);
+        //commander.connect(device);
 
         if(commander.isConnected()) {
             Toast.makeText(this, commander.getConnectedDeviceName(), Toast.LENGTH_SHORT).show();

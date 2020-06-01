@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="tamanhoIcon">40dp</dimen>
-    <dimen name="tamanhoTextoHome">26sp</dimen>
+    <dimen name="tamanhoTextoHome">25sp</dimen>
     <dimen name="distancia">30dp</dimen>
     <dimen name="tamanhoTextoToolBar">20sp</dimen>
 </resources>
