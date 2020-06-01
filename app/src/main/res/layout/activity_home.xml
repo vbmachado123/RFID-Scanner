@@ -12,28 +12,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:minHeight="?attr/actionBarSize">
+        android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@mipmap/ic_sos"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="Home "
+        app:titleTextColor="@color/branco">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="start">
-
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/logobranco" />
-
-            <TextView
-                android:textColor="@color/branco"
-                android:gravity="center_vertical"
-                android:paddingLeft="8dp"
-                android:textSize="@dimen/tamanhoTextoToolBar"
-                android:text="Home"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/txt_versaapp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:paddingRight="5dp"
+            android:text="@string/versao"
+            android:textColor="@color/branco"
+            android:textSize="15sp"
+            android:textStyle="italic|bold" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -48,15 +42,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:textColor="@color/colorPrimary"
-                android:textAlignment="textEnd"
-                android:text="@string/versao"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
             <TableRow
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/distancia"
                 android:id="@+id/trConectar"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content"
