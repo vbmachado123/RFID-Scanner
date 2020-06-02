@@ -36,12 +36,13 @@ public class FuncoesSOS {
 
 
     // Notificação padrão que será usada em todos os serviços, exceto no Servico Chat
-    public static Notification sendNotificationPadrao(Context context) {
+    public static Notification sendNotificationPadrao(Context context, String dispositivo) {
         Timber.i("sendNotificationPadrao = ");
-
+        String textoBig = "";
         String titulo = "SOS";
         String texto = "App para facilitar seu trabalho";
-        String textoBig = "";
+        if(dispositivo != null)
+             textoBig = "Aplicativo conectado com: " + dispositivo;
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, HomeActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 

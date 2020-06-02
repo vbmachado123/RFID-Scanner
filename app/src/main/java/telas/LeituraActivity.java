@@ -17,6 +17,8 @@ import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
 import java.util.UUID;
 
+import services.BluetoothService;
+
 public class LeituraActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
@@ -28,6 +30,7 @@ public class LeituraActivity extends AppCompatActivity {
     private BluetoothAdapter adapter = null;
     private BluetoothDevice device = null;
     private BluetoothSocket socket = null;
+    private BluetoothService bluetoothService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +43,13 @@ public class LeituraActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        BluetoothService bluetoothService = new BluetoothService();
         commander = new AsciiCommander(this);
-        adapter = BluetoothAdapter.getDefaultAdapter();
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
+        commander = bluetoothService.getCommander();
+        device = bluetoothService.getDevice();
 
-        MAC = extras.getString("address");
-
-        device = adapter.getRemoteDevice(MAC);
-        //commander.connect(device);
+        if(device != null)
+            Toast.makeText(this, device.getName(), Toast.LENGTH_SHORT).show();
 
         if(commander.isConnected()) {
             Toast.makeText(this, commander.getConnectedDeviceName(), Toast.LENGTH_SHORT).show();
