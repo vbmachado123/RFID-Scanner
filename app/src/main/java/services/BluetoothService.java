@@ -27,6 +27,7 @@ import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -59,12 +60,12 @@ public class BluetoothService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         commander = new AsciiCommander(getApplicationContext());
         adapter = BluetoothAdapter.getDefaultAdapter();
-        MAC =(String) intent.getExtras().get("address");
+        MAC = (String) intent.getExtras().get("address");
         device = adapter.getRemoteDevice(MAC);
         commander.connect(device);
 
         conexao = true;
-        enviarDadosActivity();
+        //enviarDadosActivity();
 
         startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
         return START_STICKY;
@@ -74,8 +75,8 @@ public class BluetoothService extends Service {
         Intent enviar = new Intent();
         enviar.setAction("GET_CONEXAO");
         enviar.putExtra( "conexao",conexao);
-      /*  enviar.putExtra( "commander", (Parcelable) commander);
-        enviar.putExtra( "device", (Parcelable) device);*/
+        /*enviar.putExtra( "commander", String.valueOf(commander));*/
+        enviar.putExtra( "device", device);
         sendBroadcast(enviar);
     }
 

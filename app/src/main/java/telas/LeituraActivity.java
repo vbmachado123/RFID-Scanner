@@ -6,7 +6,10 @@ import androidx.appcompat.widget.Toolbar;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -19,6 +22,7 @@ import java.util.UUID;
 
 import services.BluetoothService;
 
+
 public class LeituraActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
@@ -30,7 +34,7 @@ public class LeituraActivity extends AppCompatActivity {
     private BluetoothAdapter adapter = null;
     private BluetoothDevice device = null;
     private BluetoothSocket socket = null;
-    private BluetoothService bluetoothService;
+    BluetoothReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,21 +43,19 @@ public class LeituraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leitura);
 
+        receiver = new BluetoothReceiver();
+        registerReceiver(receiver, new IntentFilter("GET_CONEXAO"));
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        BluetoothService bluetoothService = new BluetoothService();
-        commander = new AsciiCommander(this);
-        commander = bluetoothService.getCommander();
-        device = bluetoothService.getDevice();
-
         if(device != null)
             Toast.makeText(this, device.getName(), Toast.LENGTH_SHORT).show();
 
-        if(commander.isConnected()) {
+     /*   if(commander.isConnected()) {
             Toast.makeText(this, commander.getConnectedDeviceName(), Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     @Override
@@ -64,5 +66,19 @@ public class LeituraActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    class BluetoothReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("GET_CONEXAO"))
+            {
+                device = intent.getParcelableExtra("device");
+               /* conexao = intent.getBooleanExtra("conexao", false);
+                // commander = (AsciiCommander) intent.getSerializableExtra("commander");
+             */
+            }
+        }
     }
 }

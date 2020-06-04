@@ -34,7 +34,6 @@ public class FuncoesSOS {
     public static final int NOTIFICATION_ID_CORRIDA_CANCELAMENTO = 15;
     public static final String NOTIFICATION_CHANNEL_ID_CORRIDA_CANCELAMENTO = "NOTIFICATION_CHANNEL_ID_CORRIDA_CANCELAMENTO";
 
-
     // Notificação padrão que será usada em todos os serviços, exceto no Servico Chat
     public static Notification sendNotificationPadrao(Context context, String dispositivo) {
         Timber.i("sendNotificationPadrao = ");
