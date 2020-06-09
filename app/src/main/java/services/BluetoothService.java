@@ -23,15 +23,20 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.ambrosus.sdk.NetworkCall;
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import gen.FuncoesSOS;
+import telas.MainActivity;
 
 /* Responsavel por iniciar e tornar publica a conexão com o dispositivo */
 public class BluetoothService extends Service {
@@ -59,12 +64,12 @@ public class BluetoothService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         commander = new AsciiCommander(getApplicationContext());
         adapter = BluetoothAdapter.getDefaultAdapter();
-        MAC =(String) intent.getExtras().get("address");
+        MAC = (String) intent.getExtras().get("address");
         device = adapter.getRemoteDevice(MAC);
         commander.connect(device);
 
         conexao = true;
-        enviarDadosActivity();
+        //enviarDadosActivity();
 
         startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
         return START_STICKY;
@@ -74,8 +79,8 @@ public class BluetoothService extends Service {
         Intent enviar = new Intent();
         enviar.setAction("GET_CONEXAO");
         enviar.putExtra( "conexao",conexao);
-      /*  enviar.putExtra( "commander", (Parcelable) commander);
-        enviar.putExtra( "device", (Parcelable) device);*/
+        /*enviar.putExtra( "commander", String.valueOf(commander));*/
+        enviar.putExtra( "device", device);
         sendBroadcast(enviar);
     }
 
@@ -90,11 +95,13 @@ public class BluetoothService extends Service {
             startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
     }
 
+    @SuppressLint("WrongConstant")
     public void onDestroy() {
         super.onDestroy();
         commander.disconnect();
         lock.release();
     }
+
 
     public boolean isConexao() {
         return conexao;
@@ -102,25 +109,5 @@ public class BluetoothService extends Service {
 
     public void setConexao(boolean conexao) {
         this.conexao = conexao;
-    }
-
-    public static String getMAC() {
-        return MAC;
-    }
-
-    public AsciiCommander getCommander() {
-        return commander;
-    }
-
-    public BluetoothAdapter getAdapter() {
-        return adapter;
-    }
-
-    public BluetoothDevice getDevice() {
-        return device;
-    }
-
-    public BluetoothSocket getSocket() {
-        return socket;
     }
 }

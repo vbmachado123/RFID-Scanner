@@ -49,10 +49,10 @@ public class HomeActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TableRow trConectar, trLeitura, trGravacao, trInventario, trConfiguracoes;
     private Context context = this;
-    private boolean conexao;
+    private static boolean conexao;
 
     private BluetoothAdapter adapter = null;
-    private BluetoothDevice device = null;
+    private static BluetoothDevice device = null;
     private BluetoothSocket socket = null;
     private BluetoothReaderService readerService;
     private AsciiCommander commander;
@@ -116,7 +116,9 @@ public class HomeActivity extends AppCompatActivity {
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
         else {
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
-            Log.i(TAGLEITURA, commander.getLastCommandLine());
+            tvConectar.setText("Desconectar");
+            /*Log.i(TAGLEITURA, commander.getLastCommandLine());*/
+
         }
 
         validaCampo();
@@ -139,7 +141,7 @@ public class HomeActivity extends AppCompatActivity {
                if(conexao){ //conexao ativa -> desconectar
                    conexao = false;
                    bluetoothService.setConexao(conexao);
-                   /*commander.disconnect(); //Encerrando conexão*/
+                   pararServer();
                    tvConectar.setText("Conectar");
                    toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
                } else { //conexao desativada
@@ -182,6 +184,10 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private void pararServer() {
+      stopService(new Intent(this, BluetoothService.class));
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK){
@@ -189,7 +195,6 @@ public class HomeActivity extends AppCompatActivity {
                 case SOLICITA_CONEXAO:
                     MAC = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
                     Log.i(TAG, "> MAC foi recebido: " + MAC);
-                    iniciarServer();
                     validaConexao();
                     break;
                 case SOLICITA_BLUETOOTH:
@@ -206,7 +211,7 @@ public class HomeActivity extends AppCompatActivity {
 
         iniciarServer();
         conexao = true;
-        bluetoothService.setConexao(conexao);
+        //bluetoothService.setConexao(conexao);
 
 /*
         device = adapter.getRemoteDevice(MAC);
@@ -272,16 +277,17 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(it);
     }
 
-    class BluetoothReceiver extends BroadcastReceiver {
+     static class BluetoothReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals("GET_CONEXAO"))
             {
                 conexao = intent.getBooleanExtra("conexao", false);
+               // commander = (AsciiCommander) intent.getSerializableExtra("commander");
+                device = intent.getParcelableExtra("device");
             }
         }
     }
-
 }
 
