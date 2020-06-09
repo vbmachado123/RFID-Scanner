@@ -23,16 +23,20 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.ambrosus.sdk.NetworkCall;
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import gen.FuncoesSOS;
+import telas.MainActivity;
 
 /* Responsavel por iniciar e tornar publica a conexão com o dispositivo */
 public class BluetoothService extends Service {
@@ -91,11 +95,13 @@ public class BluetoothService extends Service {
             startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
     }
 
+    @SuppressLint("WrongConstant")
     public void onDestroy() {
         super.onDestroy();
         commander.disconnect();
         lock.release();
     }
+
 
     public boolean isConexao() {
         return conexao;
@@ -103,25 +109,5 @@ public class BluetoothService extends Service {
 
     public void setConexao(boolean conexao) {
         this.conexao = conexao;
-    }
-
-    public static String getMAC() {
-        return MAC;
-    }
-
-    public AsciiCommander getCommander() {
-        return commander;
-    }
-
-    public BluetoothAdapter getAdapter() {
-        return adapter;
-    }
-
-    public BluetoothDevice getDevice() {
-        return device;
-    }
-
-    public BluetoothSocket getSocket() {
-        return socket;
     }
 }

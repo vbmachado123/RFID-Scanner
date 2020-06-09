@@ -1,6 +1,7 @@
 package gen;
 
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,9 +11,6 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-
-import android.util.Log;
 
 
 import androidx.core.app.NotificationCompat;
@@ -35,6 +33,7 @@ public class FuncoesSOS {
     public static final String NOTIFICATION_CHANNEL_ID_CORRIDA_CANCELAMENTO = "NOTIFICATION_CHANNEL_ID_CORRIDA_CANCELAMENTO";
 
     // Notificação padrão que será usada em todos os serviços, exceto no Servico Chat
+    @SuppressLint("ServiceCast")
     public static Notification sendNotificationPadrao(Context context, String dispositivo) {
         Timber.i("sendNotificationPadrao = ");
         String textoBig = "";
@@ -84,5 +83,11 @@ public class FuncoesSOS {
         assert notificationManager != null;
         notificationManager.notify(NOTIFICATION_ID_PADRAO, notificationBuilder.build());
         return notificationBuilder.build();
+    }
+
+    public static void desativarNotificacao(Context context){
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(String.valueOf(NOTIFICATION_ID_PADRAO));
+        notificationManager.cancelAll();
     }
 }

@@ -141,7 +141,7 @@ public class HomeActivity extends AppCompatActivity {
                if(conexao){ //conexao ativa -> desconectar
                    conexao = false;
                    bluetoothService.setConexao(conexao);
-                   /*commander.disconnect(); //Encerrando conexão*/
+                   pararServer();
                    tvConectar.setText("Conectar");
                    toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
                } else { //conexao desativada
@@ -182,6 +182,10 @@ public class HomeActivity extends AppCompatActivity {
                 acessaActivity(ConfiguracaoActivity.class);
             }
         });
+    }
+
+    private void pararServer() {
+      stopService(new Intent(this, BluetoothService.class));
     }
 
     @Override

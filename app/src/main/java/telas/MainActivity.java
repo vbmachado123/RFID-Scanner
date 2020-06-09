@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
        }
     }
 
-    private class ConnectThread extends Thread {
+    public class ConnectThread extends Thread {
 
        private InputStream inputStream;
        private OutputStream outputStream;
