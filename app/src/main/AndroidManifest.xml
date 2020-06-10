@@ -52,6 +52,9 @@
         <activity android:name="telas.LeituraActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"/>
+
+        <receiver android:name="bluetooth.BluetoothReceiver" />
+
         <activity
             android:name="telas.HomeActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"

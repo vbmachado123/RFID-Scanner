@@ -4,16 +4,11 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +18,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -35,13 +29,12 @@ import com.uk.tsl.rfid.asciiprotocol.BluetoothReaderService;
 import com.uk.tsl.rfid.asciiprotocol.commands.ReadTransponderCommand;
 import com.uk.tsl.rfid.asciiprotocol.responders.*;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.UUID;
 
-import gen.FuncoesSOS;
+import bluetooth.BluetoothListener;
+import bluetooth.*;
 import services.BluetoothService;
 
 public class HomeActivity extends AppCompatActivity {
@@ -73,8 +66,7 @@ public class HomeActivity extends AppCompatActivity {
     Handler handler = null; //Temporario
     OutputStream outputStream;
     InputStream inputStream;
-
-    BluetoothReceiver receiver;
+    private String verificaConexao;
 
     private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
@@ -86,8 +78,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        receiver = new BluetoothReceiver();
-        registerReceiver(receiver, new IntentFilter("GET_CONEXAO"));
+        if(verificaConexao != null) conexao = true;
+        else conexao = false;
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -118,7 +110,6 @@ public class HomeActivity extends AppCompatActivity {
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
             tvConectar.setText("Desconectar");
             /*Log.i(TAGLEITURA, commander.getLastCommandLine());*/
-
         }
 
         validaCampo();
@@ -144,6 +135,13 @@ public class HomeActivity extends AppCompatActivity {
                    pararServer();
                    tvConectar.setText("Conectar");
                    toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
+
+                   BluetoothReceiver.bindListener(new BluetoothListener() {
+                       @Override
+                       public void messageReceived(Bundle messageText) {
+                            //conexao = messageText;
+                       }
+                   });
                } else { //conexao desativada
                    Intent lista = new Intent( HomeActivity.this, DeviceListActivity.class);
                    startActivityForResult(lista , SOLICITA_CONEXAO);
@@ -213,6 +211,16 @@ public class HomeActivity extends AppCompatActivity {
         conexao = true;
         //bluetoothService.setConexao(conexao);
 
+        BluetoothReceiver.bindListener(new BluetoothListener() {
+            @Override
+            public void messageReceived(Bundle messageText) {
+                    verificaConexao = String.valueOf(messageText);
+            }
+        });
+
+        if(verificaConexao != null) conexao = true;
+        else conexao = false;
+
 /*
         device = adapter.getRemoteDevice(MAC);
         commander.connect(device);
@@ -277,17 +285,5 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(it);
     }
 
-     static class BluetoothReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("GET_CONEXAO"))
-            {
-                conexao = intent.getBooleanExtra("conexao", false);
-               // commander = (AsciiCommander) intent.getSerializableExtra("commander");
-                device = intent.getParcelableExtra("device");
-            }
-        }
-    }
 }
 

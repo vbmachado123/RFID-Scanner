@@ -1,42 +1,23 @@
 package services;
 
 import android.annotation.SuppressLint;
-import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.os.PowerManager;
-import android.util.Log;
-import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.ambrosus.sdk.NetworkCall;
-import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 
 import gen.FuncoesSOS;
-import telas.MainActivity;
+import bluetooth.BluetoothReceiver;
 
 /* Responsavel por iniciar e tornar publica a conexão com o dispositivo */
 public class BluetoothService extends Service {
@@ -70,17 +51,19 @@ public class BluetoothService extends Service {
 
         conexao = true;
         //enviarDadosActivity();
+        Intent it = new Intent(this, BluetoothReceiver.class).putExtra("teste info", "teste");
+        this.sendBroadcast(it);
+        enviarDadosActivity();
 
         startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
+    /* Teste de envio do estado da conexao para a home */
     private void enviarDadosActivity() { /* Teste de envio para as telas */
         Intent enviar = new Intent();
         enviar.setAction("GET_CONEXAO");
         enviar.putExtra( "conexao",conexao);
-        /*enviar.putExtra( "commander", String.valueOf(commander));*/
-        enviar.putExtra( "device", device);
         sendBroadcast(enviar);
     }
 
@@ -110,4 +93,5 @@ public class BluetoothService extends Service {
     public void setConexao(boolean conexao) {
         this.conexao = conexao;
     }
+
 }
