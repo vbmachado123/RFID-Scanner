@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+
 public class Bluetooth extends BroadcastReceiver {
     private Bluetooth.BluetoothListener listener;
     private ArrayList<BluetoothDevice> lista;
     private BluetoothAdapter dispositivo;
+
 
     public static Bluetooth getBondedDevices(Context applicationContext) throws IOException {
         Bluetooth bluetooth = new Bluetooth((Bluetooth.BluetoothListener)null);
