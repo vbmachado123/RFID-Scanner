@@ -1,5 +1,6 @@
 package bluetooth;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 /**
@@ -7,5 +8,5 @@ import android.os.Bundle;
  */
 
 public interface BluetoothListener {
-    public void messageReceived(Bundle messageText);
+    public void messageReceived(Intent messageText);
 }

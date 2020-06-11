@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey340"
+    android:keepScreenOn="true"
     tools:context="telas.HomeActivity">
     <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
