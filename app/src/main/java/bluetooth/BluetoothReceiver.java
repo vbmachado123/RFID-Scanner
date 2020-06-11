@@ -16,15 +16,12 @@ import bluetooth.BluetoothListener;
 public class BluetoothReceiver extends BroadcastReceiver {
 
     //interface
-    private static BluetoothListener mListener;
+    private static BluetoothListener mListener = null;
     private BluetoothHandler bluHandlerHandler;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle data = intent.getExtras();
-
-        BluetoothHandler bluHandler = new BluetoothHandler(data);
-        bluHandlerHandler.execute();
+        ((BluetoothHandler) new BluetoothHandler(intent)).execute();
     }
 
     public static void bindListener(BluetoothListener listener) {
@@ -32,22 +29,16 @@ public class BluetoothReceiver extends BroadcastReceiver {
     }
 
     public class BluetoothHandler extends AsyncTask<String, String, String> {
-        String messageText = "";
+        Intent intent;
 
-        Bundle data;
-
-        public BluetoothHandler(final Bundle data) {
-            this.data = data;
-
+        public BluetoothHandler(final Intent i) {
+            this.intent= i;
         }
 
         @Override
         protected String doInBackground(String... params) {
-         if (data != null) {
-           mListener.messageReceived(data);
-                }
-
-            return "";
+           mListener.messageReceived(intent);
+           return "";
         }
 
         @Override

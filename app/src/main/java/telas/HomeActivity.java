@@ -36,6 +36,7 @@ import java.util.UUID;
 import bluetooth.BluetoothListener;
 import bluetooth.*;
 import services.BluetoothService;
+import util.Preferencias;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -47,13 +48,6 @@ public class HomeActivity extends AppCompatActivity {
     private BluetoothAdapter adapter = null;
     private static BluetoothDevice device = null;
     private BluetoothSocket socket = null;
-    private BluetoothReaderService readerService;
-    private AsciiCommander commander;
-    private LoggerResponder responder;
-    private SynchronousDispatchResponder dispatchResponder;
-    private TransponderResponder transponderResponder;
-    private SwitchResponder switchResponder;
-    private ReadTransponderCommand transponderCommand;
 
     private Intent service;
     private BluetoothService bluetoothService;
@@ -63,12 +57,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "Bluetooth", TAGLEITURA = "Teste";
     private TextView tvConectar, tvLeitura, tvGravacao;
 
-    Handler handler = null; //Temporario
-    OutputStream outputStream;
-    InputStream inputStream;
     private String verificaConexao;
-
-    private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     @SuppressLint({"ResourceAsColor", "NewApi", "HandlerLeak"})
     @Override
@@ -78,19 +67,13 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        if(verificaConexao != null) conexao = true;
-        else conexao = false;
+        validaCampo();
+
+        Preferencias preferencias = new Preferencias(HomeActivity.this);
+       // conexao = preferencias.getConexao();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        /* api RFiD */
-        commander = new AsciiCommander(context);
-        transponderCommand = new ReadTransponderCommand();
-        switchResponder = new SwitchResponder();
-        dispatchResponder = new SynchronousDispatchResponder();
-        transponderResponder = new TransponderResponder();
-        responder = new LoggerResponder();
 
         bluetoothService = new BluetoothService();
 
@@ -112,7 +95,7 @@ public class HomeActivity extends AppCompatActivity {
             /*Log.i(TAGLEITURA, commander.getLastCommandLine());*/
         }
 
-        validaCampo();
+        registrarBluetoothReceiver();
     }
 
     private void validaCampo() {
@@ -135,13 +118,6 @@ public class HomeActivity extends AppCompatActivity {
                    pararServer();
                    tvConectar.setText("Conectar");
                    toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
-
-                   BluetoothReceiver.bindListener(new BluetoothListener() {
-                       @Override
-                       public void messageReceived(Bundle messageText) {
-                            //conexao = messageText;
-                       }
-                   });
                } else { //conexao desativada
                    Intent lista = new Intent( HomeActivity.this, DeviceListActivity.class);
                    startActivityForResult(lista , SOLICITA_CONEXAO);
@@ -182,9 +158,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void pararServer() {
-      stopService(new Intent(this, BluetoothService.class));
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -206,62 +180,7 @@ public class HomeActivity extends AppCompatActivity {
 
     /* UTILIZANDO A API RFID */
     private void validaConexao() {
-
         iniciarServer();
-        conexao = true;
-        //bluetoothService.setConexao(conexao);
-
-        BluetoothReceiver.bindListener(new BluetoothListener() {
-            @Override
-            public void messageReceived(Bundle messageText) {
-                    verificaConexao = String.valueOf(messageText);
-            }
-        });
-
-        if(verificaConexao != null) conexao = true;
-        else conexao = false;
-
-/*
-        device = adapter.getRemoteDevice(MAC);
-        commander.connect(device);
-        commander.addResponder(responder);
-*/
-
-        /*try {
-            socket = device.createRfcommSocketToServiceRecord(uuid);
-
-            if(commander.hasConnectedSuccessfully()){
-
-
-                commander.addSynchronousResponder();
-
-                *//*transponderResponder.setTransponderReceivedHandler(transponderCommand.getTransponderReceivedDelegate());
-        device = adapter.getRemoteDevice(MAC);
-        commander.connect(device);
-
-                if(transponderResponder.getAccessErrorCode() != null) {
-                    Log.i("Resposta", String.valueOf(transponderResponder.getAccessErrorCode()));
-                } else if(transponderResponder != null) {
-                    handler = (Handler) transponderResponder.getTransponderReceivedHandler();
-                    readerService = new BluetoothReaderService(handler);
-                    Log.i("Resposta", transponderResponder.getEpc());
-                    readerService.connect(device, true);
-                    readerService.connected(socket, device, CONNECTIVITY_SERVICE);
-                }*//*
-
-                if(commander.getConnectedDeviceName() == null) {
-                    Toast.makeText(context, "Conectado com sucesso: " + device.getName()
-                            *//*asciiCommander.getConnectedDeviceName() *//* , Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Conectado com sucesso: " + *//*device.getName()*//*
-                            commander.getConnectedDeviceName()  , Toast.LENGTH_SHORT).show();
-                    Log.i(TAGLEITURA, commander.getConnectionState().toString());
-                    Log.i(TAGLEITURA, commander.getLastCommandLine());
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
 
         toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
         tvConectar.setText("Desconectar");
@@ -271,6 +190,10 @@ public class HomeActivity extends AppCompatActivity {
         service = new Intent(this, BluetoothService.class);
         service.putExtra("address", MAC);
         startService(service);
+    }
+
+    private void pararServer() {
+        stopService(new Intent(this, BluetoothService.class));
     }
 
     @Override
@@ -285,5 +208,26 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(it);
     }
 
+    private void registrarBluetoothReceiver() {
+        BluetoothReceiver.bindListener(new BluetoothListener() {
+            @Override
+            public void messageReceived(Intent intent) {
+
+                conexao = intent.getBooleanExtra("conexao", false);
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (!conexao){
+                            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
+                            tvConectar.setText("Conectar");
+                        }else {
+                            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+                            tvConectar.setText("Desconectar");
+                        }
+                    }
+                });
+            }
+        });
+    }
 }
 

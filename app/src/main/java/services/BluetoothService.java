@@ -18,11 +18,11 @@ import java.util.UUID;
 
 import gen.FuncoesSOS;
 import bluetooth.BluetoothReceiver;
+import telas.HomeActivity;
+import util.Preferencias;
 
 /* Responsavel por iniciar e tornar publica a conexão com o dispositivo */
 public class BluetoothService extends Service {
-    private PowerManager.WakeLock lock;
-
     private static String MAC = null;
     private AsciiCommander commander;
     private BluetoothAdapter adapter = null;
@@ -33,6 +33,7 @@ public class BluetoothService extends Service {
 
     public  BluetoothService(){}
     public boolean conexao = false;
+    private Preferencias preferencias;
 
     @Nullable
     @Override
@@ -49,10 +50,10 @@ public class BluetoothService extends Service {
         device = adapter.getRemoteDevice(MAC);
         commander.connect(device);
 
+        preferencias = new Preferencias(getApplicationContext());
         conexao = true;
-        //enviarDadosActivity();
-        Intent it = new Intent(this, BluetoothReceiver.class).putExtra("teste info", "teste");
-        this.sendBroadcast(it);
+        //preferencias.salvarConexao(conexao);
+
         enviarDadosActivity();
 
         startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
@@ -61,7 +62,7 @@ public class BluetoothService extends Service {
 
     /* Teste de envio do estado da conexao para a home */
     private void enviarDadosActivity() { /* Teste de envio para as telas */
-        Intent enviar = new Intent();
+        Intent enviar = new Intent(this, BluetoothReceiver.class);
         enviar.setAction("GET_CONEXAO");
         enviar.putExtra( "conexao",conexao);
         sendBroadcast(enviar);
@@ -70,7 +71,7 @@ public class BluetoothService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        preferencias = new Preferencias(getApplicationContext());
         commander = new AsciiCommander(getApplicationContext());
         adapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -81,8 +82,10 @@ public class BluetoothService extends Service {
     @SuppressLint("WrongConstant")
     public void onDestroy() {
         super.onDestroy();
+        preferencias = new Preferencias(getApplicationContext());
         commander.disconnect();
-        lock.release();
+        conexao = false;
+        //preferencias.salvarConexao(conexao);
     }
 
 
