@@ -12,30 +12,42 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.ListView;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import bluetooth.BluetoothListener;
 import bluetooth.BluetoothReceiver;
+import model.Leitura;
 import services.BluetoothService;
 
 
 public class LeituraActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private AsciiCommander commander;
-    private static String MAC = null;
 
-    private BluetoothAdapter adapter = null;
-    private BluetoothDevice device = null;
-    private BluetoothSocket socket = null;
     private String dados;
+    private ListView listaTags;
+    private TableRow trLeitura, trLocalizar, trExpandir;
+    private List<Leitura> Leitura;
+    private List<Leitura> LeiturasFiltradas = new ArrayList<>();
+    private String textoTag = "";
+
+    private SimpleDateFormat dataFormatada;
+    private Date date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +60,21 @@ public class LeituraActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if(device != null)
-            Toast.makeText(this, device.getName(), Toast.LENGTH_SHORT).show();
-
+        validaCampo();
         registrarBluetoothReceiver();
+
+         dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+         date = new Date();
+
+        // listaTags.setAdapter();
+    }
+
+    private void validaCampo() {
+    trLeitura = (TableRow) findViewById(R.id.trLeitura);
+    trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
+    trExpandir = (TableRow) findViewById(R.id.trExpandir);
+    listaTags = (ListView) findViewById(R.id.lvTags);
+
     }
 
     /* RECEBER LEITURA */
@@ -60,13 +83,25 @@ public class LeituraActivity extends AppCompatActivity {
             @Override
             public void messageReceived(Intent intent) {
 
-                dados = intent.getStringExtra("dados");
+                dados = intent.getStringExtra("resposta");
 
                 runOnUiThread(new Runnable() {
 
                     public void run() {
                         if (dados != null){ /* PREENCHER A LISTA COM OS VALORES */
+                            Log.i("Teste-Leitura", dados);
+                            if(dados.contains("EP:")){ /* Tag */
+                                String textoTag =  dados.replaceAll("EP:","");
+                                /* RECUPERANDO A DATA */
+                                Toast.makeText(LeituraActivity.this, textoTag, Toast.LENGTH_SHORT).show();
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(date);
+                                Date dataAtual = calendar.getTime();
+                                String dataFinal = dataFormatada.format(dataAtual);
 
+
+
+                            }
                         }else { /*  */
 
                         }
