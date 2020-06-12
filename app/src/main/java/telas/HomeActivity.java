@@ -90,7 +90,7 @@ public class HomeActivity extends AppCompatActivity {
         if(!conexao)
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
         else {
-            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
             tvConectar.setText("Desconectar");
             /*Log.i(TAGLEITURA, commander.getLastCommandLine());*/
         }
@@ -221,7 +221,7 @@ public class HomeActivity extends AppCompatActivity {
                             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
                             tvConectar.setText("Conectar");
                         }else {
-                            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+                            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
                             tvConectar.setText("Desconectar");
                         }
                     }
