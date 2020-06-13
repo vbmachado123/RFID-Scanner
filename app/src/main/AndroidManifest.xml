@@ -31,10 +31,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name="telas.LerActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+        <activity android:name="telas.ListaLeituraActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:screenOrientation="portrait" ></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AlertDialog"></activity>
+        <activity
+            android:name="telas.LerActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name="telas.ListaDispositivosActivity"
             android:excludeFromRecents="true"

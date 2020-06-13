@@ -13,8 +13,8 @@ import model.Leitura;
 @Dao
 public interface LeituraDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void inserir(Leitura leitura);
+    @Insert
+    Long inserir(Leitura l);
 
     @Update
     void atualizar(Leitura leitura);

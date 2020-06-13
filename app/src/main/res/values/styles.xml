@@ -11,4 +11,9 @@
         <item name="colorControlNormal">@color/branco2</item>
     </style>
 
+    <style name="AlertDialog" parent="Theme.AppCompat.Dialog">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>
