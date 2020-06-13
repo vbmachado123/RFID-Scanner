@@ -7,14 +7,15 @@ import androidx.room.PrimaryKey;
 import java.io.Serializable;
 
 @Entity
-public class Inventario implements Serializable {
+public class SubLocal implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
     private int id;
+
     private int idLocal;
-    private int idSubLocal;
-    private String dataHora;
+
+    private String descricao;
 
     public int getId() {
         return id;
@@ -32,19 +33,11 @@ public class Inventario implements Serializable {
         this.idLocal = idLocal;
     }
 
-    public int getIdSubLocal() {
-        return idSubLocal;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setIdSubLocal(int idSubLocal) {
-        this.idSubLocal = idSubLocal;
-    }
-
-    public String getDataHora() {
-        return dataHora;
-    }
-
-    public void setDataHora(String dataHora) {
-        this.dataHora = dataHora;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

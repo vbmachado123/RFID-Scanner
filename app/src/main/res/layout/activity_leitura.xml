@@ -99,9 +99,10 @@
             </TableRow>
 
             <ListView
-                android:id="@+id/lvTags"
+                android:id="@+id/lvLista"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="400dp"
+                android:background="@color/grey300" />
 
         </LinearLayout>
     </ScrollView>

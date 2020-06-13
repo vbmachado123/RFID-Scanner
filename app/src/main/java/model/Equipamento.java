@@ -7,15 +7,15 @@ import androidx.room.PrimaryKey;
 import java.io.Serializable;
 
 @Entity
-public class Leitura implements Serializable {
+public class Equipamento implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
     private int id;
+    private String numeroTag = "";
+    private String dataLeitura = "";
 
-    private String numeroTag;
-
-    private String dataHora;
+    private int vezesLida = 0;
 
     public int getId() {
         return id;
@@ -33,11 +33,19 @@ public class Leitura implements Serializable {
         this.numeroTag = numeroTag;
     }
 
-    public String getDataHora() {
-        return dataHora;
+    public String getDataLeitura() {
+        return dataLeitura;
     }
 
-    public void setDataHora(String dataHora) {
-        this.dataHora = dataHora;
+    public void setDataLeitura(String dataLeitura) {
+        this.dataLeitura = dataLeitura;
+    }
+
+    public int getVezesLida() {
+        return vezesLida;
+    }
+
+    public void setVezesLida(int vezesLida) {
+        this.vezesLida = vezesLida;
     }
 }

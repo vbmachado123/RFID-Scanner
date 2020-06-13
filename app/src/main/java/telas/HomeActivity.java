@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,18 +23,10 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.DeviceListActivity;
-import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
-import com.uk.tsl.rfid.asciiprotocol.BluetoothReaderService;
-import com.uk.tsl.rfid.asciiprotocol.commands.ReadTransponderCommand;
-import com.uk.tsl.rfid.asciiprotocol.responders.*;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
 
 import bluetooth.BluetoothListener;
 import bluetooth.*;
-import services.BluetoothService;
+import service.BluetoothService;
 import util.Preferencias;
 
 public class HomeActivity extends AppCompatActivity {
@@ -90,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
         if(!conexao)
             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
         else {
-            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
+            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
             tvConectar.setText("Desconectar");
             /*Log.i(TAGLEITURA, commander.getLastCommandLine());*/
         }
@@ -130,6 +121,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (conexao == true) {
                     acessaActivity(LeituraActivity.class);
+                    /*acessaActivity(LerActivity.class);*/
                 } else
                     Toast.makeText(context, "Conecte com o leitor para prosseguir", Toast.LENGTH_SHORT).show();
             }
@@ -221,7 +213,7 @@ public class HomeActivity extends AppCompatActivity {
                             toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
                             tvConectar.setText("Conectar");
                         }else {
-                            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
+                            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
                             tvConectar.setText("Desconectar");
                         }
                     }
