@@ -1,4 +1,4 @@
-package services;
+package service;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -8,9 +8,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -18,14 +16,12 @@ import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 import com.uk.tsl.rfid.asciiprotocol.commands.ReadTransponderCommand;
 import com.uk.tsl.rfid.asciiprotocol.responders.IAsciiCommandResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.LoggerResponder;
-import com.uk.tsl.rfid.asciiprotocol.responders.SwitchResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.TransponderResponder;
 
 import java.util.UUID;
 
 import gen.FuncoesSOS;
 import bluetooth.BluetoothReceiver;
-import telas.HomeActivity;
 import util.Preferencias;
 
 /* Responsavel por iniciar e tornar publica a conexão com o dispositivo */
