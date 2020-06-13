@@ -17,6 +17,8 @@ public class Leitura implements Serializable {
 
     private String dataHora;
 
+    private int vezesLida;
+
     public int getId() {
         return id;
     }
@@ -39,5 +41,13 @@ public class Leitura implements Serializable {
 
     public void setDataHora(String dataHora) {
         this.dataHora = dataHora;
+    }
+
+    public int getVezesLida() {
+        return vezesLida;
+    }
+
+    public void setVezesLida(int vezesLida) {
+        this.vezesLida = vezesLida;
     }
 }

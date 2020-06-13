@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,6 +28,9 @@ import java.util.List;
 
 import bluetooth.BluetoothListener;
 import bluetooth.BluetoothReceiver;
+import helper.LeituraAdapter;
+import model.Leitura;
+import model.Lista;
 
 public class LeituraActivity extends AppCompatActivity {
 
@@ -40,26 +44,25 @@ public class LeituraActivity extends AppCompatActivity {
 
     private SimpleDateFormat dataFormatada;
     private Date date;
-    private ArrayList<String> leituras;
-    private ArrayAdapter<String> adapter;
+    private ArrayList<Leitura> leituras;
+    private LeituraAdapter adapter;
+    private Leitura l;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leitura);
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         validaCampo();
 
-        dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
-        date = new Date();
-
         leituras = new ArrayList<>();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_2, leituras);
+
+        adapter = new LeituraAdapter(this, leituras);
+
         lista.setAdapter(adapter);
         registrarBluetoothReceiver();
     }
@@ -77,6 +80,17 @@ public class LeituraActivity extends AppCompatActivity {
             startActivityForResult(intent, REQUISICAO_NOVA_TAG);
         }
     });
+
+    trExpandir.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Lista l = new Lista();
+            Intent it = new Intent(LeituraActivity.this, ListaLeituraActivity.class);
+            l.setLeituras(leituras);
+            it.putExtra("lista", l);
+            startActivity(it);
+        }
+    });
     }
 
     /* RECEBER LEITURA */
@@ -91,13 +105,18 @@ public class LeituraActivity extends AppCompatActivity {
 
                     public void run() {
                         if(dados != null && dados.contains("EP: ")){ /* Tag */ /* PREENCHER A LISTA COM OS VALORES */
+                            dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+                            date = new Date();
+                            l = new Leitura();
                             String textoTag =  dados.replaceAll("EP:","");
                             Calendar calendar = Calendar.getInstance();
                             calendar.setTime(date);
                             Date dataAtual = calendar.getTime();
                             dataFinal = dataFormatada.format(dataAtual);
-                            leituras.add(textoTag);
-                            leituras.add(dataFinal);
+                            l.setNumeroTag(textoTag);
+                            l.setDataHora(dataFinal);
+                            leituras.add(l);
+
                             adapter.notifyDataSetChanged();
                         }
                     }
@@ -123,9 +142,11 @@ public class LeituraActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
 }
+
