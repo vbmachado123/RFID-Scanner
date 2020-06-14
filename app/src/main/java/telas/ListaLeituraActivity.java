@@ -204,8 +204,15 @@ public class ListaLeituraActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(final Void... params) {
             LeituraDao dao = mDb.leituraDao();
-            Long id = dao.inserir(leitura);
-            Log.i("Salvando", " > " + leitura.getNumeroTag() + " salva: " + id);
+            Leitura l = dao.pegaUm(leitura.getNumeroTag());
+            if(l != null){  /* Verifica se já possui cadastro no banco */
+                l.setVezesLida(leitura.getVezesLida() + 1);
+                dao.atualizar(l);
+                Log.i("Salvando", " > " + leitura.getNumeroTag() + " incrementada: " + l.getVezesLida());
+            } else{ /* Caso negativo, insere */
+                Long id = dao.inserir(leitura);
+                Log.i("Salvando", " > " + leitura.getNumeroTag() + " salva: " + id);
+            }
             return null;
         }
     }

@@ -1,13 +1,16 @@
 package telas;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -104,12 +107,34 @@ public class LeituraActivity extends AppCompatActivity {
     }
 
     private void abrirLista() {
-        Lista lista = new Lista();
+/*        Lista lista = new Lista();
         Intent it = new Intent(LeituraActivity.this, ListaLeituraActivity.class);
         lista.setLeituras(leituras);
         it.putExtra("lista", lista);
         startActivity(it);
-        finish();
+        finish();*/
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Dialog);
+        View v = getLayoutInflater().inflate(R.layout.lista_leituras, null);
+        builder.setAdapter(adapter, null);
+        builder.setTitle("Leituras Realizadas");
+        builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+       // builder.setView(v);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /* RECEBER LEITURA */

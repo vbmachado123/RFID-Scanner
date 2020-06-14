@@ -1,10 +1,13 @@
 package helper;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.example.rfidscanner.R;
 
