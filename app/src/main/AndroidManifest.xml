@@ -34,26 +34,32 @@
         <activity android:name="telas.ListaLeituraActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:theme="@style/AlertDialog"></activity>
         <activity
             android:name="telas.LerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name="telas.ListaDispositivosActivity"
             android:excludeFromRecents="true"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.AppCompat.Dialog"
             tools:ignore="MissingClass" />
         <activity
             android:name="telas.ListaDispositivos"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name="telas.ConfiguracaoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name="telas.InventarioActivity"
+            android:launchMode="singleTask"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="portrait" />
 

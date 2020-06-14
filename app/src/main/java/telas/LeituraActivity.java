@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TableRow;
 
 import com.example.rfidscanner.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class LeituraActivity extends AppCompatActivity {
     private ArrayList<Leitura> leituras;
     private LeituraAdapter adapter;
     private Leitura l;
+    private FloatingActionButton fabAbrir;
+    Lista oLista = new Lista();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -58,8 +61,10 @@ public class LeituraActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         validaCampo();
-
+        oLista = new Lista();
         leituras = new ArrayList<>();
+        oLista = (Lista) getIntent().getSerializableExtra("lista");
+        if(oLista != null) leituras.addAll(oLista.getLeituras());
 
         adapter = new LeituraAdapter(this, leituras);
 
@@ -72,6 +77,7 @@ public class LeituraActivity extends AppCompatActivity {
     trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
     trExpandir = (TableRow) findViewById(R.id.trExpandir);
     lista = (ListView) findViewById(R.id.lvLista);
+    fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
 
     trLeitura.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -84,13 +90,26 @@ public class LeituraActivity extends AppCompatActivity {
     trExpandir.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Lista l = new Lista();
-            Intent it = new Intent(LeituraActivity.this, ListaLeituraActivity.class);
-            l.setLeituras(leituras);
-            it.putExtra("lista", l);
-            startActivity(it);
+            abrirLista();
         }
     });
+
+    fabAbrir.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            abrirLista();
+        }
+    });
+
+    }
+
+    private void abrirLista() {
+        Lista lista = new Lista();
+        Intent it = new Intent(LeituraActivity.this, ListaLeituraActivity.class);
+        lista.setLeituras(leituras);
+        it.putExtra("lista", lista);
+        startActivity(it);
+        finish();
     }
 
     /* RECEBER LEITURA */
