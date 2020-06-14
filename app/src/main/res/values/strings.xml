@@ -10,6 +10,7 @@
     <string name="textoFazerInventario">Fazer Inventário</string>
     <string name="textoLer">Ler</string>
     <string name="textoLocalizar">Localizar</string>
+    <string name="textoExportar">Exportar Para .CSV</string>
     <string name="textoExpandir">Expandir Lista</string>
     <string name="textoGravacao">Gravação</string>
     <string name="textoConfiguracao">Configurações</string>
