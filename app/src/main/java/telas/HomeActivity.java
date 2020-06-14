@@ -27,6 +27,7 @@ import com.uk.tsl.rfid.DeviceListActivity;
 import bluetooth.BluetoothListener;
 import bluetooth.*;
 import service.BluetoothService;
+import util.Permissao;
 import util.Preferencias;
 
 public class HomeActivity extends AppCompatActivity {
@@ -57,6 +58,8 @@ public class HomeActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        Permissao.Permissoes(this);
 
         validaCampo();
 

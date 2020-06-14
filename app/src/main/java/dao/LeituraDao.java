@@ -1,5 +1,7 @@
 package dao;
 
+import android.database.Cursor;
+
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -20,7 +22,7 @@ public interface LeituraDao {
     void atualizar(Leitura leitura);
 
     @Query("SELECT * FROM leitura")
-    public Leitura[] carregarTodos();
+    public Cursor carregarTodos();
 
     @Query("SELECT * FROM leitura")
     List<Leitura> getAll();

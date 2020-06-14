@@ -16,4 +16,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="titleTextColor">@color/colorPrimary</item>
+        <item name="android:textColor">@color/teal900</item>
+    </style>
+
 </resources>
