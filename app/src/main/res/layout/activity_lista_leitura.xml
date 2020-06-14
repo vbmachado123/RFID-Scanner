@@ -22,7 +22,7 @@
 
         <ImageButton
             android:id="@+id/fechar"
-        android:background="@color/colorPrimary"
+            android:background="@color/colorPrimary"
             android:src="@drawable/ic_close"
             android:layout_gravity="right"
             android:paddingRight="20dp"

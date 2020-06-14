@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,10 +19,12 @@ import android.widget.Toast;
 import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import bluetooth.BluetoothListener;
@@ -35,7 +38,7 @@ import util.DatabaseInitializer;
 
 public class ListaLeituraActivity extends AppCompatActivity {
 
-    private Lista l;
+    private Lista lista;
     private ListView listaSalvar;
     private FloatingActionButton fabSalvar;
     private Toolbar toolbar;
@@ -45,10 +48,11 @@ public class ListaLeituraActivity extends AppCompatActivity {
     private Date date;
     private Leitura leitura;
     private String textoTag = "", dataFinal = "";
-    private ArrayList<Leitura>  dadosArray;
+    private ArrayList<Leitura> dadosArray, listaVerifica;
     private Database db;
     private int tamanhoLista = 0;
     private Context context;
+    private ImageButton btFechar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +67,14 @@ public class ListaLeituraActivity extends AppCompatActivity {
 
         context = this;
         db = Database.getDatabase(this);
-        l = new Lista();
+        lista = new Lista();
         validaCampo();
-        l = (Lista) getIntent().getSerializableExtra("lista");
+        lista = (Lista) getIntent().getSerializableExtra("lista");
 
-        dadosArray = l.getLeituras();
+        if (lista != null) {
+            dadosArray = lista.getLeituras();
+            listaVerifica = dadosArray;
+        }
 
         adapter = new LeituraAdapter(this, dadosArray);
 
@@ -78,12 +85,19 @@ public class ListaLeituraActivity extends AppCompatActivity {
     private void validaCampo() {
         listaSalvar = (ListView) findViewById(R.id.lista_Formularios);
         fabSalvar = (FloatingActionButton) findViewById(R.id.botaoSave);
-
+        btFechar = (ImageButton) findViewById(R.id.fechar);
         fabSalvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("Salvando", "> Iniciando o banco");
                 salvarLeitura();
+            }
+        });
+
+        btFechar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fecharActivity();
             }
         });
 
@@ -100,29 +114,32 @@ public class ListaLeituraActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
 
                     public void run() {
-                        if(dados != null && dados.contains("EP: ")){ /* Tag */ /* PREENCHER A LISTA COM OS VALORES */
-                                dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
-                                date = new Date();
-                                leitura = new Leitura();
-                                String textoTag =  dados.replaceAll("EP:","");
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(date);
-                                Date dataAtual = calendar.getTime();
-                                dataFinal = dataFormatada.format(dataAtual);
-                                leitura.setNumeroTag(textoTag);
-                                leitura.setDataHora(dataFinal);
+                        if (dados != null && dados.contains("EP: ")) { /* Tag */ /* PREENCHER A LISTA COM OS VALORES */
+                            dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+                            date = new Date();
+                            leitura = new Leitura();
+                            String textoTag = dados.replaceAll("EP: ", "");
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(date);
+                            Date dataAtual = calendar.getTime();
+                            dataFinal = dataFormatada.format(dataAtual);
+                            leitura.setNumeroTag(textoTag);
+                            leitura.setDataHora(dataFinal);
 
-                                for(int i = 0; i < dadosArray.size(); i++){
-                                    if(dadosArray.get(i).getNumeroTag().equals(leitura.getNumeroTag())){
-                                        //Já possui na lista
-                                        leitura.setVezesLida(leitura.getVezesLida() + 1);
-                                    } else {
+                            /* Verifica se já existe na lista */
+                            if (!dadosArray.isEmpty()) {
+                                for (int i = 0; i < tamanhoLista; i++) {
+                                    Leitura l = dadosArray.get(i);
+                                    if (!l.getNumeroTag().equals(leitura.getNumeroTag())) {
                                         dadosArray.add(leitura);
+                                        adapter.notifyDataSetChanged();
                                     }
                                 }
-                                tamanhoLista = dadosArray.size();
-
+                            } else { /* Primeira leitura */
+                                dadosArray.add(leitura);
                                 adapter.notifyDataSetChanged();
+                            }
+                            tamanhoLista = dadosArray.size();
                         }
                     }
                 });
@@ -132,25 +149,31 @@ public class ListaLeituraActivity extends AppCompatActivity {
 
     private void salvarLeitura() {
         PopulateDbAsync task;
-        for(int i = 0; i < tamanhoLista; i++){
-           while (!dadosArray.isEmpty()){
-               db = Database.getDatabase(context);
-               Leitura l;
-               l = dadosArray.get(i);
-               task  = new PopulateDbAsync(db, l);
-               task.execute();
-               dadosArray.remove(i);
-               adapter.notifyDataSetChanged();
-           }
-        }
-            if(dadosArray.isEmpty()){
-                Toast.makeText(context, "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
-                fecharActivity();
+        for (int i = 0; i < tamanhoLista; i++) {
+            while (!dadosArray.isEmpty()) {
+                db = Database.getDatabase(context);
+                Leitura l;
+
+                l = dadosArray.get(i);
+                task = new PopulateDbAsync(db, l);
+                task.execute();
+                dadosArray.remove(i);
+
+                adapter.notifyDataSetChanged();
             }
+        }
+        if (dadosArray.isEmpty()) {
+            Toast.makeText(context, "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
+            fecharActivity();
+        }
     }
 
     private void fecharActivity() {
+        lista = new Lista();
         Intent it = new Intent(ListaLeituraActivity.this, LeituraActivity.class);
+        it.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        lista.setLeituras(listaVerifica);
+        it.putExtra("lista", lista);
         startActivity(it);
         finish();
     }
@@ -159,11 +182,9 @@ public class ListaLeituraActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
                 fecharActivity();
                 return true;
             case R.id.fechar:
-                onBackPressed();
                 fecharActivity();
                 return true;
         }
@@ -175,9 +196,9 @@ public class ListaLeituraActivity extends AppCompatActivity {
         private final Database mDb;
         private Leitura leitura;
 
-        PopulateDbAsync(Database db, Leitura leitura) {
+        PopulateDbAsync(Database db, Serializable leitura) {
             mDb = db;
-            this.leitura = leitura;
+            this.leitura = (Leitura) leitura;
         }
 
         @Override

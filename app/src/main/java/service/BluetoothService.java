@@ -102,10 +102,6 @@ public class BluetoothService extends Service {
         enviar.putExtra( "conexao",conexao);
         enviar.putExtra( "resposta",LeituraTag);
 
-        if(LeituraTag.contains("EP:")){
-            Log.i(tag, "Possui: " + LeituraTag);
-        }
-
         sendBroadcast(enviar);
     }
 
