@@ -42,15 +42,7 @@ public abstract class Database extends RoomDatabase {
 
     public static Database getDatabase(Context context) {
         if (INSTANCE == null){
-            synchronized (Database.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            Database.class, "rfid_database")
-                            .fallbackToDestructiveMigration()
-                            .addCallback(sRoomDatabaseCallback)
-                            .build();
-                }
-            }
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), Database.class,"rfid_database").build();
         }
         return INSTANCE;
     }
@@ -59,8 +51,6 @@ public abstract class Database extends RoomDatabase {
         @Override
         public void onOpen (SupportSQLiteDatabase db){
             super.onOpen(db);
-            db.beginTransaction();
-            // new PopulateDbAsync(INSTANCE).execute();
         }
     };
 
@@ -68,10 +58,6 @@ public abstract class Database extends RoomDatabase {
         INSTANCE = null;
     }
 
-    /**
-     * Populate the database in the background.
-     * If you want to start with more words, just add them.
-     */
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
         private final EquipamentoDao equipamentoDao;

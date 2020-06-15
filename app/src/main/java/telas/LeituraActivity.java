@@ -42,6 +42,7 @@ import bluetooth.BluetoothListener;
 import bluetooth.BluetoothReceiver;
 import dao.LeituraDao;
 import helper.LeituraAdapter;
+import helper.LeituraHelper;
 import model.Leitura;
 import model.Lista;
 import sql.Database;
@@ -68,6 +69,7 @@ public class LeituraActivity extends AppCompatActivity {
     private Context context = this;
     private int tamanhoLista = 0;
     private Database db;
+    private LeituraHelper helper;
     Cursor cursor;
 
     @Override
@@ -79,9 +81,8 @@ public class LeituraActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        helper = new LeituraHelper(context);
         validaCampo();
-        db = Database.getDatabase(this);
         oLista = new Lista();
         leituras = new ArrayList<>();
         oLista = (Lista) getIntent().getSerializableExtra("lista");
@@ -128,28 +129,11 @@ public class LeituraActivity extends AppCompatActivity {
         public void onClick(View v) {
             if(leituras != null){
 
-                dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
-                date = new Date();
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(date);
-                Date dataAtual = calendar.getTime();
-                dataFinal = dataFormatada.format(dataAtual);
-                db = Database.getDatabase(LeituraActivity.this);
-                LeituraDao dao = db.leituraDao();
-                Log.i("Salvando", " >  Exportando tabela");
-                Cursor cursor = dao.carregarTodos();
-                Csv csv = new Csv(cursor, dataFinal);
-                File f = csv.exportDB();
-
-                dao.deleteAll();
-                /*
-                PopulateDbAsync task;
-                task = new PopulateDbAsync(db, l, 2);
-                task.execute();*/
+                helper.exportar();
                 File exportDir = new File(Environment.getExternalStorageDirectory(), "");
                 String nomePasta = exportDir + "/SOS RFiD";
                 Toast.makeText(context, "Arquivo salvo em: " +
-                        nomePasta + "/" + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
+                        nomePasta + "/Leituras Realizadas " + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
             } else
                 Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
         }
@@ -239,17 +223,12 @@ public class LeituraActivity extends AppCompatActivity {
 
 
     private void salvarLeitura() {
-        PopulateDbAsync task;
-        int i = 0;
-        for (Leitura l : leituras) {
-            while (!leituras.isEmpty()) {
-                db = Database.getDatabase(context);
-                task = new PopulateDbAsync(db, l, 0);
-                task.execute();
-                leituras.remove(i);
 
-                adapter.notifyDataSetChanged();
-                i++;
+        for (Leitura l : leituras) {
+                db = Database.getDatabase(context);
+                if(l.getNumeroTag() != null){
+                    helper.atualizar(l);
+                    adapter.notifyDataSetChanged();
             }
         }
         if (leituras.isEmpty()) {
@@ -266,70 +245,6 @@ public class LeituraActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
-
-        private final Database mDb;
-        private Leitura leitura;
-        private int crud;
-        /* CRUD OPÇÕES:
-        * 0 -> Inserir
-        * 1 -> Atualizar
-        * 2 -> Retornar Cursor CarregarTodos()
-        * 3 -> Retornar List<Leitura> CarregarTodos()
-        * 4 -> Retorna Leitura PegaUm()
-        * 5 -> Deleta todos*/
-
-        PopulateDbAsync(Database db, Serializable leitura, int crud) {
-            mDb = db;
-            this.leitura = (Leitura) leitura;
-            this.crud = crud;
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            LeituraDao dao = mDb.leituraDao();
-                switch (crud){
-                    case 0:
-                        Leitura l = dao.pegaUm(leitura.getNumeroTag());
-                       /* if(!l.getNumeroTag().isEmpty()) { *//* Ja existe no banco *//*
-                            leitura.setVezesLida(l.getVezesLida() + 1);
-                            dao.atualizar(leitura);
-                            Log.i("Salvando", " > " + leitura.getNumeroTag() + " incrementada: " + leitura.getVezesLida());
-                        } else{*/
-                            Long id = dao.inserir(leitura);
-                            Log.i("Salvando", " > " + leitura.getNumeroTag() + " salva: " + id);
-                        //}
-                        break;
-                    case 1:
-                        dao.atualizar(leitura);
-                        Log.i("Salvando", " > " + leitura.getNumeroTag() + " incrementada: " + leitura.getVezesLida());
-                        break;
-                    case 2: //Exportar Tabela
-                        Log.i("Salvando", " >  Exportando tabela");
-                        Cursor cursor = dao.carregarTodos();
-                        Csv csv = new Csv(cursor, leitura.getDataHora());
-                        File f = csv.exportDB();
-
-                        dao.deleteAll();
-
-//x                        Toast.makeText(LeituraActivity.this, "Tabela criada com sucesso!", Toast.LENGTH_SHORT).show();
-
-                        break;
-                    case 3:
-                        Log.i("Salvando", " >  Crud 3");
-                        break;
-                    case 4:
-                        Log.i("Salvando", " >  PegaUm");
-                        break;
-                    case 5:
-                        Log.i("Salvando", " >  Deletando os itens");
-                        break;
-                }
-
-            return null;
-        }
     }
 
 }
