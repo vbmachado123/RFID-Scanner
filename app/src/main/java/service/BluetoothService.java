@@ -111,9 +111,6 @@ public class BluetoothService extends Service {
         preferencias = new Preferencias(getApplicationContext());
         commander = new AsciiCommander(getApplicationContext());
         adapter = BluetoothAdapter.getDefaultAdapter();
-
-        if (Build.VERSION.SDK_INT >= 26)
-            startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
     }
 
     @SuppressLint("WrongConstant")

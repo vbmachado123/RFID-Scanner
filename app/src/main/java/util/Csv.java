@@ -27,12 +27,14 @@ public class Csv {
     public File exportDB() {
 
         File exportDir = new File(Environment.getExternalStorageDirectory(), "");
-        if (!exportDir.exists())
+        String nomePasta = "/SOS RFiD";
+        File f = new File(exportDir, nomePasta);
+        if (!f.exists())
         {
-            exportDir.mkdirs();
+            f.mkdirs();
         }
 
-        File file = new File(exportDir, "LeiturasRealizadas " + nomeArquivo + ".csv");
+        File file = new File(f, "LeiturasRealizadas " + nomeArquivo + ".csv");
         try
         {
             file.createNewFile();
