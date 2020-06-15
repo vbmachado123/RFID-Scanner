@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey340"
+    tools:context="telas.InventarioActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@mipmap/ic_sos"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="Importar Tabela "
+        app:titleTextColor="@color/branco">
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:padding="4dp"
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/lvh"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:scrollbars="horizontal"
+        android:weightSum="3" >
+
+        <TextView
+            android:padding="4dp"
+            android:id="@+id/txtId"
+            android:textAlignment="center"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:text="@string/textoId"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:padding="4dp"
+            android:id="@+id/txtNumTag"
+            android:textAlignment="center"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="@string/textoNumTag"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:padding="4dp"
+            android:id="@+id/txtDataHora"
+            android:textAlignment="center"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="@string/textoDataHora"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:padding="4dp"
+            android:id="@+id/txtVezesLida"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:text="@string/textoVezesLida"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

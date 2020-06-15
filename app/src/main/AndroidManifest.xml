@@ -31,11 +31,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
+        <activity android:name="telas.ImportarTabelaActivity"></activity>
         <activity
             android:name="telas.LerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name="telas.ListaDispositivosActivity"
@@ -54,8 +55,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="telas.InventarioActivity"
-            android:launchMode="singleTask"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
         <service android:name="service.BluetoothService" />
@@ -105,8 +106,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
-
-
     </application>
 
 </manifest>

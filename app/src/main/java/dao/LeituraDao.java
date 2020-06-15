@@ -21,15 +21,15 @@ public interface LeituraDao {
     @Update
     void atualizar(Leitura leitura);
 
-    @Query("SELECT * FROM leitura")
-    public Cursor carregarTodos();
+    @Query("SELECT * FROM Leitura")
+    Cursor carregarTodos();
 
-    @Query("SELECT * FROM leitura")
+    @Query("SELECT * FROM Leitura")
     List<Leitura> getAll();
 
-    @Query("SELECT * FROM leitura WHERE numeroTag = :numTag")
-    public Leitura pegaUm(String numTag);
+    @Query("SELECT * FROM Leitura WHERE numeroTag = :numTag")
+    Leitura pegaUm(String numTag);
 
-    @Query("DELETE FROM leitura")
+    @Query("DELETE FROM Leitura")
     void deleteAll();
 }
