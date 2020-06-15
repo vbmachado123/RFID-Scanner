@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -125,12 +126,34 @@ public class LeituraActivity extends AppCompatActivity {
     trExportar.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            PopulateDbAsync task;
-            task = new PopulateDbAsync(db, l, 2);
-            task.execute();
+            if(leituras != null){
+
+                dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+                date = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                Date dataAtual = calendar.getTime();
+                dataFinal = dataFormatada.format(dataAtual);
+                db = Database.getDatabase(LeituraActivity.this);
+                LeituraDao dao = db.leituraDao();
+                Log.i("Salvando", " >  Exportando tabela");
+                Cursor cursor = dao.carregarTodos();
+                Csv csv = new Csv(cursor, dataFinal);
+                File f = csv.exportDB();
+
+                dao.deleteAll();
+                /*
+                PopulateDbAsync task;
+                task = new PopulateDbAsync(db, l, 2);
+                task.execute();*/
+                File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+                String nomePasta = exportDir + "/SOS RFiD";
+                Toast.makeText(context, "Arquivo salvo em: " +
+                        nomePasta + "/" + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
         }
     });
-
     }
 
     private void abrirLista() {
@@ -217,17 +240,16 @@ public class LeituraActivity extends AppCompatActivity {
 
     private void salvarLeitura() {
         PopulateDbAsync task;
-        for (int i = 0; i < tamanhoLista; i++) {
+        int i = 0;
+        for (Leitura l : leituras) {
             while (!leituras.isEmpty()) {
                 db = Database.getDatabase(context);
-                Leitura l;
-
-                l = leituras.get(i);
                 task = new PopulateDbAsync(db, l, 0);
                 task.execute();
                 leituras.remove(i);
 
                 adapter.notifyDataSetChanged();
+                i++;
             }
         }
         if (leituras.isEmpty()) {
@@ -268,26 +290,31 @@ public class LeituraActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(final Void... params) {
             LeituraDao dao = mDb.leituraDao();
-            Leitura l = dao.pegaUm(leitura.getNumeroTag());
-
                 switch (crud){
                     case 0:
-                        Long id = dao.inserir(leitura);
-                        Log.i("Salvando", " > " + leitura.getNumeroTag() + " salva: " + id);
+                        Leitura l = dao.pegaUm(leitura.getNumeroTag());
+                       /* if(!l.getNumeroTag().isEmpty()) { *//* Ja existe no banco *//*
+                            leitura.setVezesLida(l.getVezesLida() + 1);
+                            dao.atualizar(leitura);
+                            Log.i("Salvando", " > " + leitura.getNumeroTag() + " incrementada: " + leitura.getVezesLida());
+                        } else{*/
+                            Long id = dao.inserir(leitura);
+                            Log.i("Salvando", " > " + leitura.getNumeroTag() + " salva: " + id);
+                        //}
                         break;
                     case 1:
-                        l.setVezesLida(l.getVezesLida() + 1);
                         dao.atualizar(leitura);
-                        Log.i("Salvando", " > " + leitura.getNumeroTag() + " incrementada: " + l.getVezesLida());
+                        Log.i("Salvando", " > " + leitura.getNumeroTag() + " incrementada: " + leitura.getVezesLida());
                         break;
                     case 2: //Exportar Tabela
                         Log.i("Salvando", " >  Exportando tabela");
                         Cursor cursor = dao.carregarTodos();
-                        Csv csv = new Csv(cursor, "data-de-hoje");
+                        Csv csv = new Csv(cursor, leitura.getDataHora());
                         File f = csv.exportDB();
 
-                        if(f.canRead()) dao.deleteAll();
-                        else Toast.makeText(LeituraActivity.this, "Tabela criada com sucesso!", Toast.LENGTH_SHORT).show();
+                        dao.deleteAll();
+
+//x                        Toast.makeText(LeituraActivity.this, "Tabela criada com sucesso!", Toast.LENGTH_SHORT).show();
 
                         break;
                     case 3:
