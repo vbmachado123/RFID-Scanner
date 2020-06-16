@@ -20,7 +20,7 @@ public class StatusHelper {
     private Cursor cursor;
     private List<Status> statusList;
 
-    StatusHelper(Context context) {
+    public StatusHelper(Context context) {
         db = Database.getDatabase(context);
         dao = db.statusDao();
     }

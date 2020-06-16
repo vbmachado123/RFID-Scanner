@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import dao.EquipamentoDao;
 import dao.EquipamentoInventarioDao;
@@ -26,7 +27,7 @@ import model.Status;
 @androidx.room.Database(
         entities = {Equipamento.class, EquipamentoInventario.class,
                 Inventario.class, InventarioNegado.class, Leitura.class,
-        Local.class, Status.class, SubLocal.class}, version = 2, exportSchema = false)
+        Local.class, Status.class, SubLocal.class}, version = 3, exportSchema = false)
 public abstract class Database extends RoomDatabase {
 
     public abstract EquipamentoDao equipamentoDao();
@@ -42,7 +43,7 @@ public abstract class Database extends RoomDatabase {
 
     public static Database getDatabase(Context context) {
         if (INSTANCE == null){
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), Database.class,"rfid_database").build();
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), Database.class,"rfid_database").fallbackToDestructiveMigration().build();
         }
         return INSTANCE;
     }
