@@ -53,13 +53,12 @@ public class Csv {
             while(cursor.moveToNext()) {
                 String arrStr[] ={cursor.getString(0),cursor.getString(1), cursor.getString(2), cursor.getString(3)};
                 csvWrite.writeNext(arrStr);
-                Log.i("Salvando", cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2));
             }
             csvWrite.close();
             cursor.close();
         }
         catch(Exception sqlEx) {
-            Log.e("MainActivity", sqlEx.getMessage(), sqlEx);
+            Log.e("Salvando", sqlEx.getMessage(), sqlEx);
         }
         return file;
     }

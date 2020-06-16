@@ -49,7 +49,8 @@ public class InventarioActivity extends AppCompatActivity {
     private void abrirEscolha() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/csv");
+        intent.setType("gagt/sdf");
+
         startActivityForResult(Intent.createChooser(intent, "Abrir CSV"), IMPORTACAO);
     }
 
