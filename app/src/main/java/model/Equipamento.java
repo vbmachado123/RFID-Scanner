@@ -13,7 +13,25 @@ public class Equipamento implements Serializable {
     @NonNull
     private int id;
     private String numeroTag = "";
-    private String dataLeitura = "";
+    private String descricao = "";
+    private int localId;
+    private int subLocalId;
+
+    public int getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(int localId) {
+        this.localId = localId;
+    }
+
+    public int getSubLocalId() {
+        return subLocalId;
+    }
+
+    public void setSubLocalId(int subLocalId) {
+        this.subLocalId = subLocalId;
+    }
 
     private int vezesLida = 0;
 
@@ -33,19 +51,19 @@ public class Equipamento implements Serializable {
         this.numeroTag = numeroTag;
     }
 
-    public String getDataLeitura() {
-        return dataLeitura;
-    }
-
-    public void setDataLeitura(String dataLeitura) {
-        this.dataLeitura = dataLeitura;
-    }
-
     public int getVezesLida() {
         return vezesLida;
     }
 
     public void setVezesLida(int vezesLida) {
         this.vezesLida = vezesLida;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

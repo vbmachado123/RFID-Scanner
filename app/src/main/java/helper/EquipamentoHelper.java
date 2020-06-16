@@ -21,7 +21,7 @@ public class EquipamentoHelper {
     private Cursor cursor;
     private List<Equipamento> equipamentoList;
 
-    EquipamentoHelper(Context context){
+    public EquipamentoHelper(Context context){
         db = Database.getDatabase(context);
         dao = db.equipamentoDao();
     }

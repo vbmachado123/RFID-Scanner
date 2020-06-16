@@ -21,7 +21,7 @@ public class LocalHelper {
     private Cursor cursor;
     private List<Local> localList;
 
-    LocalHelper(Context context) {
+    public LocalHelper(Context context) {
         db = Database.getDatabase(context);
         dao = db.localDao();
     }

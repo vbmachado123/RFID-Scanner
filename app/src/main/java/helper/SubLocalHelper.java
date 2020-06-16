@@ -22,7 +22,7 @@ public class SubLocalHelper {
     private Cursor cursor;
     private List<SubLocal> subLocalList;
 
-    SubLocalHelper(Context context) {
+    public SubLocalHelper(Context context) {
         db = Database.getDatabase(context);
         dao = db.subLocalDao();
     }

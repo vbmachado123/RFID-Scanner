@@ -1,5 +1,7 @@
 package util;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
@@ -7,9 +9,13 @@ import android.util.Log;
 
 import com.opencsv.CSVWriter;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -22,24 +28,47 @@ import model.Leitura;
 public class Csv {
 
     private Cursor cursor;
-    private SimpleDateFormat dataFormatada;
-    private Date date;
 
     public Csv(Cursor cursor) {
         this.cursor = cursor;
     }
 
-    public void ImportCSV(){ }
+    public boolean ImportCSV(File file){
+        boolean isCreate = false;
+
+        if(!file.exists()){ /* Arquivo invalido */
+            isCreate = false;
+        } else { /* Arquivo valido */
+            String separa;
+            String[] leituraTabela;
+
+            try{
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+                while ((separa = bufferedReader.readLine()) != null){
+                    leituraTabela = separa.split(",");
+
+                    /* Inserindo no banco */
+                    ContentValues linhaTabela = new ContentValues();
+
+
+                }
+
+                isCreate = true;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return isCreate;
+    }
 
     public File exportDB() {
 
-        /* RECUPERANDO A DATA E HORA ATUAL */
-        dataFormatada = new SimpleDateFormat("ddMMyyyy_HH:mm");
-        date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        Date dataAtual = calendar.getTime();
-        String dataFinal = dataFormatada.format(dataAtual);
+        String dataFinal = Data.getDataEHoraAual("ddMMyyyy_HHmm");
 
         File exportDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SOSRFiD");
         if (!exportDir.exists()) exportDir.mkdirs();

@@ -47,6 +47,7 @@ import model.Leitura;
 import model.Lista;
 import sql.Database;
 import util.Csv;
+import util.Data;
 import util.Permissao;
 
 public class LeituraActivity extends AppCompatActivity {
@@ -177,14 +178,10 @@ public class LeituraActivity extends AppCompatActivity {
 
                     public void run() {
                         if (dados != null && dados.contains("EP: ")) { /* Tag */ /* PREENCHER A LISTA COM OS VALORES */
-                            dataFormatada = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
-                            date = new Date();
+
                             l = new Leitura();
-                            String textoTag = dados.replaceAll("EP: ", "");
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(date);
-                            Date dataAtual = calendar.getTime();
-                            dataFinal = dataFormatada.format(dataAtual);
+
+                            dataFinal = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
                             l.setNumeroTag(textoTag);
                             l.setDataHora(dataFinal);
 
