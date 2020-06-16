@@ -4,61 +4,63 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.List;
 
-import dao.InventarioDao;
-import model.Inventario;
+import dao.EquipamentoInventarioDao;
+import dao.InventarioNegadoDao;
+import model.EquipamentoInventario;
+import model.InventarioNegado;
 import sql.Database;
 
-public class InventarioHelper {
+public class InventarioNegadoHelper {
 
-    private InventarioDao dao;
     private Database db;
+    private InventarioNegadoDao dao;
     private Cursor cursor;
-    private List<Inventario> inventarioList;
+    private List<InventarioNegado> inventarioNegadoList;
 
-    InventarioHelper(Context context){
+    InventarioNegadoHelper(Context context) {
         db = Database.getDatabase(context);
-        dao = db.inventarioDao();
+        dao = db.inventarioNegadoDao();
     }
 
-    // Inserir Inventario
+
+    // Inserir InventarioNegado
     @SuppressLint("StaticFieldLeak")
-    public void inserir(final Inventario inventario) {
+    public void inserir(final InventarioNegado inventarioNegado) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Long id = db.inventarioDao().inserir(inventario);
-                Log.i("Salvando", " > [Inventario] Registro: " + id);
+                Long id = db.inventarioNegadoDao().inserir(inventarioNegado);
+                Log.i("Salvando", " > [InventarioNegado] Registro: " + id);
                 return null;
             }
         }.execute();
     }
 
-    // Atualizar Inventario
+    // Atualizar InventarioNegado
     @SuppressLint("StaticFieldLeak")
-    public void atualizar(final Inventario inventario) {
+    public void atualizar(final InventarioNegado inventarioNegado) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().atualizar(inventario);
-                Log.i("Salvando", " > [Inventario] Atualizando Inventario: " + inventario.getId());
+                db.inventarioNegadoDao().atualizar(inventarioNegado);
+                Log.i("Salvando", " > [InventarioNegado] Atualizando Equipamento: " + inventarioNegado.getId());
                 return null;
             }
         }.execute();
     }
 
-    // Carregar Inventario
+    // Carregar InventarioNegado
     @SuppressLint("StaticFieldLeak")
     public Cursor carregar() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                cursor = db.inventarioDao().carregarTodos();
-                Log.i("Salvando", " > [Inventario] Carregando cursor");
+                cursor = db.inventarioNegadoDao().carregarTodos();
+                Log.i("Salvando", " > [InventarioNegado] Carregando cursor");
                 return null;
             }
         }.execute();
@@ -66,29 +68,29 @@ public class InventarioHelper {
         return cursor;
     }
 
-    // Carregar Inventario
+    // Carregar InventarioNegado
     @SuppressLint("StaticFieldLeak")
     public List pegaLista() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                inventarioList = db.inventarioDao().getAll();
-                Log.i("Salvando", " > [Inventario] Carregando Lista");
+                inventarioNegadoList = db.inventarioNegadoDao().getAll();
+                Log.i("Salvando", " > [InventarioNegado] Carregando Lista");
                 return null;
             }
         }.execute();
 
-        return inventarioList;
+        return inventarioNegadoList;
     }
 
-    // Excluir Inventario
+    // Excluir InventarioNegado
     @SuppressLint("StaticFieldLeak")
-    public void limparInventario() {
+    public void limparInventarioNegado() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().deleteAll();
-                Log.i("Salvando", " > [Inventario] Limpando tabela Inventario");
+                db.inventarioNegadoDao().deleteAll();
+                Log.i("Salvando", " > [InventarioNegado] Limpando tabela Inventario");
                 return null;
             }
         }.execute();

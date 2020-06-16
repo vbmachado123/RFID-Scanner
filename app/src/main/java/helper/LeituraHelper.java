@@ -77,4 +77,19 @@ public class LeituraHelper {
             }
         }.execute();
     }
+
+    // Limpar Banco
+    @SuppressLint("StaticFieldLeak")
+    public void limparBanco() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                db.leituraDao().deleteAll();
+                Log.i("Salvando", " >  Banco limpo!");
+
+                return null;
+            }
+        }.execute();
+    }
 }

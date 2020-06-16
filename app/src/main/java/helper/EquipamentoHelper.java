@@ -4,61 +4,62 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.List;
 
+import dao.EquipamentoDao;
 import dao.InventarioDao;
+import model.Equipamento;
 import model.Inventario;
 import sql.Database;
 
-public class InventarioHelper {
+public class EquipamentoHelper {
 
-    private InventarioDao dao;
     private Database db;
+    private EquipamentoDao dao;
     private Cursor cursor;
-    private List<Inventario> inventarioList;
+    private List<Equipamento> equipamentoList;
 
-    InventarioHelper(Context context){
+    EquipamentoHelper(Context context){
         db = Database.getDatabase(context);
-        dao = db.inventarioDao();
+        dao = db.equipamentoDao();
     }
 
-    // Inserir Inventario
+    // Inserir Equipamento
     @SuppressLint("StaticFieldLeak")
-    public void inserir(final Inventario inventario) {
+    public void inserir(final Equipamento equipamento) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Long id = db.inventarioDao().inserir(inventario);
-                Log.i("Salvando", " > [Inventario] Registro: " + id);
+                Long id = db.equipamentoDao().inserir(equipamento);
+                Log.i("Salvando", " > [Equipamento] Registro: " + id);
                 return null;
             }
         }.execute();
     }
 
-    // Atualizar Inventario
+    // Atualizar Equipamento
     @SuppressLint("StaticFieldLeak")
-    public void atualizar(final Inventario inventario) {
+    public void atualizar(final Equipamento equipamento) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().atualizar(inventario);
-                Log.i("Salvando", " > [Inventario] Atualizando Inventario: " + inventario.getId());
+                db.equipamentoDao().atualizar(equipamento);
+                Log.i("Salvando", " > [Equipamento] Atualizando Equipamento: " + equipamento.getId());
                 return null;
             }
         }.execute();
     }
 
-    // Carregar Inventario
+    // Carregar Equipamento
     @SuppressLint("StaticFieldLeak")
     public Cursor carregar() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                cursor = db.inventarioDao().carregarTodos();
-                Log.i("Salvando", " > [Inventario] Carregando cursor");
+                cursor = db.equipamentoDao().carregarTodos();
+                Log.i("Salvando", " > [Equipamento] Carregando cursor");
                 return null;
             }
         }.execute();
@@ -66,31 +67,33 @@ public class InventarioHelper {
         return cursor;
     }
 
-    // Carregar Inventario
+    // Carregar Equipamento
     @SuppressLint("StaticFieldLeak")
     public List pegaLista() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                inventarioList = db.inventarioDao().getAll();
-                Log.i("Salvando", " > [Inventario] Carregando Lista");
+                equipamentoList = db.equipamentoDao().getAll();
+                Log.i("Salvando", " > [Equipamento] Carregando Lista");
                 return null;
             }
         }.execute();
 
-        return inventarioList;
+        return equipamentoList;
     }
 
-    // Excluir Inventario
+    // Excluir Equipamento
     @SuppressLint("StaticFieldLeak")
-    public void limparInventario() {
+    public void limparEquipamento() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().deleteAll();
-                Log.i("Salvando", " > [Inventario] Limpando tabela Inventario");
+                db.equipamentoDao().deleteAll();
+                Log.i("Salvando", " > [Equipamento] Limpando tabela Equipamento");
                 return null;
             }
         }.execute();
+
     }
+
 }

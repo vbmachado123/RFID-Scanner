@@ -4,61 +4,63 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.List;
 
-import dao.InventarioDao;
-import model.Inventario;
+import dao.LocalDao;
+import dao.SubLocalDao;
+import model.Local;
+import model.SubLocal;
 import sql.Database;
 
-public class InventarioHelper {
+public class SubLocalHelper {
 
-    private InventarioDao dao;
+
     private Database db;
+    private SubLocalDao dao;
     private Cursor cursor;
-    private List<Inventario> inventarioList;
+    private List<SubLocal> subLocalList;
 
-    InventarioHelper(Context context){
+    SubLocalHelper(Context context) {
         db = Database.getDatabase(context);
-        dao = db.inventarioDao();
+        dao = db.subLocalDao();
     }
 
-    // Inserir Inventario
+    // Inserir SubLocal
     @SuppressLint("StaticFieldLeak")
-    public void inserir(final Inventario inventario) {
+    public void inserir(final SubLocal subLocal) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Long id = db.inventarioDao().inserir(inventario);
-                Log.i("Salvando", " > [Inventario] Registro: " + id);
+                Long id = db.subLocalDao().inserir(subLocal);
+                Log.i("Salvando", " > [SubLocal] Registro: " + id);
                 return null;
             }
         }.execute();
     }
 
-    // Atualizar Inventario
+    // Atualizar SubLocal
     @SuppressLint("StaticFieldLeak")
-    public void atualizar(final Inventario inventario) {
+    public void atualizar(final SubLocal subLocal) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().atualizar(inventario);
-                Log.i("Salvando", " > [Inventario] Atualizando Inventario: " + inventario.getId());
+                db.subLocalDao().atualizar(subLocal);
+                Log.i("Salvando", " > [SubLocal] Atualizando Local: " + subLocal.getId());
                 return null;
             }
         }.execute();
     }
 
-    // Carregar Inventario
+    // Carregar SubLocal
     @SuppressLint("StaticFieldLeak")
     public Cursor carregar() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                cursor = db.inventarioDao().carregarTodos();
-                Log.i("Salvando", " > [Inventario] Carregando cursor");
+                cursor = db.subLocalDao().carregarTodos();
+                Log.i("Salvando", " > [SubLocal] Carregando cursor");
                 return null;
             }
         }.execute();
@@ -66,29 +68,29 @@ public class InventarioHelper {
         return cursor;
     }
 
-    // Carregar Inventario
+    // Carregar SubLocal
     @SuppressLint("StaticFieldLeak")
     public List pegaLista() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                inventarioList = db.inventarioDao().getAll();
-                Log.i("Salvando", " > [Inventario] Carregando Lista");
+                subLocalList = db.subLocalDao().getAll();
+                Log.i("Salvando", " > [SubLocal] Carregando Lista");
                 return null;
             }
         }.execute();
 
-        return inventarioList;
+        return subLocalList;
     }
 
-    // Excluir Inventario
+    // Excluir SubLocal
     @SuppressLint("StaticFieldLeak")
-    public void limparInventario() {
+    public void limparSubLocal() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().deleteAll();
-                Log.i("Salvando", " > [Inventario] Limpando tabela Inventario");
+                db.subLocalDao().deleteAll();
+                Log.i("Salvando", " > [SubLocal] Limpando tabela Local");
                 return null;
             }
         }.execute();

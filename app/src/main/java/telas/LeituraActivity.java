@@ -128,12 +128,12 @@ public class LeituraActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(leituras != null){
-
                 helper.exportar();
                 File exportDir = new File(Environment.getExternalStorageDirectory(), "");
                 String nomePasta = exportDir + "/SOS RFiD";
                 Toast.makeText(context, "Arquivo salvo em: " +
                         nomePasta + "/Leituras Realizadas " + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
+                helper.limparBanco();
             } else
                 Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
         }
@@ -221,19 +221,16 @@ public class LeituraActivity extends AppCompatActivity {
         }
     }
 
-
     private void salvarLeitura() {
-
         for (Leitura l : leituras) {
                 db = Database.getDatabase(context);
-                if(l.getNumeroTag() != null){
-                    helper.atualizar(l);
-                    adapter.notifyDataSetChanged();
-            }
+                if(l.getNumeroTag() != null) helper.atualizar(l);
         }
-        if (leituras.isEmpty()) {
+
+            leituras.clear();
+            adapter.notifyDataSetChanged();
             Toast.makeText(context, "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
-        }
+
     }
 
     @Override

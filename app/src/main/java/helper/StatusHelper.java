@@ -4,61 +4,61 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.List;
 
-import dao.InventarioDao;
-import model.Inventario;
+import dao.LocalDao;
+import dao.StatusDao;
+import model.Status;
 import sql.Database;
 
-public class InventarioHelper {
+public class StatusHelper {
 
-    private InventarioDao dao;
     private Database db;
+    private StatusDao dao;
     private Cursor cursor;
-    private List<Inventario> inventarioList;
+    private List<Status> statusList;
 
-    InventarioHelper(Context context){
+    StatusHelper(Context context) {
         db = Database.getDatabase(context);
-        dao = db.inventarioDao();
+        dao = db.statusDao();
     }
 
-    // Inserir Inventario
+    // Inserir Status
     @SuppressLint("StaticFieldLeak")
-    public void inserir(final Inventario inventario) {
+    public void inserir(final Status status) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Long id = db.inventarioDao().inserir(inventario);
-                Log.i("Salvando", " > [Inventario] Registro: " + id);
+                Long id = db.statusDao().inserir(status);
+                Log.i("Salvando", " > [Status] Registro: " + id);
                 return null;
             }
         }.execute();
     }
 
-    // Atualizar Inventario
+    // Atualizar Status
     @SuppressLint("StaticFieldLeak")
-    public void atualizar(final Inventario inventario) {
+    public void atualizar(final Status status) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().atualizar(inventario);
-                Log.i("Salvando", " > [Inventario] Atualizando Inventario: " + inventario.getId());
+                db.statusDao().atualizar(status);
+                Log.i("Salvando", " > [Status] Atualizando Status: " + status.getId());
                 return null;
             }
         }.execute();
     }
 
-    // Carregar Inventario
+    // Carregar Status
     @SuppressLint("StaticFieldLeak")
     public Cursor carregar() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                cursor = db.inventarioDao().carregarTodos();
-                Log.i("Salvando", " > [Inventario] Carregando cursor");
+                cursor = db.statusDao().carregarTodos();
+                Log.i("Salvando", " > [Status] Carregando cursor");
                 return null;
             }
         }.execute();
@@ -66,29 +66,29 @@ public class InventarioHelper {
         return cursor;
     }
 
-    // Carregar Inventario
+    // Carregar Status
     @SuppressLint("StaticFieldLeak")
     public List pegaLista() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                inventarioList = db.inventarioDao().getAll();
-                Log.i("Salvando", " > [Inventario] Carregando Lista");
+                statusList = db.statusDao().getAll();
+                Log.i("Salvando", " > [Status] Carregando Lista");
                 return null;
             }
         }.execute();
 
-        return inventarioList;
+        return statusList;
     }
 
-    // Excluir Inventario
+    // Excluir Status
     @SuppressLint("StaticFieldLeak")
-    public void limparInventario() {
+    public void limparStatus() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().deleteAll();
-                Log.i("Salvando", " > [Inventario] Limpando tabela Inventario");
+                db.localDao().deleteAll();
+                Log.i("Salvando", " > [Status] Limpando tabela Status");
                 return null;
             }
         }.execute();

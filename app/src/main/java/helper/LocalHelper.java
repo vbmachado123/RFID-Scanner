@@ -4,61 +4,62 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.List;
 
-import dao.InventarioDao;
-import model.Inventario;
+import dao.InventarioNegadoDao;
+import dao.LocalDao;
+import model.InventarioNegado;
+import model.Local;
 import sql.Database;
 
-public class InventarioHelper {
+public class LocalHelper {
 
-    private InventarioDao dao;
     private Database db;
+    private LocalDao dao;
     private Cursor cursor;
-    private List<Inventario> inventarioList;
+    private List<Local> localList;
 
-    InventarioHelper(Context context){
+    LocalHelper(Context context) {
         db = Database.getDatabase(context);
-        dao = db.inventarioDao();
+        dao = db.localDao();
     }
 
-    // Inserir Inventario
+    // Inserir Local
     @SuppressLint("StaticFieldLeak")
-    public void inserir(final Inventario inventario) {
+    public void inserir(final Local local) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Long id = db.inventarioDao().inserir(inventario);
-                Log.i("Salvando", " > [Inventario] Registro: " + id);
+                Long id = db.localDao().inserir(local);
+                Log.i("Salvando", " > [Local] Registro: " + id);
                 return null;
             }
         }.execute();
     }
 
-    // Atualizar Inventario
+    // Atualizar Local
     @SuppressLint("StaticFieldLeak")
-    public void atualizar(final Inventario inventario) {
+    public void atualizar(final Local local) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().atualizar(inventario);
-                Log.i("Salvando", " > [Inventario] Atualizando Inventario: " + inventario.getId());
+                db.localDao().atualizar(local);
+                Log.i("Salvando", " > [Local] Atualizando Local: " + local.getId());
                 return null;
             }
         }.execute();
     }
 
-    // Carregar Inventario
+    // Carregar Local
     @SuppressLint("StaticFieldLeak")
     public Cursor carregar() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                cursor = db.inventarioDao().carregarTodos();
-                Log.i("Salvando", " > [Inventario] Carregando cursor");
+                cursor = db.localDao().carregarTodos();
+                Log.i("Salvando", " > [Local] Carregando cursor");
                 return null;
             }
         }.execute();
@@ -66,29 +67,29 @@ public class InventarioHelper {
         return cursor;
     }
 
-    // Carregar Inventario
+    // Carregar Local
     @SuppressLint("StaticFieldLeak")
     public List pegaLista() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                inventarioList = db.inventarioDao().getAll();
-                Log.i("Salvando", " > [Inventario] Carregando Lista");
+                localList = db.localDao().getAll();
+                Log.i("Salvando", " > [Local] Carregando Lista");
                 return null;
             }
         }.execute();
 
-        return inventarioList;
+        return localList;
     }
 
-    // Excluir Inventario
+    // Excluir Local
     @SuppressLint("StaticFieldLeak")
-    public void limparInventario() {
+    public void limparLocal() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.inventarioDao().deleteAll();
-                Log.i("Salvando", " > [Inventario] Limpando tabela Inventario");
+                db.localDao().deleteAll();
+                Log.i("Salvando", " > [Local] Limpando tabela Local");
                 return null;
             }
         }.execute();
