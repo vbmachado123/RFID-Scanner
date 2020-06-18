@@ -17,7 +17,7 @@ import model.Local;
 @Dao
 public interface LocalDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long inserir(Local local);
 
     @Update

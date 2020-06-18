@@ -16,7 +16,7 @@ import model.Leitura;
 @Dao
 public interface InventarioDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long inserir(Inventario inventario);
 
     @Update

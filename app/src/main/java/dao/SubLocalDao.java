@@ -17,7 +17,7 @@ import model.SubLocal;
 @Dao
 public interface SubLocalDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long inserir(SubLocal subLocal);
 
     @Update

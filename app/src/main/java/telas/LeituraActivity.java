@@ -18,6 +18,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -62,7 +64,7 @@ public class LeituraActivity extends AppCompatActivity {
 
     private SimpleDateFormat dataFormatada;
     private Date date;
-    private ArrayList<Leitura> leituras;
+    private ArrayList<Leitura> leituras, validador;
     private LeituraAdapter adapter;
     private Leitura l = new Leitura();
     private FloatingActionButton fabAbrir;
@@ -82,10 +84,13 @@ public class LeituraActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         helper = new LeituraHelper(context);
         validaCampo();
         oLista = new Lista();
         leituras = new ArrayList<>();
+        validador = new ArrayList<>();
         oLista = (Lista) getIntent().getSerializableExtra("lista");
         if(oLista != null) leituras.addAll(oLista.getLeituras());
 
@@ -96,20 +101,20 @@ public class LeituraActivity extends AppCompatActivity {
     }
 
     private void validaCampo() {
-    trLeitura = (TableRow) findViewById(R.id.trler);
+    /*trLeitura = (TableRow) findViewById(R.id.trler);*/
     trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
     trExpandir = (TableRow) findViewById(R.id.trExpandir);
     trExportar = (TableRow) findViewById(R.id.trExportar);
     lista = (ListView) findViewById(R.id.lvLista);
     fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
 
-    trLeitura.setOnClickListener(new View.OnClickListener() {
+   /* trLeitura.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(LeituraActivity.this, LerActivity.class);
             startActivityForResult(intent, REQUISICAO_NOVA_TAG);
         }
-    });
+    });*/
 
     trExpandir.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -180,20 +185,35 @@ public class LeituraActivity extends AppCompatActivity {
                         if (dados != null && dados.contains("EP: ")) { /* Tag */ /* PREENCHER A LISTA COM OS VALORES */
 
                             l = new Leitura();
+                            textoTag =  dados.replaceAll("EP: ","");
 
                             dataFinal = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
                             l.setNumeroTag(textoTag);
                             l.setDataHora(dataFinal);
 
                             /* Verifica se já existe na lista */
+                            tamanhoLista = leituras.size();
                             if (!leituras.isEmpty()) {
+
+                                validador.addAll(leituras);
+
+                                if(!leituras.contains(l.getNumeroTag())){
+                                    leituras.add(l);
+                                    adapter.notifyDataSetChanged();
+                                }
+                           //funciona
+                                /*     boolean inserir= true;
                                 for (int i = 0; i < tamanhoLista; i++) {
                                     Leitura leitura1 = leituras.get(i);
-                                    if (!l.getNumeroTag().equals(leitura1.getNumeroTag())) {
-                                        leituras.add(l);
-                                        adapter.notifyDataSetChanged();
+                                    if (l.getNumeroTag().equals(leitura1.getNumeroTag())) {
+                                        inserir =false;
+                                        break;
                                     }
                                 }
+                                if(inserir){
+                                    leituras.add(l);
+                                    adapter.notifyDataSetChanged();
+                                }*/
                             } else { /* Primeira leitura */
                                 leituras.add(l);
                                 adapter.notifyDataSetChanged();
@@ -231,11 +251,22 @@ public class LeituraActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.limpar_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 finish();
+                return true;
+            case R.id.item_limpar:
+                leituras.clear();
+                adapter.notifyDataSetChanged();
                 return true;
         }
         return super.onOptionsItemSelected(item);

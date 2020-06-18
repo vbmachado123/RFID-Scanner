@@ -30,6 +30,8 @@
     <color name="grey40">#fafafa</color>
     <color name="grey200">#EEEEEE</color>
 
+    <color name="greyHint">#A8A7A7</color>
+
     <color name="grey800">#686868</color>
 
     <color name="redA700">#D50000</color>

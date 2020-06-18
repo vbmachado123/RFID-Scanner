@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey340"
+    tools:context="telas.EscolhaLocalActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@mipmap/ic_sos"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="Fazer Inventário "
+        app:titleTextColor="@color/branco">
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+   <ScrollView
+       android:padding="8dp"
+       android:layout_below="@+id/toolbar"
+       android:layout_height="match_parent"
+       android:layout_width="match_parent">
+
+       <LinearLayout
+           android:orientation="vertical"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+
+           <TableRow
+               android:layout_height="wrap_content"
+               android:layout_width="match_parent">
+
+               <EditText
+                   android:id="@+id/etLocal"
+                   android:textColorHint="@color/greyHint"
+                   android:textColor="@color/colorPrimary"
+                   android:hint="Local"
+                   android:layout_height="match_parent"
+                   android:layout_width="300dp"/>
+
+               <ImageButton
+                   android:id="@+id/ibAddLocal"
+                   android:layout_gravity="center"
+                   android:backgroundTint="@color/grey340"
+                   android:src="@drawable/ic_add_verde"
+                   android:layout_height="wrap_content"
+                   android:layout_width="match_parent"/>
+
+           </TableRow>
+
+           <TableRow
+               android:layout_height="wrap_content"
+               android:orientation="horizontal"
+               android:layout_width="match_parent">
+
+               <EditText
+                   android:id="@+id/etSubLocal"
+                   android:textColorHint="@color/greyHint"
+                   android:textColor="@color/colorPrimary"
+                   android:hint="SubLocal"
+                   android:layout_height="match_parent"
+                   android:layout_width="300dp"/>
+
+               <ImageButton
+                   android:id="@+id/ibAddSubLocal"
+                   android:layout_gravity="center"
+                   android:backgroundTint="@color/grey340"
+                   android:src="@drawable/ic_add_verde"
+                   android:layout_height="match_parent"
+                   android:layout_width="match_parent"/>
+
+           </TableRow>
+
+           <TextView
+               android:id="@+id/tvLocalEscolhido"
+               android:textColor="@color/colorPrimary"
+               android:padding="4dp"
+               android:textSize="18sp"
+               android:text="Local - SubLocal"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"/>
+
+           <ListView
+               android:id="@+id/lvLista"
+               android:layout_width="match_parent"
+               android:layout_height="380dp"/>
+
+       </LinearLayout>
+   </ScrollView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabProsseguir"
+            app:fabSize="auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:backgroundTint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_right"
+            tools:ignore="VectorDrawableCompat" />
+    </LinearLayout>
+
+</RelativeLayout>

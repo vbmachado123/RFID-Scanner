@@ -9,21 +9,21 @@ import android.util.Log;
 import java.util.List;
 
 import dao.EquipamentoDao;
-import dao.InventarioDao;
 import model.Equipamento;
-import model.Inventario;
 import sql.Database;
 
 public class EquipamentoHelper {
 
     private Database db;
     private EquipamentoDao dao;
+    private Equipamento equipamento;
     private Cursor cursor;
     private List<Equipamento> equipamentoList;
 
     public EquipamentoHelper(Context context){
         db = Database.getDatabase(context);
         dao = db.equipamentoDao();
+   //     cursor = db.equipamentoDao().carregarTodos();
     }
 
     // Inserir Equipamento
@@ -32,7 +32,7 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Long id = db.equipamentoDao().inserir(equipamento);
+                Long id = dao.inserir(equipamento);
                 Log.i("Salvando", " > [Equipamento] Registro: " + id);
                 return null;
             }
@@ -45,26 +45,59 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.equipamentoDao().atualizar(equipamento);
+                dao.atualizar(equipamento);
                 Log.i("Salvando", " > [Equipamento] Atualizando Equipamento: " + equipamento.getId());
                 return null;
             }
         }.execute();
     }
 
-    // Carregar Equipamento
+    // pegaUm Equipamento
     @SuppressLint("StaticFieldLeak")
-    public Cursor carregar() {
+    public Equipamento pegaUm(final int id) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                cursor = db.equipamentoDao().carregarTodos();
-                Log.i("Salvando", " > [Equipamento] Carregando cursor");
+                equipamento = dao.pegaUm(id);
                 return null;
             }
         }.execute();
 
+        return equipamento;
+    }
+
+    // Carregar Equipamento
+    @SuppressLint("StaticFieldLeak")
+    public Cursor carregar() {
+        new AsyncTask<Void, Cursor, Cursor>() {
+            Cursor cursor1;
+            @Override
+            protected Cursor doInBackground(Void... voids) {
+
+                cursor1 = dao.carregarTodos();
+
+                if(cursor1.moveToFirst())
+                Log.i("Salvando", " > [Equipamento] doInBackground Carregando cursor " + cursor1.getString(0));
+                return cursor1;
+            }
+
+            @Override
+            protected void onPostExecute(Cursor cursor) {
+                cursor1 = cursor;
+                carregaCursor(cursor1);
+
+                Log.i("Salvando", " > [Equipamento] onPostExecute Carregando cursor " + cursor1.getString(0));
+                return;
+            }
+
+        }.execute();
+
         return cursor;
+    }
+
+    private void carregaCursor(Cursor cursor) {
+        Log.i("Salvando", " > [Equipamento] carregarCursor Carregando cursor " + cursor.getString(0));
+        this.cursor = cursor;
     }
 
     // Carregar Equipamento
@@ -73,12 +106,16 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                equipamentoList = db.equipamentoDao().getAll();
+                equipamentoList = dao.getAll();
                 Log.i("Salvando", " > [Equipamento] Carregando Lista");
                 return null;
             }
-        }.execute();
 
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        }.execute();
         return equipamentoList;
     }
 
@@ -88,12 +125,14 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.equipamentoDao().deleteAll();
+                dao.deleteAll();
                 Log.i("Salvando", " > [Equipamento] Limpando tabela Equipamento");
                 return null;
             }
         }.execute();
-
     }
 
+    public Cursor getCursor() {
+        return cursor;
+    }
 }

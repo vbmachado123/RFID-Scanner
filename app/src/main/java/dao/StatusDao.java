@@ -16,7 +16,7 @@ import model.Status;
 @Dao
 public interface StatusDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long inserir(Status status);
 
     @Update

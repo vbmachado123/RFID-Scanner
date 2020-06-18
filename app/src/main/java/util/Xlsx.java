@@ -1,7 +1,11 @@
 package util;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -53,6 +57,13 @@ public class Xlsx {
     private StatusHelper statusHelper;
     private SubLocalHelper subLocalHelper;
 
+    /* Models */
+    private Leitura leitura = new Leitura();
+    private Local local = new Local();
+    private SubLocal subLocal = new SubLocal();
+    private Equipamento equipamento = new Equipamento();
+    private Status status = new Status();
+
     public Xlsx(Context context) {
         this.context = context;
         this.db = Database.getDatabase(context);
@@ -66,11 +77,11 @@ public class Xlsx {
     /* Método responsável por importar a tabela - Converter e Salvar no banco*/
     public boolean importarTabela(File filePath) {
         boolean importar = false;
-
-        if (!filePath.canRead()) { /* Formato inválido e/ou arquivo corrompido */
+        Log.i("Importacao", "Importar foi inciado " + filePath);
+        if (filePath.getPath().isEmpty()) { /* Formato inválido e/ou arquivo corrompido */
             importar = false;
+            Log.i("Importacao", "Erro aqui");
         } else { /* Arquivo valido */
-
             try {
                 /* Limpando banco para que nao haja sobreposição */
                 leituraHelper.limparBanco();
@@ -78,160 +89,160 @@ public class Xlsx {
                 subLocalHelper.limparSubLocal();
                 equipamentoHelper.limparEquipamento();
                 statusHelper.limparStatus();
+
                 Log.i(TAG, "lendoTabela: Banco foi limpo! ");
 
                 InputStream inputStream = new FileInputStream(filePath);
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
 
-                for (int i = 0; i < 5; i++) { /* Passando por todas as tabelas */
-                    XSSFSheet sheet = workbook.getSheetAt(i);
-                    int rowCount = sheet.getPhysicalNumberOfRows();
-                    FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
+                if (workbook != null) {
+                    for (int i = 0; i < 5; i++) { /* Passando por todas as tabelas */
 
-                    for (int r = 1; r < rowCount; r++) { /* Passando por todas as linhas */
-                        Row row = sheet.getRow(r);
-                        int cellCount = row.getPhysicalNumberOfCells();
+                        XSSFSheet sheet = workbook.getSheetAt(i);
+                        int rowCount = sheet.getPhysicalNumberOfRows();
+                        FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-                        for (int c = 0; c < cellCount; c++) { /* Passando por todas as colunas */
-                            String value = getCellAsString(row, c, formulaEvaluator);
+                        for (int r = 1; r < rowCount; r++) { /* Passando por todas as linhas */
+                            Row row = sheet.getRow(r);
+                            try {
+                                int cellCount = row.getPhysicalNumberOfCells();
+                                for (int c = 0; c < cellCount; c++) { /* Passando por todas as colunas */
+                                    if (row.getPhysicalNumberOfCells() < 0) break; /* Tabela chegou ao fim, ir para a próxima */
+                                    else { /* Ainda tem conteúdo */
+                                        String value = getCellAsString(row, c, formulaEvaluator);
+                                        switch (i) { /* Inventario(5), EquipamentoInventario(6) e InventarioNegado(7) sobem em branco */
+                                            case 0: /* Leitura */
+                                                switch (c) { /* Verifica qual a coluna */
+                                                    case 0:
+                                                        Log.i(TAG, "lendoTabela: Tabela Leitura ");
+                                                        double id = Double.valueOf(value);
+                                                        leitura.setId((int) id);
+                                                        break;
+                                                    case 1:
+                                                        leitura.setNumeroTag(value);
+                                                        break;
+                                                    case 2:
+                                                        leitura.setDataHora(value);
+                                                        break;
+                                                    case 3:
+                                                        double vezesLida = Double.valueOf(value);
+                                                        leitura.setVezesLida((int) vezesLida);
+                                                        leituraHelper.inserir(leitura);
+                                                        Log.i(TAG, "lendoTabela: Tabela Leitura - " + leitura.getId());
+                                                        Log.i(TAG, "lendoTabela: Tabela Leitura - " + leitura.getNumeroTag());
+                                                        Log.i(TAG, "lendoTabela: Tabela Leitura - " + leitura.getDataHora());
+                                                        Log.i(TAG, "lendoTabela: Tabela Leitura - " + leitura.getVezesLida());
+                                                        break;
+                                                }
 
-                            switch (i) { /* Inventario(5), EquipamentoInventario(6) e InventarioNegado(7) sobem em branco */
-                                case 0: //Leitura
-                                    Log.i(TAG, "lendoTabela: Tabela Leitura ");
-                                    Leitura l = new Leitura();
-                                    switch (c) {
-                                        case 0:
-                                            double id = Double.valueOf(value);
-                                            l.setId((int) id);
-                                            break;
-                                        case 1:
-                                            l.setNumeroTag(value);
-                                            break;
-                                        case 2:
-                                            l.setDataHora(value);
-                                            break;
-                                        case 3:
-                                            double vezesLida = Double.valueOf(value);
-                                            l.setVezesLida((int) vezesLida);
-                                            break;
-                                    }
+                                                break;
+                                            case 1: /* Local */
+                                                switch (c) {
+                                                    case 0:
+                                                        Log.i(TAG, "lendoTabela: Tabela Local ");
+                                                        double id = Double.valueOf(value);
+                                                        local.setId((int) id);
+                                                        break;
+                                                    case 1:
+                                                        local.setDescricao(value);
+                                                        localHelper.inserir(local);
+                                                        Log.i(TAG, "lendoTabela: Tabela Local - " + local.getId());
+                                                        Log.i(TAG, "lendoTabela: Tabela Local - " + local.getDescricao());
+                                                        break;
+                                                    default:
+                                                }
+                                                break;
+                                            case 2: /* SubLocal */
+                                                switch (c) {
+                                                    case 0:
+                                                        Log.i(TAG, "lendoTabela: Tabela SubLocal ");
+                                                        double id = Double.valueOf(value);
+                                                        subLocal.setId((int) id);
+                                                        break;
+                                                    case 1:
+                                                        // double idLocal = Double.valueOf(value);
+                                                        /*subLocal.setIdLocal((int) idLocal);*/
+                                                        String[] idFinal = value.split(".");
+                                                        if (idFinal.length > 0) {
+                                                            subLocal.setIdLocal(Integer.parseInt(idFinal[0]));
+                                                        } else {
+                                                            double idLocaal = Double.valueOf(value);
+                                                            if (idLocaal != 0)
+                                                                subLocal.setIdLocal((int) idLocaal);
+                                                        }
+                                                        break;
+                                                    case 2:
+                                                        subLocal.setDescricao(value);
+                                                        subLocalHelper.inserir(subLocal);
+                                                        Log.i(TAG, "lendoTabela: Tabela SubLocal - " + subLocal.getDescricao());
+                                                        break;
+                                                    default:
+                                                }
+                                                break;
+                                            case 3: /* Equipamento */
+                                                switch (c) {
+                                                    case 0:
+                                                        Log.i(TAG, "lendoTabela: Tabela Equipamento ");
+                                                        double id = Double.valueOf(value);
+                                                        equipamento.setId((int) id);
+                                                        break;
+                                                    case 1:
+                                                        equipamento.setNumeroTag(value);
+                                                        break;
+                                                    case 2:
+                                                        equipamento.setDescricao(value);
+                                                        break;
+                                                    case 3:
+                                                        double idLocal = Double.valueOf(value);
+                                                        equipamento.setLocalId((int) idLocal);
+                                                        break;
+                                                    case 4:
+                                                        double idSubLocal = Double.valueOf(value);
+                                                        equipamento.setSubLocalId((int) idSubLocal);
+                                                        equipamentoHelper.inserir(equipamento);
+                                                        Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getId());
+                                                        Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getNumeroTag());
+                                                        Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getDescricao());
+                                                        Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getLocalId());
+                                                        Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getSubLocalId());
+                                                        break;
+                                                    default:
+                                                }
 
-                                    if (l != null) {
-                                        leituraHelper.inserir(l);
-                                        Log.i(TAG, "lendoTabela: Tabela Leitura - " + l.getNumeroTag());
+                                                break;
+                                            case 4: /* Status */
+                                                switch (c) {
+                                                    case 0:
+                                                        Log.i(TAG, "lendoTabela: Tabela Status ");
+                                                        double id = Double.valueOf(value);
+                                                        status.setId((int) id);
+                                                        break;
+                                                    case 1:
+                                                        status.setStatus(value);
+                                                        statusHelper.inserir(status);
+                                                        Log.i(TAG, "lendoTabela: Tabela Status - " + status.getId());
+                                                        Log.i(TAG, "lendoTabela: Tabela Status - " + status.getStatus());
+                                                        break;
+                                                    default:
+                                                }
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        String cellInfo = "r:" + r + "; c:" + c + "; v:" + value;
+                                        // Log.i(TAG, "lendoTabela: Dados da celula: " + cellInfo);
                                     }
-                                    break;
-                                case 1: //Local
-                                    Log.i(TAG, "lendoTabela: Tabela Local ");
-                                    Local local = new Local();
-                                    switch (c) {
-                                        case 0:
-                                            double id = Double.valueOf(value);
-                                            local.setId((int) id);
-                                            break;
-                                        case 1:
-                                            local.setDescricao(value);
-                                            break;
-                                        default:
-                                    }
-
-                                    if (local != null) {
-                                        localHelper.inserir(local);
-                                        Log.i(TAG, "lendoTabela: Tabela Local - " + local.getDescricao());
-                                    }
-                                    break;
-                                case 2: //SubLocal
-                                    Log.i(TAG, "lendoTabela: Tabela SubLocal ");
-                                    SubLocal subLocal = new SubLocal();
-                                    switch (c) {
-                                        case 0:
-                                            double id = Double.valueOf(value);
-                                            subLocal.setId((int) id);
-                                            break;
-                                        case 1:
-                                           // double idLocal = Double.valueOf(value);
-                                            /*subLocal.setIdLocal((int) idLocal);*/
-                                            String[] idFinal = value.split(".");
-                                            if(idFinal.length > 0){
-                                                subLocal.setIdLocal(Integer.parseInt(idFinal[0]));
-                                            } else {
-                                             double idLocaal = Double.valueOf(value);
-                                             if(idLocaal != 0)
-                                                 subLocal.setIdLocal((int) idLocaal);
-                                            }
-                                            break;
-                                        case 2:
-                                            subLocal.setDescricao(value);
-                                            break;
-                                        default:
-                                    }
-
-                                    if (subLocal != null) {
-                                        subLocalHelper.inserir(subLocal);
-                                        Log.i(TAG, "lendoTabela: Tabela SubLocal - " + subLocal.getDescricao());
-                                    }
-                                    break;
-                                case 3: //Equipamento
-                                    Log.i(TAG, "lendoTabela: Tabela Equipamento ");
-                                    Equipamento equipamento = new Equipamento();
-                                    switch (c) {
-                                        case 0:
-                                            double id = Double.valueOf(value);
-                                            equipamento.setId((int) id);
-                                            break;
-                                        case 1:
-                                            equipamento.setNumeroTag(value);
-                                            break;
-                                        case 2:
-                                            equipamento.setDescricao(value);
-                                            break;
-                                        case 3:
-                                            double idLocal = Double.valueOf(value);
-                                            equipamento.setLocalId((int) idLocal);
-                                            break;
-                                        case 4:
-                                            double idSubLocal = Double.valueOf(value);
-                                            equipamento.setSubLocalId((int) idSubLocal);
-                                            break;
-                                        default:
-                                    }
-
-                                    if (equipamento != null) {
-                                        equipamentoHelper.inserir(equipamento);
-                                        Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getDescricao());
-                                        Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getNumeroTag());
-                                    }
-                                    break;
-                                case 4: //Status
-                                    Log.i(TAG, "lendoTabela: Tabela Status ");
-                                    Status status = new Status();
-                                    switch (c) {
-                                        case 0:
-                                            double id = Double.valueOf(value);
-                                            status.setId((int) id);
-                                            break;
-                                        case 1:
-                                            status.setStatus(value);
-                                            break;
-                                        default:
-                                    }
-
-                                    if (status != null) {
-                                        statusHelper.inserir(status);
-                                        Log.i(TAG, "lendoTabela: Tabela Status - " + status.getStatus());
-                                    }
-                                    break;
-                                default:
-                                    break;
+                                }
+                            } catch (NullPointerException e) {
+                                /* Célula vazia */
+                                e.printStackTrace();
                             }
-
-                            String cellInfo = "r:" + r + "; c:" + c + "; v:" + value;
-                            Log.i(TAG, "lendoTabela: Dados da celula: " + cellInfo);
                         }
                     }
-                }
 
-                importar = true;
+                    importar = true;
+
+                } else Log.i(TAG, "lendoTabela: A tabela não possui dados!!!!!! ");
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -269,7 +280,6 @@ public class Xlsx {
                     break;
                 default:
             }
-
 
         } catch (NullPointerException e) {
             e.printStackTrace();
