@@ -9,15 +9,14 @@ import android.util.Log;
 import java.util.List;
 
 import dao.EquipamentoDao;
-import dao.InventarioDao;
 import model.Equipamento;
-import model.Inventario;
 import sql.Database;
 
 public class EquipamentoHelper {
 
     private Database db;
     private EquipamentoDao dao;
+    private Equipamento equipamento;
     private Cursor cursor;
     private List<Equipamento> equipamentoList;
 
@@ -32,7 +31,7 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Long id = db.equipamentoDao().inserir(equipamento);
+                Long id = dao.inserir(equipamento);
                 Log.i("Salvando", " > [Equipamento] Registro: " + id);
                 return null;
             }
@@ -45,26 +44,44 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.equipamentoDao().atualizar(equipamento);
+                dao.atualizar(equipamento);
                 Log.i("Salvando", " > [Equipamento] Atualizando Equipamento: " + equipamento.getId());
                 return null;
             }
         }.execute();
     }
 
-    // Carregar Equipamento
+    // pegaUm Equipamento
     @SuppressLint("StaticFieldLeak")
-    public Cursor carregar() {
+    public Equipamento pegaUm(final int id) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                cursor = db.equipamentoDao().carregarTodos();
-                Log.i("Salvando", " > [Equipamento] Carregando cursor");
+                equipamento = dao.pegaUm(id);
                 return null;
             }
         }.execute();
 
-        return cursor;
+        return equipamento;
+    }
+
+    // Carregar Equipamento
+    @SuppressLint("StaticFieldLeak")
+    public Cursor carregar() {
+
+        final Cursor[] cursor1 = new Cursor[1];
+
+        new AsyncTask<Void, Void, Cursor>() {
+            @Override
+            protected Cursor doInBackground(Void... voids) {
+                cursor1[0] = dao.carregarTodos();
+                if(cursor1[0].moveToFirst())
+                Log.i("Salvando", " > [Equipamento] Carregando cursor " + cursor1[0].getString(0));
+                return cursor1[0];
+            }
+        }.execute();
+
+        return cursor1[0];
     }
 
     // Carregar Equipamento
@@ -73,7 +90,7 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                equipamentoList = db.equipamentoDao().getAll();
+                equipamentoList = dao.getAll();
                 Log.i("Salvando", " > [Equipamento] Carregando Lista");
                 return null;
             }
@@ -88,7 +105,7 @@ public class EquipamentoHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                db.equipamentoDao().deleteAll();
+                dao.deleteAll();
                 Log.i("Salvando", " > [Equipamento] Limpando tabela Equipamento");
                 return null;
             }

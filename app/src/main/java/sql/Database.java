@@ -43,7 +43,7 @@ public abstract class Database extends RoomDatabase {
 
     public static Database getDatabase(Context context) {
         if (INSTANCE == null){
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), Database.class,"rfid_database").fallbackToDestructiveMigration().build();
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), Database.class,"rfid_database")/*.fallbackToDestructiveMigration()*/.build();
         }
         return INSTANCE;
     }

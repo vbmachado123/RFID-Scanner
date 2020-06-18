@@ -21,4 +21,10 @@
         <item name="android:textColor">@color/teal900</item>
     </style>
 
+    <style name="MyEditTextTheme">
+        <item name="colorControlNormal">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@android:color/white</item>
+    </style>
+
 </resources>

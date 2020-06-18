@@ -32,7 +32,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name="telas.ImportarTabelaActivity"></activity>
+        <activity android:name="telas.EscolhaLocalActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="telas.ImportarTabelaActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="telas.LerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
@@ -90,12 +97,16 @@
             android:name="com.uk.tsl.rfid.TSLDeviceApplication"
             tools:ignore="MissingClass" />
         <activity android:name="telas.MainActivity" />
-        <activity android:name="telas.SplashScreen">
+        <activity android:name="telas.SplashScreen"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <provider

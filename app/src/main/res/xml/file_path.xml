@@ -2,10 +2,19 @@
 <paths>
     <external-path
         name="external"
-        path="." />
+        path="/*" />
+    <external-path
+        name="documents"
+        path="/*" />
+    <files-path
+        name="documents"
+        path="."/>
+    <external-files-path
+        name="content"
+        path="."/>
     <external-files-path
         name="external_files"
-        path="." />
+        path="/*" />
     <cache-path
         name="cache"
         path="." />
@@ -15,4 +24,20 @@
     <files-path
         name="files"
         path="." />
+    <root-path
+        name="root"
+        path="." />
+    <root-path
+        name="root_content"
+        path="/*" />
+    <root-path
+        name="content"
+        path="/*" />
+    <root-path
+        name="intent"
+        path="/*" />
+    <files-path
+        name="intent"
+        path="/*"/>
 </paths>
+

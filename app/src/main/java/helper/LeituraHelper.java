@@ -17,6 +17,7 @@ public class LeituraHelper {
 
     private LeituraDao dao;
     private Database db;
+    private Cursor cursor;
 
     public LeituraHelper(Context context){
         db = Database.getDatabase(context);
@@ -29,8 +30,8 @@ public class LeituraHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-               Long id = db.leituraDao().inserir(leitura);
-                Log.i("Salvando", " >  Registro: " + id);
+                dao.inserir(leitura);
+                Log.i("Salvando", " >  Registro: " + leitura.getId());
                 return null;
             }
         }.execute();
@@ -42,14 +43,14 @@ public class LeituraHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Cursor cursor = db.leituraDao().carregarTodos();
+                Cursor cursor = dao.carregarTodos();
                 if(cursor != null){
                     Csv csv = new Csv(cursor);
                     File f =csv.exportDB();
                     Log.i("Salvando", " >  Exportando tabela");
 
                     if(f.canRead()){
-                        db.leituraDao().deleteAll();
+                       db.leituraDao().deleteAll();
                         Log.i("Salvando", " >  O Banco foi limpo!");
                     }
                 }
@@ -57,6 +58,21 @@ public class LeituraHelper {
             }
         }.execute();
     }
+
+    // Carregar Cursor
+    @SuppressLint("StaticFieldLeak")
+    public Cursor carregar() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                cursor = dao.carregarTodos();
+                Log.i("Salvando", " >  O Banco foi limpo!");
+                return null;
+            }
+        }.execute();
+        return cursor;
+    }
+
 
     // Atualizar Leitura
     @SuppressLint("StaticFieldLeak")
@@ -67,10 +83,10 @@ public class LeituraHelper {
                 Leitura l = db.leituraDao().pegaUm(leitura.getNumeroTag());
                if(l != null){
                        l.setVezesLida(l.getVezesLida() + 1);
-                       db.leituraDao().atualizar(l);
+                   dao.atualizar(l);
                    Log.i("Salvando", " >  Registro - Atualizando: " + l.getId() + " " + l.getVezesLida());
                } else {
-                   Long id = db.leituraDao().inserir(leitura);
+                   Long id = dao.inserir(leitura);
                    Log.i("Salvando", " >  Registro - Inserindo: " + id);
                }
                 return null;
@@ -84,8 +100,7 @@ public class LeituraHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-
-                db.leituraDao().deleteAll();
+               dao.deleteAll();
                 Log.i("Salvando", " >  Banco limpo!");
 
                 return null;

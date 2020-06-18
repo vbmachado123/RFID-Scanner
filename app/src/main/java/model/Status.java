@@ -14,6 +14,12 @@ public class Status  implements Serializable {
     private int id;
     private String status;
 
+    /* POSSIVEIS STATUS
+    * 1 - Encontrada
+    * 2 - Nao_Atribuida
+    * 3 - Nao_Encontrada
+    * 4 - Negada_Inventario */
+
     public int getId() {
         return id;
     }

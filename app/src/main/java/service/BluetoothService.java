@@ -18,6 +18,7 @@ import com.uk.tsl.rfid.asciiprotocol.responders.IAsciiCommandResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.LoggerResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.TransponderResponder;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import gen.FuncoesSOS;
@@ -42,6 +43,8 @@ public class BluetoothService extends Service {
     public  BluetoothService(){}
     public boolean conexao = false;
     private Preferencias preferencias;
+    private  ArrayList<String> validador = new ArrayList<>();
+    private  ArrayList<String> certifica = new ArrayList<>();
 
     @Nullable
     @Override
@@ -61,6 +64,9 @@ public class BluetoothService extends Service {
         MAC = (String) intent.getExtras().get("address");
         device = adapter.getRemoteDevice(MAC);
         commander.connect(device);
+        ArrayList<String> validador = new ArrayList<>();
+        ArrayList<String> certifica = new ArrayList<>();
+
         commander.addResponder(/*responder*/ new IAsciiCommandResponder() {
             @Override
             public boolean isResponseFinished() {
@@ -75,8 +81,23 @@ public class BluetoothService extends Service {
             @Override
             public boolean processReceivedLine(String s, boolean b) throws Exception {
                 Log.i(tag, ">"+s+" - "+b);
+/*
+                if(validador.isEmpty()) validador.add(s);
+
+                for (int i = 0; i < validador.size(); i++){
+                    if(!validador.get(i).contains(s)){ //Não foi lido
+                        certifica.addAll(validador);
+
+                        for(int l = 0; l < certifica.size(); l++){
+                            if(s != certifica.get(i)){
+                                validador.add(s);
+                            }
+                        }
+                    }
+                }*/
                 LeituraTag = s;
                 enviarDadosActivity();
+
            //     Toast.makeText(getApplicationContext(), "->"+s, Toast.LENGTH_LONG).show();
 
                 return false;
