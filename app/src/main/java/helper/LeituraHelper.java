@@ -46,7 +46,7 @@ public class LeituraHelper {
                 Cursor cursor = dao.carregarTodos();
                 if(cursor != null){
                     Csv csv = new Csv(cursor);
-                    File f =csv.exportDB();
+                    File f = csv.exportDB();
                     Log.i("Salvando", " >  Exportando tabela");
 
                     if(f.canRead()){
@@ -65,14 +65,19 @@ public class LeituraHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+                Cursor cursor;
                 cursor = dao.carregarTodos();
-                Log.i("Salvando", " >  O Banco foi limpo!");
+                capturaCursor(cursor);
+                Log.i("Salvando", " >  Carregando cursor");
                 return null;
             }
         }.execute();
         return cursor;
     }
 
+    private void capturaCursor(Cursor cursor) {
+        this.cursor = cursor;
+    }
 
     // Atualizar Leitura
     @SuppressLint("StaticFieldLeak")
@@ -100,9 +105,8 @@ public class LeituraHelper {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-               dao.deleteAll();
+                dao.deleteAll();
                 Log.i("Salvando", " >  Banco limpo!");
-
                 return null;
             }
         }.execute();

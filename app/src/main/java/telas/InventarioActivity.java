@@ -58,6 +58,7 @@ import helper.LeituraHelper;
 import model.Equipamento;
 import model.XYValue;
 import sql.Database;
+import util.DatabaseClient;
 import util.Xlsx;
 
 import static androidx.core.content.FileProvider.getUriForFile;
@@ -70,21 +71,7 @@ public class InventarioActivity extends AppCompatActivity {
     private ListView lvDiretorio;
     private static final int IMPORTACAO = 1;
 
-    // Declare variables
-    private String[] FilePathStrings;
-    private String[] FileNameStrings;
-    private File[] listFile;
     File file;
-
-    Button btnUpDirectory, btnSDCard;
-
-    ArrayList<String> pathHistory;
-    String lastDirectory;
-    int count = 0;
-
-    ArrayList<XYValue> uploadData;
-
-    ListView lvInternalStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,8 +94,28 @@ public class InventarioActivity extends AppCompatActivity {
         trImportar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor cursor = new EquipamentoHelper(InventarioActivity.this).carregar();
+                getEquipamentosAlert();
+            }
+        });
 
+        trFazerInventario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                acessaActivity(EscolhaLocalActivity.class);
+            }
+        });
+    }
+
+    private void getEquipamentosAlert(){
+        class GetEquipamentosAlert extends AsyncTask<Void, Void, Cursor>{
+            @Override
+            protected Cursor doInBackground(Void... voids) {
+                return DatabaseClient.getInstance(InventarioActivity.this).getDatabase().equipamentoDao().carregarTodos();
+            }
+
+            @Override
+            protected void onPostExecute(Cursor cursor) {
+                super.onPostExecute(cursor);
                 if (cursor != null) {
                     AlertDialog dialog = new AlertDialog.Builder(InventarioActivity.this, R.style.Dialog)
                             .setTitle("Atenção")
@@ -127,14 +134,9 @@ public class InventarioActivity extends AppCompatActivity {
                     dialog.show();
                 } else selecionarArquivo();
             }
-        });
+        }
+        (new GetEquipamentosAlert()).execute();
 
-        trFazerInventario.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                acessaActivity(EscolhaLocalActivity.class);
-            }
-        });
     }
 
     private void selecionarArquivo() {
@@ -205,7 +207,7 @@ public class InventarioActivity extends AppCompatActivity {
     private void iniciarInventario() {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Dialog)
                 .setTitle("Atenção")
-                .setMessage("A importação foi concluída com sucesso! \nDeseja iniciar o inventário?")
+                .setMessage("A importação foi concluída com sucesso! Deseja iniciar o inventário?")
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) { /* Fechar */
@@ -235,5 +237,4 @@ public class InventarioActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

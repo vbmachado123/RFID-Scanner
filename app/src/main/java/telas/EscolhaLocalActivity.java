@@ -4,13 +4,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,12 +33,15 @@ import android.widget.Toast;
 import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
+
 import java.util.ArrayList;
 
 import helper.LocalAdapter;
 import helper.SubLocalAdapter;
 import model.Local;
 import model.SubLocal;
+import util.DatabaseClient;
 
 public class EscolhaLocalActivity extends AppCompatActivity {
 
@@ -43,13 +52,15 @@ public class EscolhaLocalActivity extends AppCompatActivity {
     private FloatingActionButton fabProsseguir;
     private TextView tvTextoEscolhido;
 
-    private ArrayList<Local> listaLocal, filtroListaLocal;
-    private ArrayList<SubLocal> listaSublocal, filtroListaSubLocal;
+    protected ArrayList<Local> listaLocal, filtroListaLocal;
+    protected ArrayList<SubLocal> listaSublocal, filtroListaSubLocal;
     private LocalAdapter localAdapter;
     private SubLocalAdapter subLocalAdapter;
     private Local local;
     private SubLocal subLocal;
+    private boolean completo = false;
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -61,6 +72,8 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Toast.makeText(this, "Clique longo na lista para selecionar", Toast.LENGTH_LONG).show();
+
         listaLocal = new ArrayList<>();
         filtroListaLocal = new ArrayList<>();
         listaSublocal = new ArrayList<>();
@@ -70,12 +83,13 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         subLocal = new SubLocal();
 
         validaCampo();
-        copulaArray(); /* Temporário */
+        recuperaListas();
 
         tvTextoEscolhido.setText("Selecione o Local do Inventário");
         if (etLocal.getText().toString().isEmpty()) {
             etSubLocal.setEnabled(false);
             lista.setAdapter(localAdapter);
+            fabProsseguir.getBackground().mutate().setTint(ContextCompat.getColor(this, R.color.vermelhodesativado));
         }
     }
 
@@ -103,11 +117,11 @@ public class EscolhaLocalActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Local l = new Local();
-                if(l != null){
+                if (l != null) {
                     if (!etLocal.getText().toString().isEmpty()) { /* Foi digitado algo */
                         if (!filtroListaLocal.isEmpty()) { /* Possui Registro no banco */
                             l = filtroListaLocal.get(0);
-                        } else if(filtroListaLocal.isEmpty())
+                        } else if (filtroListaLocal.isEmpty())
                             Toast.makeText(EscolhaLocalActivity.this, "O Local já foi selecionado!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -119,23 +133,21 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         addSubLocal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               if(filtroListaLocal.isEmpty()){
-                   SubLocal l = new SubLocal();
-                   if(l != null){
-                       if(!etSubLocal.getText().toString().isEmpty()){
-                           if(!filtroListaSubLocal.isEmpty()){
-                               l = filtroListaSubLocal.get(0);
-                           } else if (filtroListaSubLocal.isEmpty())
-                               Toast.makeText(EscolhaLocalActivity.this, "O SubLocal já foi selecionado!", Toast.LENGTH_SHORT).show();
-                       } else {
-                           Toast.makeText(EscolhaLocalActivity.this, "Insira o SubLocal!", Toast.LENGTH_SHORT).show();
-                       }
-                   }
-               }
+                if (filtroListaLocal.isEmpty()) {
+                    SubLocal l = new SubLocal();
+                    if (l != null) {
+                        if (!etSubLocal.getText().toString().isEmpty()) {
+                            if (!filtroListaSubLocal.isEmpty()) {
+                                l = filtroListaSubLocal.get(0);
+                            } else if (filtroListaSubLocal.isEmpty())
+                                Toast.makeText(EscolhaLocalActivity.this, "O SubLocal já foi selecionado!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(EscolhaLocalActivity.this, "Insira o SubLocal!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
             }
         });
-
-
     }
 
     private void listener() {
@@ -156,7 +168,6 @@ public class EscolhaLocalActivity extends AppCompatActivity {
                         filtroListaLocal.add(l);
                     }
                 }
-
                 lista.invalidateViews();
             }
 
@@ -176,7 +187,6 @@ public class EscolhaLocalActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 filtroListaSubLocal.clear();
-
                 for (SubLocal l : listaSublocal) {
                     if (l.getDescricao().toLowerCase().contains(s.toString().toLowerCase())) {
                         filtroListaSubLocal.add(l);
@@ -184,7 +194,6 @@ public class EscolhaLocalActivity extends AppCompatActivity {
                 }
 
                 lista.invalidateViews();
-
             }
 
             @Override
@@ -225,57 +234,6 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         i.inflate(R.menu.menu_contexto_selecionar, menu);
     }
 
-    private void copulaArray() {
-
-        Local local1 = new Local();
-        local1.setId(1);
-        local1.setDescricao("EEE 4");
-        listaLocal.add(local1);
-
-        Local local2 = new Local();
-        local2.setId(2);
-        local2.setDescricao("CRAT Interlagos");
-        listaLocal.add(local2);
-
-        Local local3 = new Local();
-        local3.setId(3);
-        local3.setDescricao("CRAT Campo Belo");
-        listaLocal.add(local3);
-
-        Local local4 = new Local();
-        local4.setId(4);
-        local4.setDescricao("Eletromecanica");
-        listaLocal.add(local4);
-
-        filtroListaLocal.addAll(listaLocal);
-
-        SubLocal subLocal1 = new SubLocal();
-        subLocal1.setId(1);
-        subLocal1.setIdLocal(1);
-        subLocal1.setDescricao("Almoxarifado");
-        listaSublocal.add(subLocal1);
-
-        SubLocal subLocal2 = new SubLocal();
-        subLocal2.setId(2);
-        subLocal2.setIdLocal(4);
-        subLocal2.setDescricao("Oficina");
-        listaSublocal.add(subLocal2);
-
-        SubLocal subLocal3 = new SubLocal();
-        subLocal3.setId(3);
-        subLocal3.setIdLocal(3);
-        subLocal3.setDescricao("Casa de Bombas");
-        listaSublocal.add(subLocal3);
-
-        SubLocal subLocal4 = new SubLocal();
-        subLocal4.setId(1);
-        subLocal4.setIdLocal(2);
-        subLocal4.setDescricao("Sala dos Paineis");
-        listaSublocal.add(subLocal4);
-
-        //filtroListaSubLocal.addAll(listaSublocal);
-    }
-
     public void selecionar(MenuItem item) { /* Após selecionar algum item do menu */
 
         AdapterView.AdapterContextMenuInfo menuInfo =
@@ -292,16 +250,19 @@ public class EscolhaLocalActivity extends AppCompatActivity {
 
     private void selecionarSubLocal() {
         etSubLocal.setText(subLocal.getDescricao());
+        completo = true;
     }
 
+    @SuppressLint("ResourceAsColor")
     private void selecionarLocal() { /* Inverter Edittext */
         etLocal.setText(local.getDescricao());
         etLocal.setEnabled(false);
         listaLocal.clear();
         etSubLocal.setEnabled(true);
+        fabProsseguir.getBackground().mutate().setTint(ContextCompat.getColor(this, R.color.colorPrimary));
 
-        for(SubLocal l : listaSublocal){
-            if(l.getIdLocal() == local.getId()){
+        for (SubLocal l : listaSublocal) {
+            if (l.getIdLocal() == local.getId()) {
                 filtroListaSubLocal.add(l);
             }
         }
@@ -309,10 +270,8 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         fabProsseguir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(local != null){ /* Local foi selecionado */
-                    if(subLocal == null){ /* Somente Local Selecionado */
-
-                    } else {
+                if (local != null) { /* Local foi selecionado */
+                    if (!completo) { /* Somente Local Selecionado */
                         AlertDialog dialog = new AlertDialog.Builder(EscolhaLocalActivity.this, R.style.Dialog)
                                 .setTitle("Atenção")
                                 .setMessage("Deseja selecionar somente o LOCAL? todos os sublocais referentes serão selecionados!")
@@ -326,9 +285,12 @@ public class EscolhaLocalActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         /* Iniciar InventárioEquipamento */
+                                        acessaActivity();
                                     }
                                 }).create();
                         dialog.show();
+                    } else { /* Local e subLocal selecionado! */
+                        acessaActivity();
                     }
                 }
             }
@@ -336,6 +298,48 @@ public class EscolhaLocalActivity extends AppCompatActivity {
 
         lista.setAdapter(subLocalAdapter);
 
-        tvTextoEscolhido.setText(local.getDescricao() + " - Sublocal: ");
+        if (filtroListaSubLocal.isEmpty())
+            tvTextoEscolhido.setText("O Local " + local.getDescricao() + " não possui sublocais cadastrados");
+        else
+            tvTextoEscolhido.setText(local.getDescricao() + " - Sublocal: ");
+    }
+
+    private void acessaActivity() {
+        Intent it = new Intent();
+        startActivity(it);
+    }
+
+    private void recuperaListas() {
+
+        class GetListaLocal extends AsyncTask<Void, Void, ArrayList<Local>> {
+
+            @Override
+            protected ArrayList<Local> doInBackground(Void... voids) {
+                return (ArrayList<Local>) DatabaseClient.getInstance(EscolhaLocalActivity.this).getDatabase().localDao().getAll();
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<Local> locals) {
+                super.onPostExecute(locals);
+                listaLocal.addAll(locals);
+                filtroListaLocal.addAll(listaLocal);
+            }
+        }
+        (new GetListaLocal()).execute();
+
+        class GetListaSubLocal extends AsyncTask<Void, Void, ArrayList<SubLocal>> {
+
+            @Override
+            protected ArrayList<SubLocal> doInBackground(Void... voids) {
+                return (ArrayList<SubLocal>) DatabaseClient.getInstance(EscolhaLocalActivity.this).getDatabase().subLocalDao().getAll();
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<SubLocal> subLocals) {
+                super.onPostExecute(subLocals);
+                listaSublocal.addAll(subLocals);
+            }
+        }
+        (new GetListaSubLocal()).execute();
     }
 }

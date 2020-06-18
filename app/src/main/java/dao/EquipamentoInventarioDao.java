@@ -16,7 +16,7 @@ import model.EquipamentoInventario;
 @Dao
 public interface EquipamentoInventarioDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long inserir(EquipamentoInventario equipamento);
 
     @Update

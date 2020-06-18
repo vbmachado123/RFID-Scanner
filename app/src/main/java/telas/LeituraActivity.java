@@ -101,20 +101,20 @@ public class LeituraActivity extends AppCompatActivity {
     }
 
     private void validaCampo() {
-    trLeitura = (TableRow) findViewById(R.id.trler);
+    /*trLeitura = (TableRow) findViewById(R.id.trler);*/
     trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
     trExpandir = (TableRow) findViewById(R.id.trExpandir);
     trExportar = (TableRow) findViewById(R.id.trExportar);
     lista = (ListView) findViewById(R.id.lvLista);
     fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
 
-    trLeitura.setOnClickListener(new View.OnClickListener() {
+   /* trLeitura.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(LeituraActivity.this, LerActivity.class);
             startActivityForResult(intent, REQUISICAO_NOVA_TAG);
         }
-    });
+    });*/
 
     trExpandir.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -192,15 +192,28 @@ public class LeituraActivity extends AppCompatActivity {
                             l.setDataHora(dataFinal);
 
                             /* Verifica se já existe na lista */
+                            tamanhoLista = leituras.size();
                             if (!leituras.isEmpty()) {
+
                                 validador.addAll(leituras);
+
+                                if(!leituras.contains(l.getNumeroTag())){
+                                    leituras.add(l);
+                                    adapter.notifyDataSetChanged();
+                                }
+                           //funciona
+                                /*     boolean inserir= true;
                                 for (int i = 0; i < tamanhoLista; i++) {
                                     Leitura leitura1 = leituras.get(i);
-                                    if(!l.getNumeroTag().equals(leitura1.getNumeroTag())) {
-                                        leituras.add(l);
-                                        adapter.notifyDataSetChanged();
+                                    if (l.getNumeroTag().equals(leitura1.getNumeroTag())) {
+                                        inserir =false;
+                                        break;
                                     }
                                 }
+                                if(inserir){
+                                    leituras.add(l);
+                                    adapter.notifyDataSetChanged();
+                                }*/
                             } else { /* Primeira leitura */
                                 leituras.add(l);
                                 adapter.notifyDataSetChanged();

@@ -15,7 +15,7 @@ import model.Leitura;
 @Dao
 public interface LeituraDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long inserir(Leitura l);
 
     @Update

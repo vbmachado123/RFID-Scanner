@@ -107,12 +107,12 @@ public class Xlsx {
                             try {
                                 int cellCount = row.getPhysicalNumberOfCells();
                                 for (int c = 0; c < cellCount; c++) { /* Passando por todas as colunas */
-                                    if (row.getPhysicalNumberOfCells() < 0) break;
-                                    else {
+                                    if (row.getPhysicalNumberOfCells() < 0) break; /* Tabela chegou ao fim, ir para a próxima */
+                                    else { /* Ainda tem conteúdo */
                                         String value = getCellAsString(row, c, formulaEvaluator);
                                         switch (i) { /* Inventario(5), EquipamentoInventario(6) e InventarioNegado(7) sobem em branco */
-                                            case 0: //Leitura
-                                                switch (c) {
+                                            case 0: /* Leitura */
+                                                switch (c) { /* Verifica qual a coluna */
                                                     case 0:
                                                         Log.i(TAG, "lendoTabela: Tabela Leitura ");
                                                         double id = Double.valueOf(value);
@@ -136,7 +136,7 @@ public class Xlsx {
                                                 }
 
                                                 break;
-                                            case 1: //Local
+                                            case 1: /* Local */
                                                 switch (c) {
                                                     case 0:
                                                         Log.i(TAG, "lendoTabela: Tabela Local ");
@@ -152,7 +152,7 @@ public class Xlsx {
                                                     default:
                                                 }
                                                 break;
-                                            case 2: //SubLocal
+                                            case 2: /* SubLocal */
                                                 switch (c) {
                                                     case 0:
                                                         Log.i(TAG, "lendoTabela: Tabela SubLocal ");
@@ -179,7 +179,7 @@ public class Xlsx {
                                                     default:
                                                 }
                                                 break;
-                                            case 3: //Equipamento
+                                            case 3: /* Equipamento */
                                                 switch (c) {
                                                     case 0:
                                                         Log.i(TAG, "lendoTabela: Tabela Equipamento ");
@@ -210,7 +210,7 @@ public class Xlsx {
                                                 }
 
                                                 break;
-                                            case 4: //Status
+                                            case 4: /* Status */
                                                 switch (c) {
                                                     case 0:
                                                         Log.i(TAG, "lendoTabela: Tabela Status ");
@@ -231,7 +231,6 @@ public class Xlsx {
                                         }
                                         String cellInfo = "r:" + r + "; c:" + c + "; v:" + value;
                                         // Log.i(TAG, "lendoTabela: Dados da celula: " + cellInfo);
-
                                     }
                                 }
                             } catch (NullPointerException e) {

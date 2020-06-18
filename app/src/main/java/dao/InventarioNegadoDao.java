@@ -16,7 +16,7 @@ import model.InventarioNegado;
 @Dao
 public interface InventarioNegadoDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long inserir(InventarioNegado inventarioNegado);
 
     @Update

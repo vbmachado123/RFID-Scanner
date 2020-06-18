@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:paddingRight="5dp"
-            android:text="@string/versao"
             android:textColor="@color/branco"
             android:textSize="15sp"
             android:textStyle="italic|bold" />

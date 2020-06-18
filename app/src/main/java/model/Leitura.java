@@ -50,4 +50,8 @@ public class Leitura implements Serializable {
     public void setVezesLida(int vezesLida) {
         this.vezesLida = vezesLida;
     }
+
+    public String toString(){
+        return getNumeroTag();
+    }
 }

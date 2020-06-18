@@ -23,6 +23,7 @@ public class EquipamentoHelper {
     public EquipamentoHelper(Context context){
         db = Database.getDatabase(context);
         dao = db.equipamentoDao();
+   //     cursor = db.equipamentoDao().carregarTodos();
     }
 
     // Inserir Equipamento
@@ -68,20 +69,35 @@ public class EquipamentoHelper {
     // Carregar Equipamento
     @SuppressLint("StaticFieldLeak")
     public Cursor carregar() {
-
-        final Cursor[] cursor1 = new Cursor[1];
-
-        new AsyncTask<Void, Void, Cursor>() {
+        new AsyncTask<Void, Cursor, Cursor>() {
+            Cursor cursor1;
             @Override
             protected Cursor doInBackground(Void... voids) {
-                cursor1[0] = dao.carregarTodos();
-                if(cursor1[0].moveToFirst())
-                Log.i("Salvando", " > [Equipamento] Carregando cursor " + cursor1[0].getString(0));
-                return cursor1[0];
+
+                cursor1 = dao.carregarTodos();
+
+                if(cursor1.moveToFirst())
+                Log.i("Salvando", " > [Equipamento] doInBackground Carregando cursor " + cursor1.getString(0));
+                return cursor1;
             }
+
+            @Override
+            protected void onPostExecute(Cursor cursor) {
+                cursor1 = cursor;
+                carregaCursor(cursor1);
+
+                Log.i("Salvando", " > [Equipamento] onPostExecute Carregando cursor " + cursor1.getString(0));
+                return;
+            }
+
         }.execute();
 
-        return cursor1[0];
+        return cursor;
+    }
+
+    private void carregaCursor(Cursor cursor) {
+        Log.i("Salvando", " > [Equipamento] carregarCursor Carregando cursor " + cursor.getString(0));
+        this.cursor = cursor;
     }
 
     // Carregar Equipamento
@@ -94,8 +110,12 @@ public class EquipamentoHelper {
                 Log.i("Salvando", " > [Equipamento] Carregando Lista");
                 return null;
             }
-        }.execute();
 
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        }.execute();
         return equipamentoList;
     }
 
@@ -110,7 +130,9 @@ public class EquipamentoHelper {
                 return null;
             }
         }.execute();
-
     }
 
+    public Cursor getCursor() {
+        return cursor;
+    }
 }
