@@ -57,28 +57,6 @@
 
             </TableRow>
 
-          <!--  <TableRow
-                android:layout_marginTop="20dp"
-                android:id="@+id/trler"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent">
-
-                <ImageView
-                    android:layout_width="@dimen/tamanhoIcon"
-                    android:layout_height="@dimen/tamanhoIcon"
-                    android:src="@drawable/ic_leitura"/>
-
-                <TextView
-                    android:paddingLeft="@dimen/distancia"
-                    android:textColor="@color/colorPrimary"
-                    android:gravity="center_vertical"
-                    android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoLer"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
-            </TableRow>-->
-
             <TableRow
                 android:layout_marginTop="@dimen/distancia"
                 android:id="@+id/trLocalizar"

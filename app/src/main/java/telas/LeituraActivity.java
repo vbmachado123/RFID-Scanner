@@ -101,20 +101,11 @@ public class LeituraActivity extends AppCompatActivity {
     }
 
     private void validaCampo() {
-    /*trLeitura = (TableRow) findViewById(R.id.trler);*/
     trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
     trExpandir = (TableRow) findViewById(R.id.trExpandir);
     trExportar = (TableRow) findViewById(R.id.trExportar);
     lista = (ListView) findViewById(R.id.lvLista);
     fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
-
-   /* trLeitura.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(LeituraActivity.this, LerActivity.class);
-            startActivityForResult(intent, REQUISICAO_NOVA_TAG);
-        }
-    });*/
 
     trExpandir.setOnClickListener(new View.OnClickListener() {
         @Override

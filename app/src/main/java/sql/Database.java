@@ -27,7 +27,7 @@ import model.Status;
 @androidx.room.Database(
         entities = {Equipamento.class, EquipamentoInventario.class,
                 Inventario.class, InventarioNegado.class, Leitura.class,
-        Local.class, Status.class, SubLocal.class}, version = 3, exportSchema = false)
+        Local.class, Status.class, SubLocal.class}, version = 4, exportSchema = false)
 public abstract class Database extends RoomDatabase {
 
     public abstract EquipamentoDao equipamentoDao();

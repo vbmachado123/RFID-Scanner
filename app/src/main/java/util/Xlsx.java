@@ -256,6 +256,7 @@ public class Xlsx {
         return importar;
     }
 
+    /* Método responsável por capturar e converter o valor da célula */
     private String getCellAsString(Row row, int c, FormulaEvaluator formulaEvaluator) {
         String value = "";
 
@@ -286,5 +287,11 @@ public class Xlsx {
             Log.i(TAG, "lendoTabela: ERRO: " + e);
         }
         return value;
+    }
+
+    /* Método responsável por Converter, Salvar, Limpar o Banco e exporta-lo */
+    public boolean exportarTabela(){
+        boolean exporta = false;
+        return exporta;
     }
 }
