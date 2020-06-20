@@ -1,21 +1,15 @@
 package model;
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
 import java.io.Serializable;
 
-@Entity
 public class EquipamentoInventario  implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
-    @NonNull
     private int id;
     private int idInventario;
     private int idEquipamento;
     private int idStatus;
     private String dataHora;
+    private String latitude, longitude;
 
     public int getId() {
         return id;
@@ -55,5 +49,21 @@ public class EquipamentoInventario  implements Serializable {
 
     public void setDataHora(String dataHora) {
         this.dataHora = dataHora;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

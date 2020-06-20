@@ -1,20 +1,14 @@
 package model;
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
 import java.io.Serializable;
 
-@Entity
 public class Inventario implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
-    @NonNull
     private int id;
     private int idLocal;
-    private int idSubLocal;
+    private int idSubLocal; /* Opcional neste primeiro momento */
     private String dataHora;
+    private String latitude, longitude, endereco;
 
     public int getId() {
         return id;
@@ -46,5 +40,29 @@ public class Inventario implements Serializable {
 
     public void setDataHora(String dataHora) {
         this.dataHora = dataHora;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
     }
 }

@@ -11,6 +11,8 @@
     <string name="textoLer">Ler</string>
     <string name="textoLocalizar">Localizar</string>
     <string name="textoExportar">Exportar Para .CSV</string>
+    <string name="textoExportarXLSX">Exportar Para .XLSX</string>
+    <string name="textoDescricao">Adicionar Descrição</string>
     <string name="textoExpandir">Expandir Lista</string>
     <string name="textoGravacao">Gravação</string>
     <string name="textoConfiguracao">Configurações</string>
@@ -21,6 +23,11 @@
     <string name="textoNumTag">numTag</string>
     <string name="textoDataHora">dataHora</string>
     <string name="textoVezesLida">vezesLida</string>
+
+    <!-- Lista EquipamentoInventario -->
+    <string name="textoNaoEncontrada">Não encontrados</string>
+    <string name="textoNaoAtribuida">Não atribuidos</string>
+    <string name="textoEncontrada">Encontrados</string>
 
     <string name="connect_reader_menu_item_text">Conectar Leitor</string>
     <string name="change_reader_menu_item_text">Mudar Leitor</string>

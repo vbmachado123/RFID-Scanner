@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey340"
-    tools:context="telas.LeituraActivity">
+    tools:context="telas.ListaInventarioActivity">
 
     <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -16,7 +16,7 @@
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@mipmap/ic_sos"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Leitura "
+        app:title="Lista Inventário "
         app:titleTextColor="@color/branco">
 
     </androidx.appcompat.widget.Toolbar>
@@ -35,10 +35,10 @@
 
             <TableRow
                 android:gravity="center"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            android:layout_height="30dp"
-            android:layout_width="match_parent">
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:layout_height="30dp"
+                android:layout_width="match_parent">
 
                 <SeekBar
                     android:id="@+id/sbPotencia"
@@ -67,14 +67,14 @@
                 <ImageView
                     android:layout_width="@dimen/tamanhoIcon"
                     android:layout_height="@dimen/tamanhoIcon"
-                    android:src="@drawable/ic_location_searching"/>
+                    android:src="@drawable/ic_description"/>
 
                 <TextView
                     android:paddingLeft="@dimen/distancia"
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoLocalizar"
+                    android:text="@string/textoDescricao"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"/>
             </TableRow>
@@ -96,7 +96,7 @@
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoExportar"
+                    android:text="@string/textoExportarXLSX"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"/>
             </TableRow>

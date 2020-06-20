@@ -5,12 +5,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import java.util.List;
-
-import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
-import android.content.ContentUris;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -18,50 +12,22 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
-import helper.EquipamentoHelper;
-import helper.LeituraHelper;
+import dao.EquipamentoDao;
 import model.Equipamento;
-import model.XYValue;
-import sql.Database;
-import util.DatabaseClient;
+import model.Inventario;
 import util.Xlsx;
-
-import static androidx.core.content.FileProvider.getUriForFile;
 
 public class InventarioActivity extends AppCompatActivity {
 
@@ -106,37 +72,29 @@ public class InventarioActivity extends AppCompatActivity {
         });
     }
 
-    private void getEquipamentosAlert(){
-        class GetEquipamentosAlert extends AsyncTask<Void, Void, Cursor>{
-            @Override
-            protected Cursor doInBackground(Void... voids) {
-                return DatabaseClient.getInstance(InventarioActivity.this).getDatabase().equipamentoDao().carregarTodos();
-            }
+    private void getEquipamentosAlert() {
 
-            @Override
-            protected void onPostExecute(Cursor cursor) {
-                super.onPostExecute(cursor);
-                if (cursor != null) {
-                    AlertDialog dialog = new AlertDialog.Builder(InventarioActivity.this, R.style.Dialog)
-                            .setTitle("Atenção")
-                            .setMessage("Deseja substituir as informações do banco? Esta ação não pode ser desfeita!")
-                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    selecionarArquivo();
-                                }
-                            }).create();
-                    dialog.show();
-                } else selecionarArquivo();
-            }
-        }
-        (new GetEquipamentosAlert()).execute();
+        EquipamentoDao dao = new EquipamentoDao(this);
+        Equipamento e = dao.recupera();
 
+        if (e != null) {
+            AlertDialog dialog = new AlertDialog.Builder(InventarioActivity.this, R.style.Dialog)
+                    .setTitle("Atenção")
+                    .setMessage("Deseja substituir as informações do banco? Esta ação não pode ser desfeita!")
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            selecionarArquivo();
+                        }
+                    }).create();
+            dialog.show();
+
+        } else selecionarArquivo();
     }
 
     private void selecionarArquivo() {

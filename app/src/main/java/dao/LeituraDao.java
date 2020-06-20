@@ -1,35 +1,63 @@
 package dao;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
-import java.util.List;
-
+import model.Equipamento;
 import model.Leitura;
+import sql.Conexao;
 
-@Dao
-public interface LeituraDao {
+public class LeituraDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Long inserir(Leitura l);
+    private Conexao conexao;
+    private SQLiteDatabase banco;
+    private Leitura leitura;
 
-    @Update
-    void atualizar(Leitura leitura);
+    public LeituraDao(Context context) {
+        conexao = new Conexao(context);
+        banco = conexao.getWritableDatabase();
+        banco = conexao.getReadableDatabase();
+    }
 
-    @Query("SELECT * FROM Leitura")
-    Cursor carregarTodos();
+    public Leitura recupera() {
+        Cursor cursor = banco.rawQuery("SELECT * FROM leitura", null);
 
-    @Query("SELECT * FROM Leitura")
-    List<Leitura> getAll();
+        while (cursor.moveToNext()) {
+            leitura = new Leitura();
+            leitura.setId(cursor.getInt(0));
+            leitura.setNumeroTag(cursor.getString(1));
+            leitura.setDataHora(cursor.getString(2));
+            leitura.setVezesLida(cursor.getInt(3));
 
-    @Query("SELECT * FROM Leitura WHERE numeroTag = :numTag")
-    Leitura pegaUm(String numTag);
+        }
+        return leitura;
+    }
 
-    @Query("DELETE FROM Leitura")
-    void deleteAll();
+    public long inserir(Leitura leitura) {
+
+        ContentValues values = new ContentValues();
+        values.put("numeroTag", leitura.getNumeroTag());
+        values.put("dataHora", leitura.getDataHora());
+        values.put("vezesLida", leitura.getVezesLida());
+
+        return banco.insert("leitura", null, values);
+    }
+
+    public void atualizar(Leitura leitura) {
+
+        ContentValues values = new ContentValues();
+        values.put("numeroTag", leitura.getNumeroTag());
+        values.put("dataHora", leitura.getDataHora());
+        values.put("vezesLida", leitura.getVezesLida());
+
+        banco.update("leitura", values, "id = ?",
+                new String[]{String.valueOf(leitura.getId())});
+    }
+
+    public void limparTabela(){
+        banco.execSQL("DELETE FROM leitura");
+    }
+
 }

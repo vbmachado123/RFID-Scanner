@@ -2,16 +2,12 @@ package telas;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.database.Cursor;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -33,15 +29,14 @@ import android.widget.Toast;
 import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
-
 import java.util.ArrayList;
 
-import helper.LocalAdapter;
-import helper.SubLocalAdapter;
+import adapter.LocalAdapter;
+import adapter.SubLocalAdapter;
+import dao.LocalDao;
+import dao.SubLocalDao;
 import model.Local;
 import model.SubLocal;
-import util.DatabaseClient;
 
 public class EscolhaLocalActivity extends AppCompatActivity {
 
@@ -59,6 +54,8 @@ public class EscolhaLocalActivity extends AppCompatActivity {
     private Local local;
     private SubLocal subLocal;
     private boolean completo = false;
+    private LocalDao localDao;
+    private SubLocalDao subLocalDao;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -67,6 +64,9 @@ public class EscolhaLocalActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escolha_local);
+
+        localDao = new LocalDao(this);
+        subLocalDao = new SubLocalDao(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -305,41 +305,20 @@ public class EscolhaLocalActivity extends AppCompatActivity {
     }
 
     private void acessaActivity() {
-        Intent it = new Intent();
+        /* Intent it = new Intent(EscolhaLocalActivity.this, ListaInventarioActivity.class);*/
+        Intent it = new Intent(EscolhaLocalActivity.this, ListaEquipamentoInventarioActivity.class);
+        it.putExtra("local", local);
+        if (subLocal != null)
+            it.putExtra("sublocal", subLocal);
+
         startActivity(it);
     }
 
     private void recuperaListas() {
+        listaLocal = (ArrayList<Local>) localDao.obterTodos();
+        filtroListaLocal.addAll(listaLocal);
 
-        class GetListaLocal extends AsyncTask<Void, Void, ArrayList<Local>> {
+        listaSublocal = (ArrayList<SubLocal>) subLocalDao.obterTodos();
 
-            @Override
-            protected ArrayList<Local> doInBackground(Void... voids) {
-                return (ArrayList<Local>) DatabaseClient.getInstance(EscolhaLocalActivity.this).getDatabase().localDao().getAll();
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<Local> locals) {
-                super.onPostExecute(locals);
-                listaLocal.addAll(locals);
-                filtroListaLocal.addAll(listaLocal);
-            }
-        }
-        (new GetListaLocal()).execute();
-
-        class GetListaSubLocal extends AsyncTask<Void, Void, ArrayList<SubLocal>> {
-
-            @Override
-            protected ArrayList<SubLocal> doInBackground(Void... voids) {
-                return (ArrayList<SubLocal>) DatabaseClient.getInstance(EscolhaLocalActivity.this).getDatabase().subLocalDao().getAll();
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<SubLocal> subLocals) {
-                super.onPostExecute(subLocals);
-                listaSublocal.addAll(subLocals);
-            }
-        }
-        (new GetListaSubLocal()).execute();
     }
 }
