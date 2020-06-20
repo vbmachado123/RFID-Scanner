@@ -5,9 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.io.File;
+
 import model.Equipamento;
 import model.Leitura;
 import sql.Conexao;
+import util.Csv;
 
 public class LeituraDao {
 
@@ -35,6 +38,20 @@ public class LeituraDao {
         return leitura;
     }
 
+    public boolean exportar() {
+        boolean exportar;
+
+        Cursor cursor = banco.rawQuery("SELECT * FROM leitura", null);
+        Csv csv = new Csv(cursor);
+        File file = csv.exportDB();
+        if (file.canRead())
+            exportar = true;
+        else
+            exportar = false;
+
+        return exportar;
+    }
+
     public long inserir(Leitura leitura) {
 
         ContentValues values = new ContentValues();
@@ -56,7 +73,7 @@ public class LeituraDao {
                 new String[]{String.valueOf(leitura.getId())});
     }
 
-    public void limparTabela(){
+    public void limparTabela() {
         banco.execSQL("DELETE FROM leitura");
     }
 

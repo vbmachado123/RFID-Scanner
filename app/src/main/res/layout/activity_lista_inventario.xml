@@ -16,7 +16,7 @@
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@mipmap/ic_sos"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Lista Inventário "
+        app:title="Lista Inventário"
         app:titleTextColor="@color/branco">
 
     </androidx.appcompat.widget.Toolbar>
@@ -59,7 +59,7 @@
 
             <TableRow
                 android:layout_marginTop="@dimen/distancia"
-                android:id="@+id/trLocalizar"
+                android:id="@+id/trAdicionarDescricao"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent">
@@ -141,7 +141,7 @@
         android:layout_margin="10dp">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/botaoAbrir"
+            android:id="@+id/botaoSalvar"
             app:fabSize="auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
