@@ -319,6 +319,5 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         filtroListaLocal.addAll(listaLocal);
 
         listaSublocal = (ArrayList<SubLocal>) subLocalDao.obterTodos();
-
     }
 }

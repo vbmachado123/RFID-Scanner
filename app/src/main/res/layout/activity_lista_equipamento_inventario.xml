@@ -146,7 +146,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@drawable/ic_right"
+            app:srcCompat="@drawable/ic_save_branco"
             tools:ignore="VectorDrawableCompat" />
     </LinearLayout>
 </RelativeLayout>

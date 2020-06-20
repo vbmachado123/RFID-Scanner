@@ -1,23 +1,39 @@
 package telas;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
+import adapter.EquipamentoAdapter;
+import dao.EquipamentoDao;
+import dao.EquipamentoInventarioDao;
 import model.Equipamento;
 import model.EquipamentoInventario;
 import model.Inventario;
@@ -34,13 +50,13 @@ public class ListaInventarioActivity extends AppCompatActivity {
     private SubLocal subLocal = new SubLocal();
     private Inventario inventario = new Inventario();
     private EquipamentoInventario equipamentoInventario = new EquipamentoInventario();
+    private EquipamentoInventarioDao equipamentoInventarioDao;
+    private EquipamentoDao equipamentoDao;
+    private EquipamentoAdapter adapter;
 
-    /* LOCALIZAÇÃO */
-    private Location location;
-    private LocationManager locationManager;
-    private double latitude = 0.0;
-    private double longitude = 0.0;
-    private String data = "";
+    private TableRow trAdicionarDescricao, trExportar, trAbrirLista;
+    private ListView listaEquipamentos;
+    private FloatingActionButton fabSalvar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,48 +65,81 @@ public class ListaInventarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_inventario);
 
+        equipamentoInventarioDao = new EquipamentoInventarioDao(this);
+        equipamentoDao = new EquipamentoDao(this);
+
+        equipamentos = new ArrayList<>();
+
+        copulaLista();
+        validaCampo();
+
         Intent it = getIntent();
         Bundle extras = it.getExtras();
-        local = (Local) extras.getSerializable("local");
-        subLocal = (SubLocal) extras.getSerializable("sublocal");
-
-        boolean iniciado = iniciaInventario();
-
-        inventario.setIdLocal(local.getId());
+        /*local = (Local) extras.getSerializable("local");
+        subLocal = (SubLocal) extras.getSerializable("sublocal");*/
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (subLocal != null) {/* Foi escolhido na tela anterior */
-            inventario.setIdSubLocal(subLocal.getIdLocal());
-            toolbar.setTitle(local.getDescricao() + " - " + subLocal.getDescricao());
-            if(iniciado) Toast.makeText(this, "O inventário " + local.getDescricao() +  " - " + subLocal.getDescricao() + " foi iniciado em: " + data, Toast.LENGTH_LONG).show();
-        } else {
-            toolbar.setTitle("Inventário: " + local.getDescricao());
-            if(iniciado) Toast.makeText(this, "O inventário " + local.getDescricao() +  " foi iniciado em: " + data, Toast.LENGTH_LONG).show();
+
+    }
+
+    private void validaCampo() {
+        trAdicionarDescricao = (TableRow) findViewById(R.id.trAdicionarDescricao);
+        trExportar = (TableRow) findViewById(R.id.trExportar);
+        trAbrirLista = (TableRow) findViewById(R.id.trExpandir);
+        listaEquipamentos = (ListView) findViewById(R.id.lvLista);
+        fabSalvar = (FloatingActionButton) findViewById(R.id.botaoSalvar);
+
+        adapter = new EquipamentoAdapter(this, equipamentos);
+
+        listaEquipamentos.setAdapter(adapter);
+
+        registerForContextMenu(listaEquipamentos);
+
+        trAbrirLista.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ListaInventarioActivity.this, R.style.Dialog);
+                View view = getLayoutInflater().inflate(R.layout.lista_leituras, null);
+                builder.setAdapter(adapter, null);
+                builder.setTitle("Equipamentos do Inventário");
+                builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.setView(view);
+                registerForContextMenu(view);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater i = getMenuInflater();
+        i.inflate(R.menu.menu_contexto_editar, menu);
+    }
+
+
+    private void editar(MenuItem item){
+        AdapterView.AdapterContextMenuInfo menuInfo =
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+    }
+
+    private void copulaLista() {
+        ArrayList<EquipamentoInventario> equipamentoInventarioList = (ArrayList<EquipamentoInventario>) equipamentoInventarioDao.obterTodos();
+
+        for(int i = 0; i < equipamentoInventarioList.size(); i++){
+            EquipamentoInventario ei = equipamentoInventarioList.get(i);
+            Equipamento equipamento = equipamentoDao.getById(ei.getIdEquipamento());
+            if(equipamento != null)
+                equipamentos.add(equipamento);
+
+            Log.i("Salvando", "EquipamentoInventario - " + equipamento.getNumeroTag());
         }
     }
 
-    private boolean iniciaInventario() {
-        boolean inicia;
-         data = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        }
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        if (location != null) {
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
-        } else {
-            longitude = 1.0;
-            latitude = 1.0;
-        }
-
-        inicia = true;
-
-        return inicia;
-    }
 }

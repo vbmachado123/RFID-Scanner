@@ -109,12 +109,14 @@ public class LeituraActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(leituras != null){
-                //helper.exportar();
-                File exportDir = new File(Environment.getExternalStorageDirectory(), "");
-                String nomePasta = exportDir + "/SOS RFiD";
-                Toast.makeText(context, "Arquivo salvo em: " +
-                        nomePasta + "/Leituras Realizadas " + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
-                leituraDao.limparTabela();
+                boolean exportar = leituraDao.exportar();
+                if(exportar){
+                    File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+                    String nomePasta = exportDir + "/SOS RFiD";
+                    Toast.makeText(context, "Arquivo salvo em: " +
+                            nomePasta + "/Leituras Realizadas " + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
+                    leituraDao.limparTabela();
+                }
             } else
                 Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
         }

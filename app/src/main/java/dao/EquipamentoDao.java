@@ -5,7 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import model.Equipamento;
+import model.Local;
 import sql.Conexao;
 
 public class EquipamentoDao {
@@ -35,6 +39,44 @@ public class EquipamentoDao {
         return equipamento;
     }
 
+    public Equipamento getById(int id){
+        Cursor cursor = banco.rawQuery("SELECT * FROM equipamento WHERE id=" + id, null);
+
+        if(cursor.moveToFirst()){
+            equipamento = new Equipamento();
+            equipamento.setId(cursor.getInt(0));
+            equipamento.setLocalId(cursor.getInt(1));
+            equipamento.setSubLocalId(cursor.getInt(2));
+            equipamento.setNumeroTag(cursor.getString(3));
+            equipamento.setDescricao(cursor.getString(4));
+        }
+
+        return equipamento;
+    }
+
+    public List<Equipamento> getByLocal(int idLocal) {
+
+        List<Equipamento> equipamentoList = new ArrayList<>();
+        Cursor cursor = banco.query("equipamento", new String[]{"id", "idLocal", "idSubLocal", "numeroTag", "descricao"},
+                null, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        while (cursor.moveToNext()) {
+            equipamento = new Equipamento();
+            equipamento.setId(cursor.getInt(0));
+            equipamento.setLocalId(cursor.getInt(1));
+            equipamento.setSubLocalId(cursor.getInt(2));
+            equipamento.setNumeroTag(cursor.getString(3));
+            equipamento.setDescricao(cursor.getString(4));
+
+            if (equipamento.getLocalId() == idLocal)
+                equipamentoList.add(equipamento);
+        }
+
+        return equipamentoList;
+    }
+
     public long inserir(Equipamento equipamento) {
 
         ContentValues values = new ContentValues();
@@ -58,7 +100,7 @@ public class EquipamentoDao {
                 new String[]{String.valueOf(equipamento.getId())});
     }
 
-    public void limparTabela(){
-         banco.execSQL("DELETE FROM equipamento");
+    public void limparTabela() {
+        banco.execSQL("DELETE FROM equipamento");
     }
 }
