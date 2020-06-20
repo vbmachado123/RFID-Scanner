@@ -1,37 +1,77 @@
 package dao;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Local;
-import model.Status;
 import model.SubLocal;
+import sql.Conexao;
 
-@Dao
-public interface SubLocalDao {
+public class SubLocalDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Long inserir(SubLocal subLocal);
+    private Conexao conexao;
+    private SQLiteDatabase banco;
+    private SubLocal subLocal;
 
-    @Update
-    void atualizar(SubLocal subLocal);
+    public SubLocalDao(Context context) {
+        conexao = new Conexao(context);
+        banco = conexao.getWritableDatabase();
+        banco = conexao.getReadableDatabase();
+    }
 
-    @Query("SELECT * FROM SubLocal")
-    Cursor carregarTodos();
+    public SubLocal recupera() {
+        Cursor cursor = banco.rawQuery("SELECT * FROM subLocal", null);
 
-    @Query("SELECT * FROM SubLocal")
-    List<SubLocal> getAll();
+        while (cursor.moveToNext()) {
+            subLocal = new SubLocal();
+            subLocal.setId(cursor.getInt(0));
+            subLocal.setIdLocal(cursor.getInt(1));
+            subLocal.setDescricao(cursor.getString(2));
+        }
+        return subLocal;
+    }
 
-    @Query("SELECT * FROM SubLocal WHERE id = :id")
-    SubLocal pegaUm(int id);
+    public List<SubLocal> obterTodos(){
 
-    @Query("DELETE FROM SubLocal")
-    void deleteAll();
+        List<SubLocal> subLocalList = new ArrayList<>();
+        Cursor cursor = banco.query("subLocal", new String[]{"id","idLocal" , "descricao"}, null, null, null, null, null);
+
+        while(cursor.moveToNext()){
+            subLocal = new SubLocal();
+            subLocal.setId(cursor.getInt(0));
+            subLocal.setIdLocal(cursor.getInt(1));
+            subLocal.setDescricao(cursor.getString(2));
+
+            subLocalList.add(subLocal);
+        }
+        return subLocalList;
+    }
+
+    public long inserir(SubLocal subLocal) {
+
+        ContentValues values = new ContentValues();
+        values.put("idLocal", subLocal.getIdLocal());
+        values.put("descricao", subLocal.getDescricao());
+        return banco.insert("subLocal", null, values);
+    }
+
+    public void atualizar(SubLocal subLocal) {
+
+        ContentValues values = new ContentValues();
+        values.put("idLocal", subLocal.getIdLocal());
+        values.put("descricao", subLocal.getDescricao());
+
+        banco.update("subLocal", values, "id = ?",
+                new String[]{String.valueOf(subLocal.getId())});
+    }
+
+    public void limparTabela() {
+        banco.execSQL("DELETE FROM subLocal");
+    }
+
 }

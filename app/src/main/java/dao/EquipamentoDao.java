@@ -1,35 +1,64 @@
 package dao;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
-import java.util.List;
+import android.database.sqlite.SQLiteDatabase;
 
 import model.Equipamento;
+import sql.Conexao;
 
-@Dao
-public interface EquipamentoDao {
+public class EquipamentoDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Long inserir(Equipamento equipamento);
+    private Equipamento equipamento = null;
 
-    @Update
-    void atualizar(Equipamento equipamento);
+    private Conexao conexao;
+    private SQLiteDatabase banco;
 
-    @Query("SELECT * FROM Equipamento")
-    Cursor carregarTodos();
+    public EquipamentoDao(Context context) {
+        conexao = new Conexao(context);
+        banco = conexao.getWritableDatabase();
+        banco = conexao.getReadableDatabase();
+    }
 
-    @Query("SELECT * FROM Equipamento")
-    List<Equipamento> getAll();
+    public Equipamento recupera() {
+        Cursor cursor = banco.rawQuery("SELECT * FROM equipamento", null);
 
-    @Query("SELECT * FROM Equipamento WHERE id = :id")
-    Equipamento pegaUm(int id);
+        while (cursor.moveToNext()) {
+            equipamento = new Equipamento();
+            equipamento.setId(cursor.getInt(0));
+            equipamento.setLocalId(cursor.getInt(1));
+            equipamento.setSubLocalId(cursor.getInt(2));
+            equipamento.setNumeroTag(cursor.getString(3));
+            equipamento.setDescricao(cursor.getString(4));
+        }
+        return equipamento;
+    }
 
-    @Query("DELETE FROM Equipamento")
-    void deleteAll();
+    public long inserir(Equipamento equipamento) {
+
+        ContentValues values = new ContentValues();
+        values.put("idLocal", equipamento.getLocalId());
+        values.put("idSubLocal", equipamento.getSubLocalId());
+        values.put("numeroTag", equipamento.getNumeroTag());
+        values.put("descricao", equipamento.getDescricao());
+
+        return banco.insert("equipamento", null, values);
+    }
+
+    public void atualizar(Equipamento equipamento) {
+
+        ContentValues values = new ContentValues();
+        values.put("idLocal", equipamento.getLocalId());
+        values.put("idSubLocal", equipamento.getSubLocalId());
+        values.put("numeroTag", equipamento.getNumeroTag());
+        values.put("descricao", equipamento.getDescricao());
+
+        banco.update("equipamento", values, "id = ?",
+                new String[]{String.valueOf(equipamento.getId())});
+    }
+
+    public void limparTabela(){
+         banco.execSQL("DELETE FROM equipamento");
+    }
 }

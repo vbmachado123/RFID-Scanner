@@ -1,36 +1,54 @@
 package dao;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
-import java.util.List;
-
+import model.Leitura;
 import model.Local;
 import model.Status;
+import sql.Conexao;
 
-@Dao
-public interface StatusDao {
+public class StatusDao {
+    private Conexao conexao;
+    private SQLiteDatabase banco;
+    private Status status;
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Long inserir(Status status);
+    public StatusDao(Context context) {
+        conexao = new Conexao(context);
+        banco = conexao.getWritableDatabase();
+        banco = conexao.getReadableDatabase();
+    }
 
-    @Update
-    void atualizar(Status status);
+    public Status recupera() {
+        Cursor cursor = banco.rawQuery("SELECT * FROM status", null);
 
-    @Query("SELECT * FROM Status")
-    Cursor carregarTodos();
+        while (cursor.moveToNext()) {
+            status = new Status();
+            status.setId(cursor.getInt(0));
+            status.setStatus(cursor.getString(2));
+        }
+        return status;
+    }
 
-    @Query("SELECT * FROM Status")
-    List<Status> getAll();
+    public long inserir(Status status) {
 
-    @Query("SELECT * FROM Status WHERE id = :id")
-    Status pegaUm(int id);
+        ContentValues values = new ContentValues();
+        values.put("descricao", status.getStatus());
+        return banco.insert("status", null, values);
+    }
 
-    @Query("DELETE FROM Status")
-    void deleteAll();
+    public void atualizar(Status status) {
+
+        ContentValues values = new ContentValues();
+        values.put("descricao", status.getStatus());
+        banco.update("status", values, "id = ?",
+                new String[]{String.valueOf(status.getId())});
+    }
+
+    public void limparTabela() {
+        banco.execSQL("DELETE FROM status");
+    }
+
 }

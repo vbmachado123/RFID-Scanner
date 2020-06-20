@@ -1,19 +1,13 @@
 package util;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
-import androidx.core.content.ContextCompat;
-
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFAnchor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -24,22 +18,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 
-import javax.net.ssl.SSLEngineResult;
-
-import helper.EquipamentoHelper;
-import helper.EquipamentoInventarioHelper;
-import helper.InventarioHelper;
-import helper.InventarioNegadoHelper;
-import helper.LeituraHelper;
-import helper.LocalHelper;
-import helper.StatusHelper;
-import helper.SubLocalHelper;
+import dao.EquipamentoDao;
+import dao.EquipamentoInventarioDao;
+import dao.InventarioDao;
+import dao.InventarioNegadoDao;
+import dao.LeituraDao;
+import dao.LocalDao;
+import dao.StatusDao;
+import dao.SubLocalDao;
 import model.Equipamento;
 import model.Leitura;
 import model.Local;
 import model.Status;
 import model.SubLocal;
-import sql.Database;
 
 public class Xlsx {
 
@@ -47,15 +38,14 @@ public class Xlsx {
     private Context context;
 
     /* BANCO DE DADOS */
-    private Database db;
-    private EquipamentoHelper equipamentoHelper;
-    private EquipamentoInventarioHelper equipamentoInventarioHelper;
-    private InventarioHelper inventarioHelper;
-    private InventarioNegadoHelper inventarioNegadoHelper;
-    private LeituraHelper leituraHelper;
-    private LocalHelper localHelper;
-    private StatusHelper statusHelper;
-    private SubLocalHelper subLocalHelper;
+    private EquipamentoDao equipamentoDao;
+    private EquipamentoInventarioDao equipamentoInventarioDao;
+    private InventarioDao inventarioDao;
+    private InventarioNegadoDao inventarioNegadoDao;
+    private LeituraDao leituraDao;
+    private LocalDao localDao;
+    private StatusDao statusDao;
+    private SubLocalDao subLocalDao;
 
     /* Models */
     private Leitura leitura = new Leitura();
@@ -66,12 +56,12 @@ public class Xlsx {
 
     public Xlsx(Context context) {
         this.context = context;
-        this.db = Database.getDatabase(context);
-        leituraHelper = new LeituraHelper(context);
-        localHelper = new LocalHelper(context);
-        subLocalHelper = new SubLocalHelper(context);
-        equipamentoHelper = new EquipamentoHelper(context);
-        statusHelper = new StatusHelper(context);
+
+        leituraDao = new LeituraDao(context);
+        localDao = new LocalDao(context);
+        subLocalDao = new SubLocalDao(context);
+        equipamentoDao = new EquipamentoDao(context);
+        statusDao = new StatusDao(context);
     }
 
     /* Método responsável por importar a tabela - Converter e Salvar no banco*/
@@ -84,11 +74,11 @@ public class Xlsx {
         } else { /* Arquivo valido */
             try {
                 /* Limpando banco para que nao haja sobreposição */
-                leituraHelper.limparBanco();
-                localHelper.limparLocal();
-                subLocalHelper.limparSubLocal();
-                equipamentoHelper.limparEquipamento();
-                statusHelper.limparStatus();
+                leituraDao.limparTabela();
+                localDao.limparTabela();
+                subLocalDao.limparTabela();
+                equipamentoDao.limparTabela();
+                statusDao.limparTabela();
 
                 Log.i(TAG, "lendoTabela: Banco foi limpo! ");
 
@@ -127,7 +117,7 @@ public class Xlsx {
                                                     case 3:
                                                         double vezesLida = Double.valueOf(value);
                                                         leitura.setVezesLida((int) vezesLida);
-                                                        leituraHelper.inserir(leitura);
+                                                        leituraDao.inserir(leitura);
                                                         Log.i(TAG, "lendoTabela: Tabela Leitura - " + leitura.getId());
                                                         Log.i(TAG, "lendoTabela: Tabela Leitura - " + leitura.getNumeroTag());
                                                         Log.i(TAG, "lendoTabela: Tabela Leitura - " + leitura.getDataHora());
@@ -145,7 +135,7 @@ public class Xlsx {
                                                         break;
                                                     case 1:
                                                         local.setDescricao(value);
-                                                        localHelper.inserir(local);
+                                                        localDao.inserir(local);
                                                         Log.i(TAG, "lendoTabela: Tabela Local - " + local.getId());
                                                         Log.i(TAG, "lendoTabela: Tabela Local - " + local.getDescricao());
                                                         break;
@@ -173,7 +163,7 @@ public class Xlsx {
                                                         break;
                                                     case 2:
                                                         subLocal.setDescricao(value);
-                                                        subLocalHelper.inserir(subLocal);
+                                                        subLocalDao.inserir(subLocal);
                                                         Log.i(TAG, "lendoTabela: Tabela SubLocal - " + subLocal.getDescricao());
                                                         break;
                                                     default:
@@ -199,7 +189,7 @@ public class Xlsx {
                                                     case 4:
                                                         double idSubLocal = Double.valueOf(value);
                                                         equipamento.setSubLocalId((int) idSubLocal);
-                                                        equipamentoHelper.inserir(equipamento);
+                                                        equipamentoDao.inserir(equipamento);
                                                         Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getId());
                                                         Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getNumeroTag());
                                                         Log.i(TAG, "lendoTabela: Tabela Equipamento - " + equipamento.getDescricao());
@@ -219,7 +209,7 @@ public class Xlsx {
                                                         break;
                                                     case 1:
                                                         status.setStatus(value);
-                                                        statusHelper.inserir(status);
+                                                        statusDao.inserir(status);
                                                         Log.i(TAG, "lendoTabela: Tabela Status - " + status.getId());
                                                         Log.i(TAG, "lendoTabela: Tabela Status - " + status.getStatus());
                                                         break;

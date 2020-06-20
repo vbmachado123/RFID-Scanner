@@ -3,27 +3,19 @@ package telas;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.Toast;
@@ -32,25 +24,18 @@ import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import bluetooth.BluetoothListener;
 import bluetooth.BluetoothReceiver;
+import adapter.LeituraAdapter;
 import dao.LeituraDao;
-import helper.LeituraAdapter;
-import helper.LeituraHelper;
 import model.Leitura;
 import model.Lista;
-import sql.Database;
-import util.Csv;
+import sql.Conexao;
 import util.Data;
-import util.Permissao;
 
 public class LeituraActivity extends AppCompatActivity {
 
@@ -71,8 +56,8 @@ public class LeituraActivity extends AppCompatActivity {
     private Lista oLista = new Lista();
     private Context context = this;
     private int tamanhoLista = 0;
-    private Database db;
-    private LeituraHelper helper;
+    private Conexao db;
+    private LeituraDao leituraDao;
     Cursor cursor;
 
     @Override
@@ -85,8 +70,7 @@ public class LeituraActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        helper = new LeituraHelper(context);
+        leituraDao = new LeituraDao(context);
         validaCampo();
         oLista = new Lista();
         leituras = new ArrayList<>();
@@ -125,12 +109,12 @@ public class LeituraActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(leituras != null){
-                helper.exportar();
+                //helper.exportar();
                 File exportDir = new File(Environment.getExternalStorageDirectory(), "");
                 String nomePasta = exportDir + "/SOS RFiD";
                 Toast.makeText(context, "Arquivo salvo em: " +
                         nomePasta + "/Leituras Realizadas " + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
-                helper.limparBanco();
+                leituraDao.limparTabela();
             } else
                 Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
         }
@@ -231,14 +215,13 @@ public class LeituraActivity extends AppCompatActivity {
 
     private void salvarLeitura() {
         for (Leitura l : leituras) {
-                db = Database.getDatabase(context);
-                if(l.getNumeroTag() != null) helper.atualizar(l);
+
+                if(l.getNumeroTag() != null) leituraDao.atualizar(l);
         }
 
             leituras.clear();
             adapter.notifyDataSetChanged();
             Toast.makeText(context, "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
@@ -262,6 +245,5 @@ public class LeituraActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }
 

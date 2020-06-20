@@ -1,18 +1,11 @@
 package model;
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-@Entity
 public class InventarioNegado {
 
-    @PrimaryKey(autoGenerate = true)
-    @NonNull
     private int id;
     private int idInventario;
-    private int idEquipamento;
     private int idStatus;
+    private String numeroTag;
     private String dataHora;
     private String latitude, longitude;
 
@@ -30,14 +23,6 @@ public class InventarioNegado {
 
     public void setIdInventario(int idInventario) {
         this.idInventario = idInventario;
-    }
-
-    public int getIdEquipamento() {
-        return idEquipamento;
-    }
-
-    public void setIdEquipamento(int idEquipamento) {
-        this.idEquipamento = idEquipamento;
     }
 
     public int getIdStatus() {
@@ -70,5 +55,13 @@ public class InventarioNegado {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getNumeroTag() {
+        return numeroTag;
+    }
+
+    public void setNumeroTag(String numeroTag) {
+        this.numeroTag = numeroTag;
     }
 }

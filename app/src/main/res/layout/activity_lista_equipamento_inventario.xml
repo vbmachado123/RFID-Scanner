@@ -16,7 +16,7 @@
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@mipmap/ic_sos"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Lista Inventário "
+        app:title="Status Equipamentos "
         app:titleTextColor="@color/branco">
 
     </androidx.appcompat.widget.Toolbar>
@@ -32,34 +32,41 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <TableRow
-                android:gravity="center"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/distancia"
+                android:id="@+id/trNaoEncontrado"
                 android:orientation="horizontal"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 android:layout_width="match_parent">
 
-                <SeekBar
-                    android:id="@+id/sbPotencia"
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_width="@dimen/tamanhoIcon"
+                    android:layout_height="@dimen/tamanhoIcon"
+                    android:src="@drawable/ic_nao_encontrado"/>
 
                 <TextView
-                    android:id="@+id/tvPotencia"
+                    android:id="@+id/txtNaoEncontrado"
                     android:paddingLeft="@dimen/distancia"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/vermelhodesativado"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="0 db"
-                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:layout_height="match_parent"
                     android:layout_width="wrap_content"/>
 
+                <TextView
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/vermelhodesativado"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="@string/textoNaoEncontrada"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
             </TableRow>
 
             <TableRow
                 android:layout_marginTop="@dimen/distancia"
-                android:id="@+id/trLocalizar"
+                android:id="@+id/trNaoAtribuido"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent">
@@ -67,21 +74,31 @@
                 <ImageView
                     android:layout_width="@dimen/tamanhoIcon"
                     android:layout_height="@dimen/tamanhoIcon"
-                    android:src="@drawable/ic_description"/>
+                    android:src="@drawable/ic_nao_atribuida"/>
+
+                <TextView
+                    android:id="@+id/txtNaoAtribuido"
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/amarelo_nao_atribuido"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="1"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"/>
 
                 <TextView
                     android:paddingLeft="@dimen/distancia"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/amarelo_nao_atribuido"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoDescricao"
+                    android:text="@string/textoNaoAtribuida"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"/>
             </TableRow>
 
             <TableRow
                 android:layout_marginTop="@dimen/distancia"
-                android:id="@+id/trExportar"
+                android:id="@+id/trEncontrado"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent">
@@ -89,45 +106,27 @@
                 <ImageView
                     android:layout_width="@dimen/tamanhoIcon"
                     android:layout_height="@dimen/tamanhoIcon"
-                    android:src="@drawable/ic_export"/>
+                    android:src="@drawable/ic_encontrada_atribuida"/>
+
+                <TextView
+                    android:id="@+id/txtEncontrado"
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/tamanhoTextoHome"
+                    android:text="1"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"/>
 
                 <TextView
                     android:paddingLeft="@dimen/distancia"
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoExportarXLSX"
+                    android:text="@string/textoEncontrada"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"/>
             </TableRow>
-
-            <TableRow
-                android:layout_marginTop="@dimen/distancia"
-                android:id="@+id/trExpandir"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent">
-
-                <ImageView
-                    android:layout_width="@dimen/tamanhoIcon"
-                    android:layout_height="@dimen/tamanhoIcon"
-                    android:src="@drawable/ic_expand_more"/>
-
-                <TextView
-                    android:paddingLeft="@dimen/distancia"
-                    android:textColor="@color/colorPrimary"
-                    android:gravity="center_vertical"
-                    android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoExpandir"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
-            </TableRow>
-
-            <ListView
-                android:id="@+id/lvLista"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/grey60" />
 
         </LinearLayout>
     </ScrollView>
@@ -141,13 +140,13 @@
         android:layout_margin="10dp">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/botaoAbrir"
+            android:id="@+id/fabProsseguir"
             app:fabSize="auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@drawable/ic_save_branco"
+            app:srcCompat="@drawable/ic_right"
             tools:ignore="VectorDrawableCompat" />
     </LinearLayout>
 </RelativeLayout>
