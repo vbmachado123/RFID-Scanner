@@ -32,6 +32,11 @@ public class StatusDao {
         return status;
     }
 
+    public Cursor pegaCursor(){
+        Cursor cursor = banco.rawQuery("SELECT * FROM status", null);
+        return cursor;
+    }
+
     public long inserir(Status status) {
 
         ContentValues values = new ContentValues();

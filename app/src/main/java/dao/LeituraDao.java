@@ -52,6 +52,11 @@ public class LeituraDao {
         return exportar;
     }
 
+    public Cursor pegaCursos(){
+        Cursor cursor = banco.rawQuery("SELECT * FROM leitura", null);
+        return cursor;
+    }
+
     public long inserir(Leitura leitura) {
 
         ContentValues values = new ContentValues();

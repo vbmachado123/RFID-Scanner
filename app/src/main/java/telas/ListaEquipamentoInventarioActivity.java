@@ -290,12 +290,11 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                 Status status = new Status();
                 status.setStatus("Encontrada");
                 Long statusId = statusDao.inserir(status);
-                Long equipamentoId = equipamentoDao.inserir(e);
                 equipamentoInventario.setDataHora(dataSalvamento);
                 equipamentoInventario.setLatitude(String.valueOf(latitude));
                 equipamentoInventario.setLongitude(String.valueOf(longitude));
                 equipamentoInventario.setIdInventario(inventarioId);
-                equipamentoInventario.setIdEquipamento(Math.toIntExact(equipamentoId));
+                equipamentoInventario.setIdEquipamento(e.getId());
                 equipamentoInventario.setIdStatus(Math.toIntExact(statusId));
                 Long idEquipamento = equipamentoInventarioDao.inserir(equipamentoInventario);
 
@@ -438,7 +437,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         }
         try {
             endereco = buscaEndereco(latitude, longitude);
-
+            inventario.setEndereco(endereco.getAddressLine(0));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -451,8 +450,6 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         inventario.setDataHora(dataFinal);
         inventario.setLatitude(String.valueOf(latitude));
         inventario.setLongitude(String.valueOf(longitude));
-        inventario.setEndereco(String.valueOf(endereco));
-
         inventarioId = (int) inventarioDao.inserir(inventario);
 
         if (inventarioId >= 0)

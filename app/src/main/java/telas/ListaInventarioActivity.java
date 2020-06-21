@@ -40,6 +40,7 @@ import model.Inventario;
 import model.Local;
 import model.SubLocal;
 import util.Data;
+import util.Xlsx;
 
 public class ListaInventarioActivity extends AppCompatActivity {
 
@@ -95,6 +96,33 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
         registerForContextMenu(listaEquipamentos);
 
+        trExportar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ListaInventarioActivity.this, R.style.Dialog);
+                View view = getLayoutInflater().inflate(R.layout.lista_leituras, null);
+                builder.setTitle("Atenção");
+                builder.setMessage("O banco será limpo após a exportação, essa ação não pode ser desfeita! Deseja continuar?");
+                builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                builder.setPositiveButton("Exportar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        exportarBanco();
+                    }
+                });
+
+                registerForContextMenu(view);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
         trAbrirLista.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,12 +136,21 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
                     }
                 });
-                builder.setView(view);
+
+                //builder.setView(view);
                 registerForContextMenu(view);
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
         });
+    }
+
+    private void exportarBanco() {
+        Xlsx xlsx = new Xlsx(this);
+        boolean exportar = xlsx.exportarTabela(this);
+
+        if (exportar)
+            Toast.makeText(this, "A exportação foi concluída!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -124,7 +161,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
     }
 
 
-    private void editar(MenuItem item){
+    private void editar(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo =
                 (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
     }
@@ -132,10 +169,10 @@ public class ListaInventarioActivity extends AppCompatActivity {
     private void copulaLista() {
         ArrayList<EquipamentoInventario> equipamentoInventarioList = (ArrayList<EquipamentoInventario>) equipamentoInventarioDao.obterTodos();
 
-        for(int i = 0; i < equipamentoInventarioList.size(); i++){
+        for (int i = 0; i < equipamentoInventarioList.size(); i++) {
             EquipamentoInventario ei = equipamentoInventarioList.get(i);
             Equipamento equipamento = equipamentoDao.getById(ei.getIdEquipamento());
-            if(equipamento != null)
+            if (equipamento != null)
                 equipamentos.add(equipamento);
 
             Log.i("Salvando", "EquipamentoInventario - " + equipamento.getNumeroTag());

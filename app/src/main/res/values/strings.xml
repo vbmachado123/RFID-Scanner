@@ -11,7 +11,7 @@
     <string name="textoLer">Ler</string>
     <string name="textoLocalizar">Localizar</string>
     <string name="textoExportar">Exportar Para .CSV</string>
-    <string name="textoExportarXLSX">Exportar Para .XLSX</string>
+    <string name="textoExportarXLS">Exportar Para .XLS</string>
     <string name="textoDescricao">Adicionar Descrição</string>
     <string name="textoExpandir">Expandir Lista</string>
     <string name="textoGravacao">Gravação</string>

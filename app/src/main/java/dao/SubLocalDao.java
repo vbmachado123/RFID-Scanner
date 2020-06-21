@@ -1,5 +1,6 @@
 package dao;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -36,6 +37,18 @@ public class SubLocalDao {
         return subLocal;
     }
 
+    public SubLocal getById(int id){
+        Cursor cursor = banco.rawQuery("SELECT * FROM subLocal WHERE id=" + id, null);
+
+        if (cursor.moveToFirst()) {
+            subLocal = new SubLocal();
+            subLocal.setId(cursor.getInt(0));
+            subLocal.setIdLocal(cursor.getInt(1));
+            subLocal.setDescricao(cursor.getString(2));
+        }
+        return subLocal;
+    }
+
     public List<SubLocal> obterTodos(){
 
         List<SubLocal> subLocalList = new ArrayList<>();
@@ -50,6 +63,11 @@ public class SubLocalDao {
             subLocalList.add(subLocal);
         }
         return subLocalList;
+    }
+
+    public Cursor pegaCursor(){
+        Cursor cursor = banco.rawQuery("SELECT * FROM subLocal", null);
+        return cursor;
     }
 
     public long inserir(SubLocal subLocal) {
