@@ -90,8 +90,7 @@ public class InventarioDao {
     }
 
     public Cursor pegaCursor(){
-        Cursor cursor = banco.query("inventario", new String[]{"id", "idLocal", "idSubLocal", "dataHora", "latitude",
-                "longitude", "endereco"}, null, null, null, null, null);
+        Cursor cursor = banco.rawQuery("SELECT * FROM inventario", null);
         return cursor;
     }
 

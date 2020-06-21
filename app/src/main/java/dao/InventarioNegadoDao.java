@@ -89,8 +89,7 @@ public class InventarioNegadoDao {
     }
 
     public Cursor pegaCursor(){
-        Cursor cursor = banco.query("inventarioNegado", new String[]{"id", "idInventario", "idStatus", "numeroTag", "dataHora",
-                "latitude", "longitude"}, null, null, null, null, null);
+        Cursor cursor = banco.rawQuery("SELECT * FROM inventarioNegado", null);
 
         return cursor;
     }

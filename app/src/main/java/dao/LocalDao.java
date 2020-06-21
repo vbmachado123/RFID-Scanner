@@ -34,6 +34,17 @@ public class LocalDao {
         return local;
     }
 
+    public Local getById(int id){
+        Cursor cursor = banco.rawQuery("SELECT * FROM local WHERE id=" + id, null);
+
+        if (cursor.moveToFirst()) {
+            local = new Local();
+            local.setId(cursor.getInt(0));
+            local.setDescricao(cursor.getString(1));
+        }
+        return local;
+    }
+
     public List<Local> obterTodos(){
 
         List<Local> localList = new ArrayList<>();
@@ -47,6 +58,11 @@ public class LocalDao {
             localList.add(local);
         }
         return localList;
+    }
+
+    public Cursor pegaCursor(){
+        Cursor cursor = banco.rawQuery("SELECT * FROM local", null);
+        return cursor;
     }
 
 

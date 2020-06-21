@@ -77,6 +77,11 @@ public class EquipamentoDao {
         return equipamentoList;
     }
 
+    public Cursor pegaCursor(){
+        Cursor cursor = banco.rawQuery("SELECT * FROM equipamento", null);
+        return cursor;
+    }
+
     public long inserir(Equipamento equipamento) {
 
         ContentValues values = new ContentValues();

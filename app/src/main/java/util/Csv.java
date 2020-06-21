@@ -73,7 +73,7 @@ public class Csv {
         File exportDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SOSRFiD");
         if (!exportDir.exists()) exportDir.mkdirs();
 
-        File file = new File(exportDir, "LeiturasRealizadas" + dataFinal + ".csv"); /* Temporario */
+        File file = new File(exportDir, "LeiturasRealizadas" + dataFinal + ".csv");
         try {
             file.createNewFile();
             CSVWriter csvWrite = new CSVWriter(new FileWriter(file));

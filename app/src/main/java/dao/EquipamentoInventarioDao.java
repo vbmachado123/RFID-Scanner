@@ -74,25 +74,26 @@ public class EquipamentoInventarioDao {
         Cursor cursor = banco.query("equipamentoInventario", new String[]{"id", "idInventario", "idEquipamento", "idStatus", "dataHora",
                 "latitude", "longitude"}, null, null, null, null, null);
 
-        while(cursor.moveToNext()){
-            equipamentoInventario = new EquipamentoInventario();
-            equipamentoInventario.setId(cursor.getInt(0));
-            equipamentoInventario.setIdInventario(cursor.getInt(1));
-            equipamentoInventario.setIdEquipamento(cursor.getInt(2));
-            equipamentoInventario.setIdStatus(cursor.getInt(3));
-            equipamentoInventario.setDataHora(cursor.getString(4));
-            equipamentoInventario.setLatitude(cursor.getString(5));
-            equipamentoInventario.setLongitude(cursor.getString(6));
+        if(cursor.moveToFirst()){
+            while(cursor.moveToNext()){
+                equipamentoInventario = new EquipamentoInventario();
+                equipamentoInventario.setId(cursor.getInt(0));
+                equipamentoInventario.setIdInventario(cursor.getInt(1));
+                equipamentoInventario.setIdEquipamento(cursor.getInt(2));
+                equipamentoInventario.setIdStatus(cursor.getInt(3));
+                equipamentoInventario.setDataHora(cursor.getString(4));
+                equipamentoInventario.setLatitude(cursor.getString(5));
+                equipamentoInventario.setLongitude(cursor.getString(6));
 
-            equipamentoInventarios.add(equipamentoInventario);
+                equipamentoInventarios.add(equipamentoInventario);
+            }
         }
+
         return equipamentoInventarios;
     }
 
     public Cursor pegaCursor(){
-         Cursor cursor = banco.query("equipamentoInventario", new String[]{"id", "idInventario", "idEquipamento", "idStatus", "dataHora",
-                "latitude", "longitude"}, null, null, null, null, null);
-
+        Cursor cursor = banco.rawQuery("SELECT * FROM equipamentoInventario", null);
          return cursor;
     }
 

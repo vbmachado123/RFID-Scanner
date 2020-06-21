@@ -96,7 +96,7 @@
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoExportarXLSX"
+                    android:text="@string/textoExportarXLS"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"/>
             </TableRow>

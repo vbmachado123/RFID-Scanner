@@ -1,6 +1,8 @@
 package util;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.os.Environment;
 import android.util.Log;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -17,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Locale;
 
 import dao.EquipamentoDao;
 import dao.EquipamentoInventarioDao;
@@ -26,7 +30,15 @@ import dao.LeituraDao;
 import dao.LocalDao;
 import dao.StatusDao;
 import dao.SubLocalDao;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 import model.Equipamento;
+import model.EquipamentoInventario;
+import model.Inventario;
+import model.InventarioNegado;
 import model.Leitura;
 import model.Local;
 import model.Status;
@@ -62,6 +74,9 @@ public class Xlsx {
         subLocalDao = new SubLocalDao(context);
         equipamentoDao = new EquipamentoDao(context);
         statusDao = new StatusDao(context);
+        equipamentoInventarioDao = new EquipamentoInventarioDao(context);
+        inventarioDao = new InventarioDao(context);
+        inventarioNegadoDao = new InventarioNegadoDao(context);
     }
 
     /* Método responsável por importar a tabela - Converter e Salvar no banco*/
@@ -70,7 +85,6 @@ public class Xlsx {
         Log.i("Importacao", "Importar foi inciado " + filePath);
         if (filePath.getPath().isEmpty()) { /* Formato inválido e/ou arquivo corrompido */
             importar = false;
-            Log.i("Importacao", "Erro aqui");
         } else { /* Arquivo valido */
             try {
                 /* Limpando banco para que nao haja sobreposição */
@@ -79,6 +93,9 @@ public class Xlsx {
                 subLocalDao.limparTabela();
                 equipamentoDao.limparTabela();
                 statusDao.limparTabela();
+                equipamentoInventarioDao.limparTabela();
+                inventarioDao.limparTabela();
+                inventarioNegadoDao.limparTabela();
 
                 Log.i(TAG, "lendoTabela: Banco foi limpo! ");
 
@@ -97,7 +114,8 @@ public class Xlsx {
                             try {
                                 int cellCount = row.getPhysicalNumberOfCells();
                                 for (int c = 0; c < cellCount; c++) { /* Passando por todas as colunas */
-                                    if (row.getPhysicalNumberOfCells() < 0) break; /* Tabela chegou ao fim, ir para a próxima */
+                                    if (row.getPhysicalNumberOfCells() < 0)
+                                        break; /* Tabela chegou ao fim, ir para a próxima */
                                     else { /* Ainda tem conteúdo */
                                         String value = getCellAsString(row, c, formulaEvaluator);
                                         switch (i) { /* Inventario(5), EquipamentoInventario(6) e InventarioNegado(7) sobem em branco */
@@ -279,9 +297,136 @@ public class Xlsx {
         return value;
     }
 
-    /* Método responsável por Converter, Salvar, Limpar o Banco e exporta-lo */
-    public boolean exportarTabela(){
+    /* Método responsável por Converter, Salvar, Exportar e limpar o banco */
+    public boolean exportarTabela(Context context) {
         boolean exporta = false;
+
+        /* Recuperando dados */
+        EquipamentoDao equipamentoDao = new EquipamentoDao(context);
+        EquipamentoInventarioDao equipamentoInventarioDao = new EquipamentoInventarioDao(context);
+        InventarioDao inventarioDao = new InventarioDao(context);
+        InventarioNegadoDao inventarioNegadoDao = new InventarioNegadoDao(context);
+        LeituraDao leituraDao = new LeituraDao(context);
+        LocalDao localDao = new LocalDao(context);
+        StatusDao statusDao = new StatusDao(context);
+        SubLocalDao subLocalDao = new SubLocalDao(context);
+
+        String dataFinal = Data.getDataEHoraAual("ddMMyyyy_HHmm");
+
+        File exportDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SOSRFiD");
+        if (!exportDir.exists()) exportDir.mkdirs();
+
+        Inventario inventario = inventarioDao.recupera();
+        Local local = localDao.getById(inventario.getIdLocal());
+        SubLocal subLocal = subLocalDao.getById(inventario.getIdSubLocal());
+
+
+        File file = new File(exportDir, "Inventario - " + local.getDescricao() + " - " + subLocal.getDescricao() + ".xls");
+        try {
+            WorkbookSettings wbSettings = new WorkbookSettings();
+            wbSettings.setLocale(new Locale("pt", "BR"));
+            WritableWorkbook workbook;
+            workbook = Workbook.createWorkbook(file, wbSettings);
+            WritableSheet sheet = workbook.createSheet("Atribuidos", 0);
+
+            /* CABEÇALHO */
+            sheet.addCell(new Label(0, 0, String.valueOf(inventario.getId())));
+            sheet.addCell(new Label(1, 0, local.getDescricao()));
+            /*sheet.addCell(new Label(2, 0, subLocal.getDescricao()));*/
+            sheet.addCell(new Label(2, 0, inventario.getDataHora()));
+            sheet.addCell(new Label(3, 0, inventario.getLatitude()));
+            sheet.addCell(new Label(4, 0, inventario.getLongitude()));
+            sheet.addCell(new Label(5, 0, inventario.getEndereco()));
+
+            /* EquipamentoInventario */
+            ArrayList<EquipamentoInventario> eiList = (ArrayList<EquipamentoInventario>) equipamentoInventarioDao.obterTodos();
+
+            for (int r = 2; r < eiList.size() + 2; r++) { /* Passando por todos os itens da lista */
+                int i = r -2;
+                for (int c = 0; c < 6; c++) { /* Passando por todas as colunas */
+                    EquipamentoInventario ei = eiList.get(i);
+                    Equipamento e = equipamentoDao.getById(ei.getIdEquipamento());
+                    switch (c) { /* Preenchendo as células */
+                  /*      case 0:; Preenche o numero do inventario na 1 coluna
+                            sheet.addCell(new Label(c, r, String.valueOf(ei.getIdInventario())));
+                            Log.i("Exportacao", "Celula: " + c + r + String.valueOf(ei.getIdInventario()));
+                            break;*/
+                        case 1:
+                            sheet.addCell(new Label(c, r, e.getNumeroTag()));
+                            Log.i("Exportacao", "Celula: " + c + r + e.getNumeroTag());
+                            break;
+                        case 2:
+                            sheet.addCell(new Label(c, r, e.getDescricao()));
+                            Log.i("Exportacao", "Celula: " + c + r + e.getDescricao());
+                            break;
+                        case 3:
+                            sheet.addCell(new Label(c, r, ei.getLatitude()));
+                            Log.i("Exportacao", "Celula: " + c + r + ei.getLatitude());
+                            break;
+                        case 4:
+                            sheet.addCell(new Label(c, r, ei.getLongitude()));
+                            Log.i("Exportacao", "Celula: " + c + r + ei.getLongitude());
+                            break;
+                        case 5:
+                            sheet.addCell(new Label(c, r, subLocal.getDescricao()));
+                            break;
+                    }
+                }
+            }
+
+            InventarioNegado inventarioNegado = inventarioNegadoDao.recupera();
+            if(inventarioNegado != null){
+                WritableSheet sheet1 = workbook.createSheet("Nao_Atribuidos", 1);
+
+                ArrayList<InventarioNegado> inventarioNegadoList = (ArrayList<InventarioNegado>) inventarioNegadoDao.obterTodos();
+                Cursor cursor = inventarioNegadoDao.pegaCursor();
+                if(cursor.moveToFirst()){
+                    sheet1.addCell(new Label(0, 0, "id"));
+                    sheet1.addCell(new Label(1, 0, "idInventario"));
+                    sheet1.addCell(new Label(2, 0, "numeroTag"));
+                    sheet1.addCell(new Label(3, 0, "dataHora"));
+                    sheet1.addCell(new Label(4, 0, "latitude"));
+                    sheet1.addCell(new Label(5, 0, "longitude"));
+
+                    do{
+                        String id = String.valueOf(cursor.getInt(cursor.getColumnIndex("id")));
+                        String idInventario = String.valueOf(cursor.getInt(cursor.getColumnIndex("idInventario")));
+                        String numeroTag = cursor.getString(cursor.getColumnIndex("numeroTag"));
+                        String dataHora = cursor.getString(cursor.getColumnIndex("dataHora"));
+                        String latitude = cursor.getString(cursor.getColumnIndex("latitude"));
+                        String longitude = cursor.getString(cursor.getColumnIndex("longitude"));
+
+                        int i = cursor.getPosition() + 1;
+                        sheet1.addCell(new Label(0, i, id));
+                        sheet1.addCell(new Label(1, i, idInventario));
+                        sheet1.addCell(new Label(2, i, numeroTag));
+                        sheet1.addCell(new Label(3, i, dataHora));
+                        sheet1.addCell(new Label(4, i, latitude));
+                        sheet1.addCell(new Label(5, i, longitude));
+
+                    }while (cursor.moveToNext());
+                }
+
+            }
+
+            workbook.write();
+            workbook.close();
+            exporta = true;
+
+            equipamentoDao.limparTabela();
+            equipamentoInventarioDao.limparTabela();
+            inventarioDao.limparTabela();
+            inventarioNegadoDao.limparTabela();
+            leituraDao.limparTabela();
+            localDao.limparTabela();
+            statusDao.limparTabela();
+            subLocalDao.limparTabela();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("Exportacao", "Erro: " + e);
+        }
+
         return exporta;
     }
 }
