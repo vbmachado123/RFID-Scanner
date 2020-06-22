@@ -116,8 +116,9 @@ public class LeituraActivity extends AppCompatActivity {
                 if(exportar){
                     File exportDir = new File(Environment.getExternalStorageDirectory(), "");
                     String nomePasta = exportDir + "/SOS RFiD";
+                    String dataArquivo = Data.getDataEHoraAual("ddMMyyyy_HHmm");
                     Toast.makeText(context, "Arquivo salvo em: " +
-                            nomePasta + "/Leituras Realizadas " + l.getDataHora() + ".csv", Toast.LENGTH_SHORT).show();
+                            nomePasta + "/Leituras Realizadas " + dataArquivo + ".csv", Toast.LENGTH_SHORT).show();
                     leituraDao.limparTabela();
                 }
             } else

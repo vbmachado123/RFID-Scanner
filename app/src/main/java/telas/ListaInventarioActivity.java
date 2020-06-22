@@ -55,7 +55,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
     private EquipamentoDao equipamentoDao;
     private EquipamentoAdapter adapter;
 
-    private TableRow trAdicionarDescricao, trExportar, trAbrirLista;
+    private TableRow trAlterarDescricao, trExportar, trAbrirLista;
     private ListView listaEquipamentos;
     private FloatingActionButton fabSalvar;
 
@@ -84,7 +84,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
     }
 
     private void validaCampo() {
-        trAdicionarDescricao = (TableRow) findViewById(R.id.trAdicionarDescricao);
+        trAlterarDescricao = (TableRow) findViewById(R.id.trAdicionarDescricao);
         trExportar = (TableRow) findViewById(R.id.trExportar);
         trAbrirLista = (TableRow) findViewById(R.id.trExpandir);
         listaEquipamentos = (ListView) findViewById(R.id.lvLista);
@@ -95,6 +95,13 @@ public class ListaInventarioActivity extends AppCompatActivity {
         listaEquipamentos.setAdapter(adapter);
 
         registerForContextMenu(listaEquipamentos);
+
+        trAlterarDescricao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         trExportar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,10 +154,14 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
     private void exportarBanco() {
         Xlsx xlsx = new Xlsx(this);
-        boolean exportar = xlsx.exportarTabela(this);
+        boolean exportar = xlsx.exportarTabela();
 
-        if (exportar)
+        if (exportar){
             Toast.makeText(this, "A exportação foi concluída!", Toast.LENGTH_SHORT).show();
+            Intent it = new Intent(ListaInventarioActivity.this, HomeActivity.class);
+            startActivity(it);
+            finish();
+        }
     }
 
     @Override
@@ -158,12 +169,6 @@ public class ListaInventarioActivity extends AppCompatActivity {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.menu_contexto_editar, menu);
-    }
-
-
-    private void editar(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo menuInfo =
-                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
     }
 
     private void copulaLista() {

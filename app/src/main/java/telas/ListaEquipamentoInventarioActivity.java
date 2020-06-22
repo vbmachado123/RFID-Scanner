@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -62,6 +63,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
     /* Listas */
     ArrayList<Equipamento> listaPrimeira, listaNaoEncontrado, listaNaoAtribuida, listaEncontrado;
+    ArrayList<String> latitudeEncontrada, longitudeEncontrada, latitudeNaoAtribuida, longitudeNaoAtribuida;
 
     private Equipamento equipamento = new Equipamento();
     private Local local = new Local();
@@ -154,8 +156,13 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         listaEncontrado = new ArrayList<>();
         listaNaoEncontrado = new ArrayList<>();
         listaNaoAtribuida = new ArrayList<>();
+        /* Para a localizacao das tags */
+        latitudeEncontrada = new ArrayList<>();
+        longitudeEncontrada = new ArrayList<>();
+        latitudeNaoAtribuida = new ArrayList<>();
+        longitudeNaoAtribuida = new ArrayList<>();
 
-        listaPrimeira = (ArrayList<Equipamento>) equipamentoDao.getByLocal(localId);
+        listaPrimeira = (ArrayList<Equipamento>) equipamentoDao.getByLocal(local.getId());
 
         if (subLocal != null) {/* SubLocal Anteriormente Selecionado*/
             for (Equipamento e : listaPrimeira) {
@@ -251,7 +258,6 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
     }
 
-
     private void salvar() {
 
         String dataSalvamento = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
@@ -264,7 +270,8 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
             if (!listaNaoEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
                 listaNaoAtribuida.addAll(listaNaoEncontrado);
-            } else { /* Salvar na InventarioNegado */
+            } /*else { *//* Salvar na InventarioNegado */
+                int i = 0;
                 for (Equipamento e : listaNaoAtribuida) {
                     InventarioNegado inventarioNegado = new InventarioNegado();
                     Status status = new Status();
@@ -280,12 +287,13 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
                     progressDialog.setMessage("Salvando " + progresso + "%");
                     progresso++;
-
+                    i++;
                     Log.i("Salvando", "Salva - InventarioNegado: " + inventarioNegadoId);
                 }
-            } /* Salvar EquipamentoInventario */
+           // } /* Salvar EquipamentoInventario */
 
-            for(Equipamento e : listaEncontrado){
+            int x = 0;
+            for (Equipamento e : listaEncontrado) {
                 equipamentoInventario = new EquipamentoInventario();
                 Status status = new Status();
                 status.setStatus("Encontrada");
@@ -300,6 +308,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
                 Log.i("Salvando", "Salva - EquipamentoInventario: " + idEquipamento);
 
+                x++;
                 progressDialog.setMessage("Salvando " + progresso + "%");
                 progresso++;
             }
@@ -307,7 +316,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
             progressDialog.dismiss();
             Intent it = new Intent(ListaEquipamentoInventarioActivity.this, ListaInventarioActivity.class);
             startActivity(it);
-
+            //finish();
         } else { /* Lista ENCONTRADOS vazia */
             Toast.makeText(this, "A lista ENCONTRADOS não precisa ter ao menos um item!", Toast.LENGTH_SHORT).show();
         }
@@ -323,6 +332,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
                 runOnUiThread(new Runnable() {
 
+                    @SuppressLint("MissingPermission")
                     public void run() {
                         if (dados != null && dados.contains("EP: ")) { /* Tag */ /* PREENCHER A LISTA COM OS VALORES */
 
@@ -332,21 +342,29 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                             dataFinal = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
                             equipamento.setNumeroTag(textoTag);
 
+                         /*   locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                            if (location != null) {
+                                longitude = location.getLongitude();
+                                latitude = location.getLatitude();
+                            }*/
+
+                            boolean adicionar = true;
                             /* Verifica se já existe na lista */
                             if (!listaNaoEncontrado.isEmpty()) {
                                 for (Equipamento e : listaNaoEncontrado) {
-                                    Log.i("Teste", "Recebido1: " + e.getNumeroTag());
                                     if (e.getNumeroTag().equals(equipamento.getNumeroTag())) { /* Existe na listaNaoEncontrado */
-                                        Log.i("Teste", "Recebido2: " + e.getNumeroTag());
                                         if (!listaEncontrado.isEmpty()) {
                                             for (Equipamento equipamentoEncontrado : listaEncontrado) {
-                                                Log.i("Teste", "Recebido3: " + equipamentoEncontrado.getNumeroTag());
                                                 if (e.getNumeroTag().equals(equipamentoEncontrado)) /* Já foi inserido na Lista */
                                                     break;
                                                 else { /* Ainda nao foi inserido */
-                                                    Log.i("Teste", "Recebido4: " + equipamentoEncontrado.getNumeroTag());
                                                     listaEncontrado.add(e);
+                                                    latitudeEncontrada.add(String.valueOf(latitude));
+                                                    longitudeEncontrada.add(String.valueOf(longitude));
                                                     txtEncontrado.setText(String.valueOf(listaEncontrado.size()));
+                                                    adicionar = false;
                                                     ativaSalvar();
                                                     break;
                                                 }
@@ -354,44 +372,91 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                                         } else {
                                             Log.i("Teste", "Recebido5: " + e.getNumeroTag());
                                             listaEncontrado.add(e);
+                                            latitudeEncontrada.add(String.valueOf(latitude));
+                                            longitudeEncontrada.add(String.valueOf(longitude));
                                             txtEncontrado.setText(String.valueOf(listaEncontrado.size()));
-                                            break;
-                                        }
-                                    } else { /* Não existe na listaNaoEncontrado */
-                                        for (Equipamento equipamentoEncontrado : listaEncontrado) {
-                                            if (equipamentoEncontrado.getNumeroTag().equals(equipamento.getNumeroTag())) /* Verifica se ja foi adicionado e encontrado */
-                                                break;
-                                            else { /* Não existe na listaEncontrado e nem na naoEncontrado */
-                                                for (Equipamento equipamentoNaoAtribuido : listaNaoAtribuida) {
-                                                    if (e.getNumeroTag().equals(equipamentoNaoAtribuido.getNumeroTag()))
-                                                        break;
-                                                    else {
-                                                        listaNaoAtribuida.add(e);
-                                                        txtNaoAtribuido.setText(String.valueOf(listaNaoAtribuida.size()));
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } else { /* Lista vazia, todos os itens ja foram adicionados */
-                                if (!listaNaoAtribuida.isEmpty()) {
-                                    boolean adicionar = true;
-                                    for (Equipamento equipamentoNaoAtribuido : listaNaoAtribuida) {
-                                        if (equipamentoNaoAtribuido.getNumeroTag().equals(equipamento.getNumeroTag())) {
                                             adicionar = false;
                                             break;
                                         }
                                     }
-                                    if (adicionar) {
-                                        listaNaoAtribuida.add(equipamento);
-                                        txtNaoAtribuido.setText(String.valueOf(listaNaoAtribuida.size()));
+                                } //else { /* Não existe na listaNaoEncontrado */
+                                if (adicionar) {
+                                    if (!listaNaoAtribuida.isEmpty()) {
+                                        adicionar = true;
+                                        for (Equipamento equipamentoFinal : listaEncontrado) {
+                                            if (equipamentoFinal.getNumeroTag().equals(equipamento.getNumeroTag())) {
+                                                adicionar = false;
+                                                break;
+                                            }
+                                        }
+                                        for (Equipamento equipamentoNaoAtribuido : listaNaoAtribuida) {
+                                            if (equipamentoNaoAtribuido.getNumeroTag().equals(equipamento.getNumeroTag())) {
+                                                adicionar = false;
+                                                break;
+                                            }
+                                        }
+                                        if (adicionar) {
+                                            latitudeNaoAtribuida.add(String.valueOf(latitude));
+                                            longitudeNaoAtribuida.add(String.valueOf(longitude));
+                                            listaNaoAtribuida.add(equipamento);
+                                            txtNaoAtribuido.setText(String.valueOf(listaNaoAtribuida.size()));
+                                        }
+
+                                    } else {
+
+                                        for (Equipamento equipamentoFinal : listaEncontrado) {
+                                            if (equipamentoFinal.getNumeroTag().equals(equipamento.getNumeroTag())) {
+                                                adicionar = false;
+                                                break;
+                                            }
+                                        }
+                                        if (adicionar) {
+                                            listaNaoAtribuida.add(equipamento);
+                                            latitudeNaoAtribuida.add(String.valueOf(latitude));
+                                            longitudeNaoAtribuida.add(String.valueOf(longitude));
+                                            txtNaoAtribuido.setText(String.valueOf(listaNaoAtribuida.size()));
+                                        }
                                     }
-                                } else {
-                                    listaNaoAtribuida.add(equipamento);
-                                    txtNaoAtribuido.setText(String.valueOf(listaNaoAtribuida.size()));
                                 }
+
+                            } else { /* Lista vazia, todos os itens ja foram adicionados */
+                                if (adicionar) {
+                                    if (!listaNaoAtribuida.isEmpty()) {
+                                        for (Equipamento equipamentoFinal : listaEncontrado) {
+                                            if (equipamentoFinal.getNumeroTag().equals(equipamento.getNumeroTag())) {
+                                                adicionar = false;
+                                                break;
+                                            }
+                                        }
+                                        for (Equipamento equipamentoNaoAtribuido : listaNaoAtribuida) {
+                                            if (equipamentoNaoAtribuido.getNumeroTag().equals(equipamento.getNumeroTag())) {
+                                                adicionar = false;
+                                                break;
+                                            }
+                                        }
+                                        if (adicionar) {
+                                            latitudeNaoAtribuida.add(String.valueOf(latitude));
+                                            longitudeNaoAtribuida.add(String.valueOf(longitude));
+                                            listaNaoAtribuida.add(equipamento);
+                                            txtNaoAtribuido.setText(String.valueOf(listaNaoAtribuida.size()));
+                                        }
+
+                                    } else {
+                                        for (Equipamento equipamentoFinal : listaEncontrado) {
+                                            if (equipamentoFinal.getNumeroTag().equals(equipamento.getNumeroTag())) {
+                                                adicionar = false;
+                                                break;
+                                            }
+                                        }
+                                        if (adicionar) {
+                                            listaNaoAtribuida.add(equipamento);
+                                            latitudeNaoAtribuida.add(String.valueOf(latitude));
+                                            longitudeNaoAtribuida.add(String.valueOf(longitude));
+                                            txtNaoAtribuido.setText(String.valueOf(listaNaoAtribuida.size()));
+                                        }
+                                    }
+                                }
+
                             }
 
                             /* Remover as tags encontradas */
@@ -434,10 +499,14 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         if (location != null) {
             longitude = location.getLongitude();
             latitude = location.getLatitude();
+            Log.i("Inventario", "Latitude: " + latitude);
+            Log.i("Inventario", "Longitude: " + longitude);
+
         }
         try {
             endereco = buscaEndereco(latitude, longitude);
             inventario.setEndereco(endereco.getAddressLine(0));
+            Log.i("Inventario", "Endereco: " + endereco.getAddressLine(0));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {

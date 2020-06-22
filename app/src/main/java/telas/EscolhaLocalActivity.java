@@ -308,7 +308,7 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         /* Intent it = new Intent(EscolhaLocalActivity.this, ListaInventarioActivity.class);*/
         Intent it = new Intent(EscolhaLocalActivity.this, ListaEquipamentoInventarioActivity.class);
         it.putExtra("local", local);
-        if (subLocal != null)
+        if (subLocal.getDescricao() != null)
             it.putExtra("sublocal", subLocal);
 
         startActivity(it);

@@ -59,47 +59,47 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-    validaCampo();
+        validaCampo();
     }
 
     private void validaCampo() {
-    trLimparBanco = (TableRow) findViewById(R.id.trLimpar);
+        trLimparBanco = (TableRow) findViewById(R.id.trLimpar);
 
-    trLimparBanco.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+        trLimparBanco.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(ConfiguracaoActivity.this, R.style.Dialog);
-            builder.setTitle("Atenção");
-            builder.setMessage("Deseja realmente limpar o banco? essa ação não pode ser desfeita!");
-            builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ConfiguracaoActivity.this, R.style.Dialog);
+                builder.setTitle("Atenção");
+                builder.setMessage("Deseja realmente limpar o banco? essa ação não pode ser desfeita!");
+                builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                }
-            });
+                    }
+                });
 
-            builder.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    equipamentoDao.limparTabela();
-                    equipamentoInventarioDao.limparTabela();
-                    inventarioDao.limparTabela();
-                    inventarioNegadoDao.limparTabela();
-                    leituraDao.limparTabela();
-                    localDao.limparTabela();
-                    statusDao.limparTabela();
-                    subLocalDao.limparTabela();
-                }
-            });
+                builder.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        equipamentoDao.limparTabela();
+                        equipamentoInventarioDao.limparTabela();
+                        inventarioDao.limparTabela();
+                        inventarioNegadoDao.limparTabela();
+                        leituraDao.limparTabela();
+                        localDao.limparTabela();
+                        statusDao.limparTabela();
+                        subLocalDao.limparTabela();
+                        Toast.makeText(context, "O banco de dados foi limpo com sucesso!", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-            // builder.setView(v);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
-    });
+                // builder.setView(v);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
-        Toast.makeText(context, "O banco de dados foi limpo com sucesso!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
