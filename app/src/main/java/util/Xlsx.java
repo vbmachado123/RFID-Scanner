@@ -298,10 +298,10 @@ public class Xlsx {
     }
 
     /* Método responsável por Converter, Salvar, Exportar e limpar o banco */
-    public boolean exportarTabela(Context context) {
+    public boolean exportarTabela(/*Context context*/) {
         boolean exporta = false;
 
-        /* Recuperando dados */
+     /*   *//* Recuperando dados *//*
         EquipamentoDao equipamentoDao = new EquipamentoDao(context);
         EquipamentoInventarioDao equipamentoInventarioDao = new EquipamentoInventarioDao(context);
         InventarioDao inventarioDao = new InventarioDao(context);
@@ -309,7 +309,7 @@ public class Xlsx {
         LeituraDao leituraDao = new LeituraDao(context);
         LocalDao localDao = new LocalDao(context);
         StatusDao statusDao = new StatusDao(context);
-        SubLocalDao subLocalDao = new SubLocalDao(context);
+        SubLocalDao subLocalDao = new SubLocalDao(context);*/
 
         String dataFinal = Data.getDataEHoraAual("ddMMyyyy_HHmm");
 
@@ -320,8 +320,15 @@ public class Xlsx {
         Local local = localDao.getById(inventario.getIdLocal());
         SubLocal subLocal = subLocalDao.getById(inventario.getIdSubLocal());
 
+        String nome = "";
+        if (subLocal != null)
+            nome = local.getDescricao() + " - " + subLocal.getDescricao();
 
-        File file = new File(exportDir, "Inventario - " + local.getDescricao() + " - " + subLocal.getDescricao() + ".xls");
+        else
+            nome = local.getDescricao();
+
+        File file = new File(exportDir, "Inventario - " + nome + ".xls");
+
         try {
             WorkbookSettings wbSettings = new WorkbookSettings();
             wbSettings.setLocale(new Locale("pt", "BR"));
@@ -342,10 +349,11 @@ public class Xlsx {
             ArrayList<EquipamentoInventario> eiList = (ArrayList<EquipamentoInventario>) equipamentoInventarioDao.obterTodos();
 
             for (int r = 2; r < eiList.size() + 2; r++) { /* Passando por todos os itens da lista */
-                int i = r -2;
+                int i = r - 2;
                 for (int c = 0; c < 6; c++) { /* Passando por todas as colunas */
                     EquipamentoInventario ei = eiList.get(i);
                     Equipamento e = equipamentoDao.getById(ei.getIdEquipamento());
+                    SubLocal sub = subLocalDao.getById(e.getSubLocalId());
                     switch (c) { /* Preenchendo as células */
                   /*      case 0:; Preenche o numero do inventario na 1 coluna
                             sheet.addCell(new Label(c, r, String.valueOf(ei.getIdInventario())));
@@ -360,7 +368,7 @@ public class Xlsx {
                             Log.i("Exportacao", "Celula: " + c + r + e.getDescricao());
                             break;
                         case 3:
-                            sheet.addCell(new Label(c, r, subLocal.getDescricao()));
+                            sheet.addCell(new Label(c, r, sub.getDescricao()));
 
                             Log.i("Exportacao", "Celula: " + c + r + ei.getLatitude());
                             break;
@@ -376,12 +384,12 @@ public class Xlsx {
             }
 
             InventarioNegado inventarioNegado = inventarioNegadoDao.recupera();
-            if(inventarioNegado != null){
+            if (inventarioNegado != null) {
                 WritableSheet sheet1 = workbook.createSheet("Nao_Atribuidos", 1);
 
                 ArrayList<InventarioNegado> inventarioNegadoList = (ArrayList<InventarioNegado>) inventarioNegadoDao.obterTodos();
                 Cursor cursor = inventarioNegadoDao.pegaCursor();
-                if(cursor.moveToFirst()){
+                if (cursor.moveToFirst()) {
                     sheet1.addCell(new Label(0, 0, "id"));
                     sheet1.addCell(new Label(1, 0, "idInventario"));
                     sheet1.addCell(new Label(2, 0, "numeroTag"));
@@ -389,7 +397,7 @@ public class Xlsx {
                     sheet1.addCell(new Label(4, 0, "latitude"));
                     sheet1.addCell(new Label(5, 0, "longitude"));
 
-                    do{
+                    do {
                         String id = String.valueOf(cursor.getInt(cursor.getColumnIndex("id")));
                         String idInventario = String.valueOf(cursor.getInt(cursor.getColumnIndex("idInventario")));
                         String numeroTag = cursor.getString(cursor.getColumnIndex("numeroTag"));
@@ -405,7 +413,7 @@ public class Xlsx {
                         sheet1.addCell(new Label(4, i, latitude));
                         sheet1.addCell(new Label(5, i, longitude));
 
-                    }while (cursor.moveToNext());
+                    } while (cursor.moveToNext());
                 }
 
             }

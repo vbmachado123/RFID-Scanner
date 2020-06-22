@@ -32,10 +32,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name="telas.ListaEquipamentoInventarioActivity"
+        <activity android:name="telas.AlterarDescricaoActivity"></activity>
+        <activity
+            android:name="telas.ListaEquipamentoInventarioActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" ></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name="telas.ListaInventarioActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
