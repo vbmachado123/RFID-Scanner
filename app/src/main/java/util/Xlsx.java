@@ -360,15 +360,16 @@ public class Xlsx {
                             Log.i("Exportacao", "Celula: " + c + r + e.getDescricao());
                             break;
                         case 3:
-                            sheet.addCell(new Label(c, r, ei.getLatitude()));
+                            sheet.addCell(new Label(c, r, subLocal.getDescricao()));
+
                             Log.i("Exportacao", "Celula: " + c + r + ei.getLatitude());
                             break;
                         case 4:
-                            sheet.addCell(new Label(c, r, ei.getLongitude()));
+                            sheet.addCell(new Label(c, r, ei.getLatitude()));
                             Log.i("Exportacao", "Celula: " + c + r + ei.getLongitude());
                             break;
                         case 5:
-                            sheet.addCell(new Label(c, r, subLocal.getDescricao()));
+                            sheet.addCell(new Label(c, r, ei.getLongitude()));
                             break;
                     }
                 }
