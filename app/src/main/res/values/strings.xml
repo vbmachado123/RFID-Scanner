@@ -29,7 +29,12 @@
     <string name="textoNaoAtribuida">Não atribuidos</string>
     <string name="textoEncontrada">Encontrados</string>
 
+    <!-- Configurações -->
+    <string name="textoBanco">Banco de Dados</string>
+    <string name="textoLimparBanco">Limpar</string>
+
     <string name="connect_reader_menu_item_text">Conectar Leitor</string>
     <string name="change_reader_menu_item_text">Mudar Leitor</string>
     <string name="disconnect_reader_menu_item_text">Disconectar Leitor</string>
+
 </resources>

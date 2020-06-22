@@ -5,12 +5,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
+
 import java.io.File;
 
 import model.Equipamento;
 import model.Leitura;
 import sql.Conexao;
 import util.Csv;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LeituraDao {
 
@@ -36,6 +40,22 @@ public class LeituraDao {
 
         }
         return leitura;
+    }
+
+    public List<Leitura> getAll(){
+       ArrayList<Leitura> leituras = new ArrayList<>();
+        Cursor cursor = banco.query("leitura", new String[]{"id", "numeroTag", "dataHora", "vezesLida"}, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            leitura = new Leitura();
+            leitura.setId(cursor.getInt(0));
+            leitura.setNumeroTag(cursor.getString(1));
+            leitura.setDataHora(cursor.getString(2));
+            leitura.setVezesLida(cursor.getInt(3));
+
+            leituras.add(leitura);
+        }
+        return leituras;
     }
 
     public boolean exportar() {

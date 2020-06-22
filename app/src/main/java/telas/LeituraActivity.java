@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
@@ -58,6 +59,7 @@ public class LeituraActivity extends AppCompatActivity {
     private int tamanhoLista = 0;
     private Conexao db;
     private LeituraDao leituraDao;
+    private TextView tagsLidas;
     Cursor cursor;
 
     @Override
@@ -89,6 +91,7 @@ public class LeituraActivity extends AppCompatActivity {
     trExpandir = (TableRow) findViewById(R.id.trExpandir);
     trExportar = (TableRow) findViewById(R.id.trExportar);
     lista = (ListView) findViewById(R.id.lvLista);
+    tagsLidas = (TextView) findViewById(R.id.txtTagsLidas);
     fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
 
     trExpandir.setOnClickListener(new View.OnClickListener() {
@@ -168,8 +171,30 @@ public class LeituraActivity extends AppCompatActivity {
                             l.setNumeroTag(textoTag);
                             l.setDataHora(dataFinal);
 
+                             /* Funcionando */
+                            if(!leituras.isEmpty()){ /* Verifica se ja existe na lista */
+                                boolean inserir = true;
+                                for(Leitura leitura : leituras){
+                                    if(leitura.getNumeroTag().equals(l.getNumeroTag())){
+                                        inserir = false;
+                                        break;
+                                    }
+                                }
+
+                                if(inserir){
+                                    leituras.add(l);
+                                    adapter.notifyDataSetChanged();
+                                    tagsLidas.setText(String.valueOf(leituras.size()));
+                                }
+
+                            } else {
+                                leituras.add(l);
+                                adapter.notifyDataSetChanged();
+                                tagsLidas.setText(String.valueOf(leituras.size()));
+                            }
+
                             /* Verifica se já existe na lista */
-                            tamanhoLista = leituras.size();
+                         /*   tamanhoLista = leituras.size();
                             if (!leituras.isEmpty()) {
 
                                 validador.addAll(leituras);
@@ -177,9 +202,10 @@ public class LeituraActivity extends AppCompatActivity {
                                 if(!leituras.contains(l.getNumeroTag())){
                                     leituras.add(l);
                                     adapter.notifyDataSetChanged();
+                                    tagsLidas.setText(String.valueOf(leituras.size()));
                                 }
                            //funciona
-                                /*     boolean inserir= true;
+                                *//*     boolean inserir= true;
                                 for (int i = 0; i < tamanhoLista; i++) {
                                     Leitura leitura1 = leituras.get(i);
                                     if (l.getNumeroTag().equals(leitura1.getNumeroTag())) {
@@ -190,12 +216,12 @@ public class LeituraActivity extends AppCompatActivity {
                                 if(inserir){
                                     leituras.add(l);
                                     adapter.notifyDataSetChanged();
-                                }*/
-                            } else { /* Primeira leitura */
+                                }*//*
+                            } else { *//* Primeira leitura *//*
                                 leituras.add(l);
                                 adapter.notifyDataSetChanged();
                             }
-                            tamanhoLista = leituras.size();
+                            tamanhoLista = leituras.size();*/
                         }
                     }
                 });
@@ -216,9 +242,30 @@ public class LeituraActivity extends AppCompatActivity {
     }
 
     private void salvarLeitura() {
-        for (Leitura l : leituras) {
+        ArrayList<Leitura> arrayList = (ArrayList<Leitura>) leituraDao.getAll();
 
-                if(l.getNumeroTag() != null) leituraDao.atualizar(l);
+        for (Leitura l : leituras) {
+          if(!arrayList.isEmpty()){
+              for(Leitura leitura : arrayList){
+                  if(l.getNumeroTag().equals(leitura.getNumeroTag())){ /* Já existe no banco */
+                      leitura.setVezesLida(leitura.getVezesLida() + 1);
+                      leituraDao.atualizar(leitura);
+                      break;
+                  } else { /* Não existe no banco */
+                      leituraDao.inserir(l);
+                      break;
+                  }
+                  /*if(leitura != null) { *//* Verifica se já existe no banco *//*
+                  leitura.setVezesLida(leitura.getVezesLida() + 1);
+              } else { *//* Ainda nao existe no banco *//*
+                  leituraDao.inserir(l);
+              }*/
+              }
+          } else { /* Não existe no banco */
+              l.setVezesLida(1);
+              leituraDao.inserir(l);
+          }
+               /*if(l.getNumeroTag() != null) leituraDao.inserir(l);*/
         }
 
             leituras.clear();
