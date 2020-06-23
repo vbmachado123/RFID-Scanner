@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -39,6 +40,9 @@ public class InventarioActivity extends AppCompatActivity {
     private TableRow trImportar, trFazerInventario;
     private ListView lvDiretorio;
     private static final int IMPORTACAO = 1;
+    private Uri uri;
+    private boolean arqImportado = false;
+    private ProgressDialog progressDialog;
 
     File file;
 
@@ -163,8 +167,12 @@ public class InventarioActivity extends AppCompatActivity {
     private void receberArquivoM(Intent data) {
         boolean xiaomi = false;
         file = new File(String.valueOf(data.getData()));
-      /*  //Uri uri = getUriForFile(InventarioActivity.this, "com.example.rfidscanner", file);
-        try {
+        uri = data.getData();
+        //importarBackground(data);
+        ImportarAsync importarAsync = new ImportarAsync();
+        importarAsync.execute();
+
+       /* try {
             Uri uri = data.getData();
             File f = new File(util.Uri.getPath(this, uri));
             Xlsx xlsx = new Xlsx(this);
@@ -178,50 +186,7 @@ public class InventarioActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        if (!xiaomi) {
-            try {
-                Uri uri = FileProvider.getUriForFile(this, "com.example.rfidscanner", file);
-                Xlsx xlsx = new Xlsx(this);
-                if (uri != null) {
-                    // boolean importar;
-                    boolean importar = xlsx.importarTabela(new File(uri.getPath()));
-
-                    if (importar) iniciarInventario();
-                } else {
-                    //Toast.makeText(this, "Não foi possível importar, tente novamente!", Toast.LENGTH_SHORT).show();
-                    Uri uri1 = data.getData();
-                   // file = new File(uri1.getPath());
-                    boolean importar1 = xlsx.importarTabela(file);
-                    if (importar1) iniciarInventario();
-                    else
-                        Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 2", Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                AlertDialog dialog = new AlertDialog.Builder(InventarioActivity.this, R.style.Dialog)
-                        .setTitle("Atenção")
-                        .setMessage("Não foi possível importar! ERRO: " + e.getMessage()
-                        ).create();
-                dialog.show();
-            }
-        }*/
-
-        try {
-            Uri uri = data.getData();
-            File f = new File(util.Uri.getPath(this, uri));
-            Xlsx xlsx = new Xlsx(this);
-            boolean importar = xlsx.importarTabela(f);
-            if (importar) {
-                xiaomi = true;
-                iniciarInventario();
-            } else {
-                xiaomi = false;
-                Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 1", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } if(!xiaomi){ /* Não é um xiaomi */
+        } if(!xiaomi){ *//* Não é um xiaomi *//*
             Uri uri = data.getData();
             file = new File(uri.getPath());
             Xlsx xlsx = new Xlsx(this);
@@ -235,6 +200,78 @@ public class InventarioActivity extends AppCompatActivity {
             if (importar) iniciarInventario();
             else
                 Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 2", Toast.LENGTH_SHORT).show();
+        }*/
+    }
+
+    private class ImportarAsync extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(InventarioActivity.this, R.style.Dialog);
+            progressDialog.setCancelable(false);
+            progressDialog.setTitle("Aguarde");
+            progressDialog.setMessage("Importando o Banco...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMax(100);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            boolean xiaomi = false;
+            boolean importar = false;
+            try {
+                File f = new File(util.Uri.getPath(InventarioActivity.this, uri));
+                Xlsx xlsx = new Xlsx(InventarioActivity.this);
+                importar = xlsx.importarTabela(f);
+                if (importar) {
+                    xiaomi = true;
+                    iniciarInventario();
+                } else {
+                    xiaomi = false;
+                    // Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 1", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (!xiaomi) { /* Não é um xiaomi */
+                file = new File(uri.getPath());
+                Xlsx xlsx = new Xlsx(InventarioActivity.this);
+                importar = false;
+                try {
+                    importar = xlsx.importarTabela(file);
+                    importar = true;
+                  //  return importar;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //Toast.makeText(this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+               /* if (importar) iniciarInventario();
+                else
+                    importar = false;*/
+                //return importar;
+                // Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 2", Toast.LENGTH_SHORT).show();
+            }
+            return importar;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean importado) {
+            super.onPostExecute(importado);
+            progressDialog.dismiss();
+            if (importado){
+                iniciarInventario();
+                arqImportado = true;
+            } else{
+                arqImportado = false;
+                Toast.makeText(InventarioActivity.this, "Não foi possível importar", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

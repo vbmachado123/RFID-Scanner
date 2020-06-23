@@ -72,7 +72,7 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Toast.makeText(this, "Clique longo na lista para selecionar", Toast.LENGTH_LONG).show();
+       // Toast.makeText(this, "Clique longo na lista para selecionar", Toast.LENGTH_LONG).show();
 
         listaLocal = new ArrayList<>();
         filtroListaLocal = new ArrayList<>();
@@ -104,6 +104,19 @@ public class EscolhaLocalActivity extends AppCompatActivity {
 
         localAdapter = new LocalAdapter(this, filtroListaLocal);
         subLocalAdapter = new SubLocalAdapter(this, filtroListaSubLocal);
+
+        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
+                if (!listaLocal.isEmpty()) { /* Foi Selecionado na Lista do Local */
+                    local = filtroListaLocal.get(i);
+                    selecionarLocal();
+                } else { /* Foi Selecionado na Lista do SubLocal */
+                    subLocal = filtroListaSubLocal.get(i);
+                    selecionarSubLocal();
+                }
+            }
+        });
 
         /* EditText */
         listener();

@@ -1,25 +1,31 @@
 package telas;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -162,9 +168,50 @@ public class HomeActivity extends AppCompatActivity {
         trConfiguracoes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acessaActivity(ConfiguracaoActivity.class);
+
+                solicitaAcesso();
+
             }
         });
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private void solicitaAcesso() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this, R.style.Dialog);
+        builder.setTitle("Atenção");
+        builder.setMessage("Insira a senha para prosseguir");
+        builder.setIcon(R.drawable.ic_key);
+
+        final EditText input = new EditText(HomeActivity.this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+        input.setInputType(InputType.TYPE_CLASS_NUMBER
+                | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        input.setTextColor(R.color.colorPrimary);
+       // input.setHighlightColor(R.color.colorPrimary);
+        input.setLayoutParams(lp);
+        builder.setView(input);
+        builder.setPositiveButton("Prosseguir", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String m_text = input.getText().toString();
+                if(m_text != null && m_text.equals("00000")) {
+                    acessaActivity(ConfiguracaoActivity.class);
+                } else {
+                    Toast.makeText(context, "Senha incorreta", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        Dialog dialog = builder.create();
+        dialog.show();
     }
 
 
