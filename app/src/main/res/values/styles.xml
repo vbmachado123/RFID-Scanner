@@ -19,8 +19,21 @@
     <style name="Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="titleTextColor">@color/colorPrimary</item>
         <item name="android:textColor">@color/teal900</item>
+        <item name="editTextColor">@color/colorPrimary</item>
     </style>
 
+    <style name="DialogDark" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="background">@color/grey60</item>
+        <item name="titleTextColor">@color/grey60</item>
+        <item name="android:textColor">@color/grey60</item>
+        <item name="editTextColor">@color/grey60</item>
+    </style>
+
+    <style name="Edittext">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:inputType">numberPassword</item>
+    </style>
+    
     <style name="MyEditTextTheme">
         <item name="colorControlNormal">@color/colorPrimary</item>
         <item name="colorControlActivated">@color/colorPrimary</item>

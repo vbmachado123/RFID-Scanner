@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TableRow;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import dao.EquipamentoDao;
 import dao.EquipamentoInventarioDao;
@@ -37,6 +39,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
     private StatusDao statusDao;
     private SubLocalDao subLocalDao;
     private Context context;
+    private FloatingActionButton fabSalvar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
 
     private void validaCampo() {
         trLimparBanco = (TableRow) findViewById(R.id.trLimpar);
-
+        fabSalvar = (FloatingActionButton) findViewById(R.id.botaoSalvar) ;
         trLimparBanco.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +100,14 @@ public class ConfiguracaoActivity extends AppCompatActivity {
                 // builder.setView(v);
                 AlertDialog dialog = builder.create();
                 dialog.show();
+            }
+        });
+        fabSalvar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(ConfiguracaoActivity.this, HomeActivity.class);
+                startActivity(it);
+                finish();
             }
         });
 

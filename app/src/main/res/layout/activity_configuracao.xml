@@ -7,8 +7,7 @@
     android:background="@color/grey340"
     tools:context="telas.ConfiguracaoActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,51 +22,66 @@
 
 
     <ScrollView
-        android:padding="8dp"
-        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:padding="8dp">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <TextView
-                android:textColor="@color/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/textoBanco"
                 android:textAlignment="center"
-                android:textSize="28sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:textColor="@color/colorPrimary"
+                android:textSize="28sp" />
 
             <TableRow
-                android:layout_marginTop="@dimen/distancia"
                 android:id="@+id/trLimpar"
-                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent">
+                android:layout_marginTop="@dimen/distancia"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="@dimen/tamanhoIcon"
                     android:layout_height="@dimen/tamanhoIcon"
-                    android:src="@drawable/ic_clear"/>
+                    android:src="@drawable/ic_clear" />
 
                 <TextView
                     android:id="@+id/tvConectar"
-                    android:paddingLeft="@dimen/distancia"
-                    android:textColor="@color/colorPrimary"
-                    android:gravity="center_vertical"
-                    android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="@string/textoLimparBanco"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/distancia"
+                    android:text="@string/textoLimparBanco"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/tamanhoTextoHome" />
             </TableRow>
-
-
         </LinearLayout>
-
-
     </ScrollView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:gravity="bottom">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/botaoSalvar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimary"
+            android:clickable="true"
+            app:fabSize="auto"
+            app:srcCompat="@drawable/ic_save_branco"
+            tools:ignore="VectorDrawableCompat" />
+    </LinearLayout>
 
 </RelativeLayout>

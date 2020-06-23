@@ -37,6 +37,7 @@ import dao.EquipamentoInventarioDao;
 import model.Equipamento;
 import model.EquipamentoInventario;
 import model.Inventario;
+import model.Lista;
 import model.Local;
 import model.SubLocal;
 import util.Data;
@@ -73,14 +74,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
         copulaLista();
         validaCampo();
-
-        Intent it = getIntent();
-        Bundle extras = it.getExtras();
-        /*local = (Local) extras.getSerializable("local");
-        subLocal = (SubLocal) extras.getSerializable("sublocal");*/
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-
     }
 
     private void validaCampo() {
@@ -99,34 +93,16 @@ public class ListaInventarioActivity extends AppCompatActivity {
         trAlterarDescricao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent it = new Intent(ListaInventarioActivity.this, AlterarDescricaoActivity.class);
+                startActivity(it);
+                finish();
             }
         });
 
         trExportar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListaInventarioActivity.this, R.style.Dialog);
-                View view = getLayoutInflater().inflate(R.layout.lista_leituras, null);
-                builder.setTitle("Atenção");
-                builder.setMessage("O banco será limpo após a exportação, essa ação não pode ser desfeita! Deseja continuar?");
-                builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-                builder.setPositiveButton("Exportar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        exportarBanco();
-                    }
-                });
-
-                registerForContextMenu(view);
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                exportar();
             }
         });
 
@@ -145,18 +121,48 @@ public class ListaInventarioActivity extends AppCompatActivity {
                 });
 
                 //builder.setView(view);
-                registerForContextMenu(view);
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
         });
+
+        fabSalvar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exportar();
+            }
+        });
+    }
+
+    private void exportar() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListaInventarioActivity.this, R.style.Dialog);
+        View view = getLayoutInflater().inflate(R.layout.lista_leituras, null);
+        builder.setTitle("Atenção");
+        builder.setMessage("O banco será limpo após a exportação, essa ação não pode ser desfeita! Deseja continuar?");
+        builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.setPositiveButton("Exportar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                exportarBanco();
+            }
+        });
+
+        registerForContextMenu(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void exportarBanco() {
         Xlsx xlsx = new Xlsx(this);
         boolean exportar = xlsx.exportarTabela();
 
-        if (exportar){
+        if (exportar) {
             Toast.makeText(this, "A exportação foi concluída!", Toast.LENGTH_SHORT).show();
             Intent it = new Intent(ListaInventarioActivity.this, HomeActivity.class);
             startActivity(it);
@@ -172,6 +178,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
     }
 
     private void copulaLista() {
+
         ArrayList<EquipamentoInventario> equipamentoInventarioList = (ArrayList<EquipamentoInventario>) equipamentoInventarioDao.obterTodos();
 
         for (int i = 0; i < equipamentoInventarioList.size(); i++) {
@@ -183,5 +190,4 @@ public class ListaInventarioActivity extends AppCompatActivity {
             Log.i("Salvando", "EquipamentoInventario - " + equipamento.getNumeroTag());
         }
     }
-
 }
