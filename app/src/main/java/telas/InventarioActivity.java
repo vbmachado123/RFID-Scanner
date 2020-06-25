@@ -165,7 +165,6 @@ public class InventarioActivity extends AppCompatActivity {
     }
 
     private void receberArquivoM(Intent data) {
-        boolean xiaomi = false;
         file = new File(String.valueOf(data.getData()));
         uri = data.getData();
         //importarBackground(data);
@@ -236,16 +235,25 @@ public class InventarioActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (!xiaomi) { /* Não é um xiaomi */
-                file = new File(uri.getPath());
                 Xlsx xlsx = new Xlsx(InventarioActivity.this);
+                file = new File(uri.getPath());
                 importar = false;
                 try {
-                    importar = xlsx.importarTabela(file);
-                    importar = true;
-                  //  return importar;
+                    Uri uri1 = FileProvider.getUriForFile(InventarioActivity.this, "com.example.rfidscanner", file);
+                    File f = new File(uri1.getPath());
+                    importar = xlsx.importarTabela(f);
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    //Toast.makeText(this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                }
+                if (!importar) {
+                    try {
+                        importar = xlsx.importarTabela(file);
+                        importar = true;
+                        //  return importar;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        //Toast.makeText(this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
                /* if (importar) iniciarInventario();
                 else
@@ -265,10 +273,10 @@ public class InventarioActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean importado) {
             super.onPostExecute(importado);
             progressDialog.dismiss();
-            if (importado){
+            if (importado) {
                 iniciarInventario();
                 arqImportado = true;
-            } else{
+            } else {
                 arqImportado = false;
                 Toast.makeText(InventarioActivity.this, "Não foi possível importar", Toast.LENGTH_SHORT).show();
             }
