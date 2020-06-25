@@ -280,8 +280,10 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                     inventarioNegado.setIdStatus(Math.toIntExact(statusId));
                     inventarioNegado.setIdInventario(inventarioId);
                     inventarioNegado.setDataHora(dataSalvamento);
-                    inventarioNegado.setLatitude(String.valueOf(latitude));
-                    inventarioNegado.setLongitude(String.valueOf(longitude));
+                  /*  inventarioNegado.setLatitude(String.valueOf(latitude));
+                    inventarioNegado.setLongitude(String.valueOf(longitude));*/
+                    inventarioNegado.setLatitude(latitudeNaoAtribuida.get(i));
+                    inventarioNegado.setLongitude(longitudeNaoAtribuida.get(i));
                     inventarioNegado.setNumeroTag(e.getNumeroTag());
                     Long inventarioNegadoId = inventarioNegadoDao.inserir(inventarioNegado);
 
@@ -299,8 +301,10 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                 status.setStatus("Encontrada");
                 Long statusId = statusDao.inserir(status);
                 equipamentoInventario.setDataHora(dataSalvamento);
-                equipamentoInventario.setLatitude(String.valueOf(latitude));
-                equipamentoInventario.setLongitude(String.valueOf(longitude));
+                /*equipamentoInventario.setLatitude(String.valueOf(latitude));
+                equipamentoInventario.setLongitude(String.valueOf(longitude));*/
+                equipamentoInventario.setLatitude(latitudeEncontrada.get(x));
+                equipamentoInventario.setLongitude(longitudeEncontrada.get(x));
                 equipamentoInventario.setIdInventario(inventarioId);
                 equipamentoInventario.setIdEquipamento(e.getId());
                 equipamentoInventario.setIdStatus(Math.toIntExact(statusId));
@@ -342,13 +346,13 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                             dataFinal = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
                             equipamento.setNumeroTag(textoTag);
 
-                         /*   locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                             if (location != null) {
                                 longitude = location.getLongitude();
                                 latitude = location.getLatitude();
-                            }*/
+                            }
 
                             boolean adicionar = true;
                             /* Verifica se já existe na lista */
