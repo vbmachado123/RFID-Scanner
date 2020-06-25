@@ -32,7 +32,14 @@ import java.util.Date;
 import bluetooth.BluetoothListener;
 import bluetooth.BluetoothReceiver;
 import adapter.LeituraAdapter;
+import dao.EquipamentoDao;
+import dao.EquipamentoInventarioDao;
+import dao.InventarioDao;
+import dao.InventarioNegadoDao;
 import dao.LeituraDao;
+import dao.LocalDao;
+import dao.StatusDao;
+import dao.SubLocalDao;
 import model.Leitura;
 import model.Lista;
 import sql.Conexao;
@@ -78,7 +85,7 @@ public class LeituraActivity extends AppCompatActivity {
         leituras = new ArrayList<>();
         validador = new ArrayList<>();
         oLista = (Lista) getIntent().getSerializableExtra("lista");
-        if(oLista != null) leituras.addAll(oLista.getLeituras());
+        if (oLista != null) leituras.addAll(oLista.getLeituras());
 
         adapter = new LeituraAdapter(this, leituras);
 
@@ -87,44 +94,63 @@ public class LeituraActivity extends AppCompatActivity {
     }
 
     private void validaCampo() {
-    trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
-    trExpandir = (TableRow) findViewById(R.id.trExpandir);
-    trExportar = (TableRow) findViewById(R.id.trExportar);
-    lista = (ListView) findViewById(R.id.lvLista);
-    tagsLidas = (TextView) findViewById(R.id.txtTagsLidas);
-    fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
+        trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
+        trExpandir = (TableRow) findViewById(R.id.trExpandir);
+        trExportar = (TableRow) findViewById(R.id.trExportar);
+        lista = (ListView) findViewById(R.id.lvLista);
+        tagsLidas = (TextView) findViewById(R.id.txtTagsLidas);
+        fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
 
-    trExpandir.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            abrirLista();
-        }
-    });
+        trExpandir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                abrirLista();
+            }
+        });
 
-    fabAbrir.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            abrirLista();
-        }
-    });
+        fabAbrir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                abrirLista();
+            }
+        });
 
-    trExportar.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(leituras != null){
-                boolean exportar = leituraDao.exportar();
-                if(exportar){
-                    File exportDir = new File(Environment.getExternalStorageDirectory(), "");
-                    String nomePasta = exportDir + "/SOS RFiD";
-                    String dataArquivo = Data.getDataEHoraAual("ddMMyyyy_HHmm");
-                    Toast.makeText(context, "Arquivo salvo em: " +
-                            nomePasta + "/Leituras Realizadas " + dataArquivo + ".csv", Toast.LENGTH_SHORT).show();
-                    leituraDao.limparTabela();
-                }
-            } else
-                Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
-        }
-    });
+        trExportar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (leituras != null) {
+                    salvarLeitura();
+                    boolean exportar = leituraDao.exportar();
+                    if (exportar) {
+                        File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+                        String nomePasta = exportDir + "/SOS RFiD";
+                        String dataArquivo = Data.getDataEHoraAual("ddMMyyyy_HHmm");
+                        Toast.makeText(context, "Arquivo salvo em: " +
+                                nomePasta + "/Leituras Realizadas " + dataArquivo + ".csv", Toast.LENGTH_SHORT).show();
+                        limparBanco();
+                    }
+                } else
+                    Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void limparBanco() {
+        EquipamentoDao equipamentoDao = new EquipamentoDao(this);
+        EquipamentoInventarioDao equipamentoInventarioDao = new EquipamentoInventarioDao(this);
+        InventarioDao inventarioDao = new InventarioDao(this);
+        InventarioNegadoDao inventarioNegadoDao = new InventarioNegadoDao(this);
+        LocalDao localDao = new LocalDao(this);
+        StatusDao statusDao = new StatusDao(this);
+        SubLocalDao subLocalDao = new SubLocalDao(this);
+        leituraDao.limparTabela();
+        equipamentoDao.limparTabela();
+        equipamentoInventarioDao.limparTabela();
+        inventarioDao.limparTabela();
+        inventarioNegadoDao.limparTabela();
+        localDao.limparTabela();
+        statusDao.limparTabela();
+        subLocalDao.limparTabela();
     }
 
     private void abrirLista() {
@@ -147,7 +173,7 @@ public class LeituraActivity extends AppCompatActivity {
             }
         });
 
-       // builder.setView(v);
+        // builder.setView(v);
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -166,23 +192,23 @@ public class LeituraActivity extends AppCompatActivity {
                         if (dados != null && dados.contains("EP: ")) { /* Tag */ /* PREENCHER A LISTA COM OS VALORES */
 
                             l = new Leitura();
-                            textoTag =  dados.replaceAll("EP: ","");
+                            textoTag = dados.replaceAll("EP: ", "");
 
                             dataFinal = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
                             l.setNumeroTag(textoTag);
                             l.setDataHora(dataFinal);
 
-                             /* Funcionando */
-                            if(!leituras.isEmpty()){ /* Verifica se ja existe na lista */
+                            /* Funcionando */
+                            if (!leituras.isEmpty()) { /* Verifica se ja existe na lista */
                                 boolean inserir = true;
-                                for(Leitura leitura : leituras){
-                                    if(leitura.getNumeroTag().equals(l.getNumeroTag())){
+                                for (Leitura leitura : leituras) {
+                                    if (leitura.getNumeroTag().equals(l.getNumeroTag())) {
                                         inserir = false;
                                         break;
                                     }
                                 }
 
-                                if(inserir){
+                                if (inserir) {
                                     leituras.add(l);
                                     adapter.notifyDataSetChanged();
                                     tagsLidas.setText(String.valueOf(leituras.size()));
@@ -246,32 +272,32 @@ public class LeituraActivity extends AppCompatActivity {
         ArrayList<Leitura> arrayList = (ArrayList<Leitura>) leituraDao.getAll();
 
         for (Leitura l : leituras) {
-          if(!arrayList.isEmpty()){
-              for(Leitura leitura : arrayList){
-                  if(l.getNumeroTag().equals(leitura.getNumeroTag())){ /* Já existe no banco */
-                      leitura.setVezesLida(leitura.getVezesLida() + 1);
-                      leituraDao.atualizar(leitura);
-                      break;
-                  } else { /* Não existe no banco */
-                      leituraDao.inserir(l);
-                      break;
-                  }
-                  /*if(leitura != null) { *//* Verifica se já existe no banco *//*
+            if (!arrayList.isEmpty()) {
+                for (Leitura leitura : arrayList) {
+                    if (l.getNumeroTag().equals(leitura.getNumeroTag())) { /* Já existe no banco */
+                        leitura.setVezesLida(leitura.getVezesLida() + 1);
+                        leituraDao.atualizar(leitura);
+                        break;
+                    } else { /* Não existe no banco */
+                        leituraDao.inserir(l);
+                        break;
+                    }
+                    /*if(leitura != null) { *//* Verifica se já existe no banco *//*
                   leitura.setVezesLida(leitura.getVezesLida() + 1);
               } else { *//* Ainda nao existe no banco *//*
                   leituraDao.inserir(l);
               }*/
-              }
-          } else { /* Não existe no banco */
-              l.setVezesLida(1);
-              leituraDao.inserir(l);
-          }
-               /*if(l.getNumeroTag() != null) leituraDao.inserir(l);*/
+                }
+            } else { /* Não existe no banco */
+                l.setVezesLida(1);
+                leituraDao.inserir(l);
+            }
+            /*if(l.getNumeroTag() != null) leituraDao.inserir(l);*/
         }
 
-            leituras.clear();
-            adapter.notifyDataSetChanged();
-            Toast.makeText(context, "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
+        leituras.clear();
+        adapter.notifyDataSetChanged();
+        Toast.makeText(context, "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

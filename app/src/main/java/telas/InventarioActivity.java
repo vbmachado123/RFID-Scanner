@@ -273,9 +273,13 @@ public class InventarioActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean importado) {
             super.onPostExecute(importado);
             progressDialog.dismiss();
-            if (importado) {
-                iniciarInventario();
-                arqImportado = true;
+            if (importado) { /* Valida importação */
+               EquipamentoDao dao = new EquipamentoDao(InventarioActivity.this);
+               Equipamento e = dao.recupera();
+               if(e != null){
+                   iniciarInventario();
+                   arqImportado = true;
+               } else Toast.makeText(InventarioActivity.this, "Não foi possível importar!", Toast.LENGTH_SHORT).show();
             } else {
                 arqImportado = false;
                 Toast.makeText(InventarioActivity.this, "Não foi possível importar", Toast.LENGTH_SHORT).show();
