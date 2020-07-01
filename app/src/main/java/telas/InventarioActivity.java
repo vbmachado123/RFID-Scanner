@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +31,8 @@ import java.io.File;
 import dao.EquipamentoDao;
 import model.Equipamento;
 import model.Inventario;
+import util.Permissao;
+import util.RealPathUri;
 import util.Xlsx;
 
 import static androidx.core.content.FileProvider.getUriForFile;
@@ -168,6 +172,7 @@ public class InventarioActivity extends AppCompatActivity {
         file = new File(String.valueOf(data.getData()));
         uri = data.getData();
         //importarBackground(data);
+        Permissao.Permissoes(InventarioActivity.this);
         ImportarAsync importarAsync = new ImportarAsync();
         importarAsync.execute();
 
@@ -214,9 +219,10 @@ public class InventarioActivity extends AppCompatActivity {
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setMax(100);
             progressDialog.show();
+
         }
 
-        @Override
+       /* @Override
         protected Boolean doInBackground(Void... voids) {
             boolean xiaomi = false;
             boolean importar = false;
@@ -227,13 +233,154 @@ public class InventarioActivity extends AppCompatActivity {
                 if (importar) {
                     xiaomi = true;
                     iniciarInventario();
+                    Log.i("Importacao", "Importacao 1");
                 } else {
                     xiaomi = false;
+
                     // Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 1", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.i("Importacao", "Importacao 1 - " + e.getMessage());
             }
+            *//*try {
+                File f = new File(RealPathUri.getRealPath(InventarioActivity.this, uri));
+                Xlsx xlsx = new Xlsx(InventarioActivity.this);
+                importar = xlsx.importarTabela(f);
+                if (importar) {
+                    xiaomi = true;
+                    iniciarInventario();
+                    Log.i("Importacao", "Importacao 1");
+                } else {
+                    xiaomi = false;
+
+                    // Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 1", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i("Importacao", "Importacao 1 - " + e.getMessage());
+            }*//*
+            if (!xiaomi) { *//* Não é um xiaomi *//*
+                Xlsx xlsx = new Xlsx(InventarioActivity.this);
+                file = new File(uri.getPath());
+                importar = false;
+
+            *//*    try {
+
+                    Uri uri = FileProvider.getUriForFile(InventarioActivity.this, "com.example.rfidscanner", file);
+                    File f = new File(uri.getPath());
+                    importar = xlsx.importarTabela(f);
+                    Log.i("Importacao", "Importacao 2 - " + f.getPath());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.i("Importacao", "Importacao 2 - " + e.getMessage());
+                }*//*
+                try {
+                    File f = new File(RealPathUri.getRealPath(InventarioActivity.this, uri));
+                    importar = xlsx.importarTabela(f);
+                    importar = true;
+                    Log.i("Importacao", "Importando - " + f.getAbsolutePath());
+                    Log.i("Importacao", "Importacao 2");
+                } catch (Exception e) {
+                    Log.i("Importacao", "Erro 2: " + e.getMessage());
+                }
+                if (!importar) {
+                    try {
+                        file = new File(RealPathUri.getFilePath(InventarioActivity.this, uri));
+                        importar = xlsx.importarTabela(new File(getFilePathFromUri(InventarioActivity.this, uri)));
+                        importar = true;
+                        Log.i("Importacao", "Importacao 3");
+                    } catch (Exception e) {
+                        Log.i("Importacao", "Importacao 1 - " + e.getMessage());
+                    }
+                }
+                if (!importar) {
+                    try {
+                        file = new File(RealPathUri.getRealPath(InventarioActivity.this, FileProvider.getUriForFile(InventarioActivity.this, "com.example.rfidscanner", file)));
+                        importar = xlsx.importarTabela(file);
+                        importar = true;
+                        Log.i("Importacao", "Importacao 4");
+                    } catch (Exception e) {
+                        Log.i("Importacao", "Importacao 1 - " + e.getMessage());
+                    }
+                }
+                if (!importar) {
+                    try {
+                        file = new File(RealPathUri.getRealPathFromURI_BelowAPI11(InventarioActivity.this, uri));
+                        importar = xlsx.importarTabela(file);
+                        importar = true;
+                        Log.i("Importacao", "Importacao 5");
+                    } catch (Exception e) {
+                        Log.i("Importacao", "Importacao 1 - " + e.getMessage());
+                    }
+                }
+                if (!importar) {
+                    try {
+                        file = new File(RealPathUri.getRealPathFromURI_API11to18(InventarioActivity.this, uri));
+                        importar = xlsx.importarTabela(file);
+                        importar = true;
+                        Log.i("Importacao", "Importacao 6");
+                    } catch (Exception e) {
+                        Log.i("Importacao", "Importacao 1 - " + e.getMessage());
+                    }
+                }
+
+                if (!importar) {
+                    try {
+                        file = new File(getFilePathFromUri(InventarioActivity.this, uri));
+                        importar = xlsx.importarTabela(file);
+                        importar = true;
+                        Log.i("Importacao", "Importacao 7");
+                    } catch (Exception e) {
+                        Log.i("Importacao", "Importacao 1 - " + e.getMessage());
+                    }
+                }
+                *//*Funcionando*//*
+                if (!importar) {
+                    try {
+                        importar = xlsx.importarTabela(file);
+                        importar = true;
+                        //  return importar;
+                        Log.i("Importacao", "Importacao 8");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        //Toast.makeText(this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.i("Importacao", "Importacao 1 - " + e.getMessage());
+                    }
+                }
+               *//* if (importar) iniciarInventario();
+                else
+                    importar = false;*//*
+                //return importar;
+                // Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 2", Toast.LENGTH_SHORT).show();
+            }
+            return importar;
+        }*/
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            boolean xiaomi = false;
+            boolean importar = false;
+            try {
+                // Uri uri = FileProvider.getUriForFile(InventarioActivity.this, "com.example.rfidscanner.fileprovider", file);
+                File f = new File(RealPathUri.getFilePath(InventarioActivity.this, uri));
+                Xlsx xlsx = new Xlsx(InventarioActivity.this);
+                importar = xlsx.importarTabela(f);
+                /*File f = new File(util.Uri.getPath(InventarioActivity.this, uri));
+                Xlsx xlsx = new Xlsx(InventarioActivity.this);
+                importar = xlsx.importarTabela(f);
+                importar = true;
+                if (importar) {
+                    xiaomi = true;
+                    iniciarInventario();
+                } else {
+                    xiaomi = false;
+                    // Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 1", Toast.LENGTH_SHORT).show();
+                }*/
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             if (!xiaomi) { /* Não é um xiaomi */
                 Xlsx xlsx = new Xlsx(InventarioActivity.this);
                 file = new File(uri.getPath());
@@ -245,20 +392,39 @@ public class InventarioActivity extends AppCompatActivity {
                 } catch (Exception e) {
 
                 }
+
+                if (!importar) {
+                    try {
+                        File f = new File(RealPathUri.getFilePath(InventarioActivity.this, uri));
+                        importar = xlsx.importarTabela(f);
+
+                        if (!importar) {
+                            f = new File(RealPathUri.getRealPath(InventarioActivity.this, uri));
+                            importar = xlsx.importarTabela(f);
+                        }
+
+                        if (!importar) {
+                            f = new File(getFilePathFromUri(InventarioActivity.this, uri));
+                            importar = xlsx.importarTabela(f.getAbsoluteFile());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 if (!importar) {
                     try {
                         importar = xlsx.importarTabela(file);
                         importar = true;
-                        //  return importar;
+                        return importar;
                     } catch (Exception e) {
                         e.printStackTrace();
                         //Toast.makeText(this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
-               /* if (importar) iniciarInventario();
+             /*   if (importar) iniciarInventario();
                 else
                     importar = false;*/
-                //return importar;
+                return importar;
                 // Toast.makeText(this, "Não foi possível importar, tente novamente! Erro: 2", Toast.LENGTH_SHORT).show();
             }
             return importar;
@@ -274,17 +440,51 @@ public class InventarioActivity extends AppCompatActivity {
             super.onPostExecute(importado);
             progressDialog.dismiss();
             if (importado) { /* Valida importação */
-               EquipamentoDao dao = new EquipamentoDao(InventarioActivity.this);
-               Equipamento e = dao.recupera();
-               if(e != null){
-                   iniciarInventario();
-                   arqImportado = true;
-               } else Toast.makeText(InventarioActivity.this, "Não foi possível importar!", Toast.LENGTH_SHORT).show();
+                EquipamentoDao dao = new EquipamentoDao(InventarioActivity.this);
+                Equipamento e = dao.recupera();
+                if (e != null) {
+                    iniciarInventario();
+                    arqImportado = true;
+                } else
+                    Toast.makeText(InventarioActivity.this, "Não foi possível importar!", Toast.LENGTH_SHORT).show();
             } else {
                 arqImportado = false;
                 Toast.makeText(InventarioActivity.this, "Não foi possível importar", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public static String getFilePathFromUri(Context context, Uri _uri) {
+        String filePath = "";
+        if (_uri != null && "content".equals(_uri.getScheme())) {
+            //Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
+            //context.revokeUriPermission(_uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Cursor cursor = null;
+            try {
+                cursor = context.getContentResolver().query(_uri,
+                        new String[]
+                                {
+                                        MediaStore.Images.ImageColumns.DATA,
+                                        MediaStore.Images.Media.DATA,
+                                        MediaStore.Images.Media.MIME_TYPE,
+                                        MediaStore.Video.VideoColumns.DATA,
+                                }, null, null, null);
+                cursor.moveToFirst();
+                filePath = cursor.getString(0);
+            } catch (SecurityException e) {
+                //if file open with third party application
+                if (_uri.toString().contains("/storage/emulated/0")) {
+                    filePath = "/storage/emulated/0" + _uri.toString().split("/storage/emulated/0")[1];
+                }
+            } finally {
+                if (cursor != null)
+                    cursor.close();
+            }
+
+        } else {
+            filePath = _uri.getPath();
+        }
+        return filePath;
     }
 
     private void receberArquivo(Intent data) {

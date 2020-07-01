@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,12 +18,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -42,8 +46,11 @@ import dao.StatusDao;
 import dao.SubLocalDao;
 import model.Leitura;
 import model.Lista;
+import service.BluetoothService;
 import sql.Conexao;
 import util.Data;
+import util.InventoryModel;
+import util.Preferencias;
 
 public class LeituraActivity extends AppCompatActivity {
 
@@ -68,6 +75,10 @@ public class LeituraActivity extends AppCompatActivity {
     private LeituraDao leituraDao;
     private TextView tagsLidas;
     Cursor cursor;
+    private InventoryModel mModel;
+    private SeekBar sbPotencia;
+    private TextView tvPotencia;
+    private int potencia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +104,7 @@ public class LeituraActivity extends AppCompatActivity {
         registrarBluetoothReceiver();
     }
 
+    @SuppressLint("NewApi")
     private void validaCampo() {
         trLocalizar = (TableRow) findViewById(R.id.trLocalizar);
         trExpandir = (TableRow) findViewById(R.id.trExpandir);
@@ -100,6 +112,8 @@ public class LeituraActivity extends AppCompatActivity {
         lista = (ListView) findViewById(R.id.lvLista);
         tagsLidas = (TextView) findViewById(R.id.txtTagsLidas);
         fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
+        sbPotencia = (SeekBar) findViewById(R.id.sbPotencia);
+        tvPotencia = (TextView) findViewById(R.id.tvPotencia);
 
         trExpandir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +145,28 @@ public class LeituraActivity extends AppCompatActivity {
                     }
                 } else
                     Toast.makeText(context, "Nenhuma leitura foi realizada!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        sbPotencia.setMax(30);
+        sbPotencia.setMin(2);
+        sbPotencia.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tvPotencia.setText(progress + " dBm");
+                potencia = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { /* Passar para a service */
+                Preferencias preferencias = new Preferencias(LeituraActivity.this);
+                preferencias.salvarPotencia(potencia);
             }
         });
     }
@@ -185,7 +221,6 @@ public class LeituraActivity extends AppCompatActivity {
             public void messageReceived(Intent intent) {
 
                 dados = intent.getStringExtra("resposta");
-
                 runOnUiThread(new Runnable() {
 
                     public void run() {

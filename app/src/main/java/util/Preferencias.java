@@ -18,6 +18,7 @@ public class Preferencias {
     private final String CHAVE_IDENTIFICADOR = "identificadorUsuarioLogado";
     private final String CHAVE_NOME = "nomeUsuarioLogado";
     private boolean CHAVE_CONEXAO = false;
+    private int CHAVE_POTENCIA = 30;
 
     public Preferencias(Context contextoParametro) {
         contexto = contextoParametro;
@@ -39,6 +40,10 @@ public class Preferencias {
         editor.commit();
     }
 
+    public void salvarPotencia(int potencia){
+        editor.putInt(String.valueOf(CHAVE_POTENCIA), 30);
+        editor.commit();
+    }
     public String getIdentificador(){
         return preferences.getString(CHAVE_IDENTIFICADOR, null);
     }
@@ -51,4 +56,7 @@ public class Preferencias {
         return preferences.getBoolean(String.valueOf(CHAVE_CONEXAO), false);
     }
 
+    public int getPotencia() {
+        return preferences.getInt(String.valueOf(CHAVE_POTENCIA), 30);
+    }
 }

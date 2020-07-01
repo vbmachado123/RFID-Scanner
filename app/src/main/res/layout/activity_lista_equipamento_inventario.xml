@@ -33,6 +33,38 @@
             android:layout_height="match_parent">
 
             <TableRow
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:textColor="@color/colorPrimary"
+                    android:textAlignment="textStart"
+                    android:textSize="18sp"
+                    android:text="Força"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+
+                <SeekBar
+                    android:id="@+id/sbPotencia"
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/tvPotencia"
+                    android:paddingLeft="@dimen/distancia"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:textSize="20sp"
+                    android:text="2 dBm"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+
+            </TableRow>
+
+            <TableRow
                 android:layout_marginTop="@dimen/distancia"
                 android:id="@+id/trNaoEncontrado"
                 android:orientation="horizontal"
