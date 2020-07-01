@@ -1,11 +1,5 @@
 package telas;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -24,14 +18,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.SeekBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,6 +52,7 @@ import model.Local;
 import model.Status;
 import model.SubLocal;
 import util.Data;
+import util.Preferencias;
 
 public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
@@ -86,6 +86,10 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
     private InventarioDao inventarioDao;
     private InventarioNegadoDao inventarioNegadoDao;
     private StatusDao statusDao;
+
+    private SeekBar sbPotencia;
+    private TextView tvPotencia;
+    private int potencia;
 
     /* IDs */
     private int localId, sublocalId, equipamentoId, inventarioId, equipamentoInventarioId;
@@ -135,6 +139,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         registrarBluetoothReceiver();
     }
 
+    @SuppressLint("NewApi")
     private void validaCampo() {
         trNaoEncontrado = (TableRow) findViewById(R.id.trNaoEncontrado);
         txtNaoEncontrado = (TextView) findViewById(R.id.txtNaoEncontrado);
@@ -143,12 +148,34 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         trEncontrado = (TableRow) findViewById(R.id.trEncontrado);
         txtEncontrado = (TextView) findViewById(R.id.txtEncontrado);
         fabProsseguir = (FloatingActionButton) findViewById(R.id.fabProsseguir);
+        sbPotencia = (SeekBar) findViewById(R.id.sbPotencia);
+        tvPotencia = (TextView) findViewById(R.id.tvPotencia);
 
         recuperaEquipamentos();
 
         abrirListas();
         fabProsseguir.getBackground().mutate().setTint(ContextCompat.getColor(ListaEquipamentoInventarioActivity.this, R.color.vermelhodesativado));
 
+        sbPotencia.setMax(30);
+        sbPotencia.setMin(2);
+        sbPotencia.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tvPotencia.setText(progress + " dBm");
+                potencia = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { /* Passar para a service */
+                Preferencias preferencias = new Preferencias(ListaEquipamentoInventarioActivity.this);
+                preferencias.salvarPotencia(potencia);
+            }
+        });
     }
 
     private void recuperaEquipamentos() { /* Carrega Lista Primeira */
@@ -261,16 +288,99 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
     private void salvar() {
 
         String dataSalvamento = Data.getDataEHoraAual("dd/MM/yyyy - HH:mm");
-        int progresso = 0;
+        final ProgressDialog progressDialog = new ProgressDialog(ListaEquipamentoInventarioActivity.this, R.style.Dialog);
 
-        if (!listaEncontrado.isEmpty()) { /* Necessariamente ao menos 1 item encontrado */
-            final ProgressDialog progressDialog = new ProgressDialog(this, R.style.Dialog);
-            progressDialog.setTitle("Salvando Listas...");
-            progressDialog.show();
+        class SalvarAsync extends AsyncTask<Void, Void, Void> {
+            int progresso = 0;
 
-            if (!listaNaoEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                progressDialog.setTitle("Salvando Listas...");
+                progressDialog.show();
+
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                if (!listaEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
+                    if (!listaNaoEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
+                        listaNaoAtribuida.addAll(listaNaoEncontrado);
+                        for(int i = 0; i < listaNaoEncontrado.size(); i++){
+                            latitudeNaoAtribuida.add(String.valueOf(latitude));
+                            longitudeNaoAtribuida.add(String.valueOf(longitude));
+                        }
+                    } /*else { *//* Salvar na InventarioNegado */
+                    int i = 0;
+                    for (Equipamento e : listaNaoAtribuida) {
+                        InventarioNegado inventarioNegado = new InventarioNegado();
+                        model.Status status = new model.Status();
+                        status.setStatus("Nao_Atribuida");
+                        Long statusId = statusDao.inserir(status);
+                        inventarioNegado.setIdStatus(Math.toIntExact(statusId));
+                        inventarioNegado.setIdInventario(inventarioId);
+                        inventarioNegado.setDataHora(dataSalvamento);
+                        /*inventarioNegado.setLatitude(String.valueOf(latitude));
+                        inventarioNegado.setLongitude(String.valueOf(longitude));*/
+                        inventarioNegado.setLatitude(latitudeNaoAtribuida.get(i));
+                        inventarioNegado.setLongitude(longitudeNaoAtribuida.get(i));
+                        inventarioNegado.setNumeroTag(e.getNumeroTag());
+                        Long inventarioNegadoId = inventarioNegadoDao.inserir(inventarioNegado);
+
+                        progressDialog.setMessage("Salvando " + progresso + "%");
+                        progresso++;
+                        i++;
+                        Log.i("Salvando", "Salva - InventarioNegado: " + inventarioNegadoId);
+                    }
+                    // } /* Salvar EquipamentoInventario */
+
+                    int x = 0;
+                    for (Equipamento e : listaEncontrado) {
+                        equipamentoInventario = new EquipamentoInventario();
+                        model.Status status = new model.Status();
+                        status.setStatus("Encontrada");
+                        Long statusId = statusDao.inserir(status);
+                        equipamentoInventario.setDataHora(dataSalvamento);
+                        /*equipamentoInventario.setLatitude(String.valueOf(latitude));
+                         equipamentoInventario.setLongitude(String.valueOf(longitude));*/
+                        equipamentoInventario.setLatitude(latitudeEncontrada.get(x));
+                        equipamentoInventario.setLongitude(longitudeEncontrada.get(x));
+                        equipamentoInventario.setIdInventario(inventarioId);
+                        equipamentoInventario.setIdEquipamento(e.getId());
+                        equipamentoInventario.setIdStatus(Math.toIntExact(statusId));
+                        Long idEquipamento = equipamentoInventarioDao.inserir(equipamentoInventario);
+
+                        Log.i("Salvando", "Salva - EquipamentoInventario: " + idEquipamento);
+
+                        x++;
+                        progressDialog.setMessage("Salvando " + progresso + "%");
+                        progresso++;
+                    }
+
+                    progressDialog.dismiss();
+                    Intent it = new Intent(ListaEquipamentoInventarioActivity.this, ListaInventarioActivity.class);
+                    startActivity(it);
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                progressDialog.dismiss();
+                Intent it = new Intent(ListaEquipamentoInventarioActivity.this, ListaInventarioActivity.class);
+                startActivity(it);
+            }
+        }
+        (new SalvarAsync()).execute();
+
+        /*if (!listaEncontrado.isEmpty()) {  *//* Necessariamente ao menos 1 item encontrado *//*
+
+            if (!listaNaoEncontrado.isEmpty()) { *//* Ainda existem itens nao encontrados *//*
                 listaNaoAtribuida.addAll(listaNaoEncontrado);
-            } /*else { *//* Salvar na InventarioNegado */
+            } *//*else { *//**//* Salvar na InventarioNegado *//*
                 int i = 0;
                 for (Equipamento e : listaNaoAtribuida) {
                     InventarioNegado inventarioNegado = new InventarioNegado();
@@ -280,19 +390,16 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                     inventarioNegado.setIdStatus(Math.toIntExact(statusId));
                     inventarioNegado.setIdInventario(inventarioId);
                     inventarioNegado.setDataHora(dataSalvamento);
-                  /*  inventarioNegado.setLatitude(String.valueOf(latitude));
-                    inventarioNegado.setLongitude(String.valueOf(longitude));*/
+                  *//*  inventarioNegado.setLatitude(String.valueOf(latitude));
+                    inventarioNegado.setLongitude(String.valueOf(longitude));*//*
                     inventarioNegado.setLatitude(latitudeNaoAtribuida.get(i));
                     inventarioNegado.setLongitude(longitudeNaoAtribuida.get(i));
                     inventarioNegado.setNumeroTag(e.getNumeroTag());
                     Long inventarioNegadoId = inventarioNegadoDao.inserir(inventarioNegado);
 
-                    progressDialog.setMessage("Salvando " + progresso + "%");
-                    progresso++;
-                    i++;
                     Log.i("Salvando", "Salva - InventarioNegado: " + inventarioNegadoId);
                 }
-           // } /* Salvar EquipamentoInventario */
+            } *//* Salvar EquipamentoInventario *//*
 
             int x = 0;
             for (Equipamento e : listaEncontrado) {
@@ -301,8 +408,8 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                 status.setStatus("Encontrada");
                 Long statusId = statusDao.inserir(status);
                 equipamentoInventario.setDataHora(dataSalvamento);
-                /*equipamentoInventario.setLatitude(String.valueOf(latitude));
-                equipamentoInventario.setLongitude(String.valueOf(longitude));*/
+                *//*equipamentoInventario.setLatitude(String.valueOf(latitude));
+                equipamentoInventario.setLongitude(String.valueOf(longitude));*//*
                 equipamentoInventario.setLatitude(latitudeEncontrada.get(x));
                 equipamentoInventario.setLongitude(longitudeEncontrada.get(x));
                 equipamentoInventario.setIdInventario(inventarioId);
@@ -312,18 +419,15 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
                 Log.i("Salvando", "Salva - EquipamentoInventario: " + idEquipamento);
 
-                x++;
-                progressDialog.setMessage("Salvando " + progresso + "%");
-                progresso++;
             }
 
             progressDialog.dismiss();
             Intent it = new Intent(ListaEquipamentoInventarioActivity.this, ListaInventarioActivity.class);
             startActivity(it);
             //finish();
-        } else { /* Lista ENCONTRADOS vazia */
+        } else { *//* Lista ENCONTRADOS vazia *//*
             Toast.makeText(this, "A lista ENCONTRADOS não precisa ter ao menos um item!", Toast.LENGTH_SHORT).show();
-        }
+        } */
     }
 
     /* RECEBER LEITURA */

@@ -8,16 +8,16 @@
         path="/*" />
     <files-path
         name="documents"
-        path="."/>
+        path="." />
     <external-files-path
         name="content"
-        path="."/>
+        path="." />
     <external-files-path
         name="external_files"
         path="/*" />
     <external-files-path
         name="external_files"
-        path="."/>
+        path="." />
     <cache-path
         name="cache"
         path="." />
@@ -41,6 +41,12 @@
         path="/*" />
     <files-path
         name="intent"
-        path="/*"/>
+        path="/*" />
+    <external-path
+        name="external_files"
+        path="." />
+    <root-path
+        name="external_files2"
+        path="/storage/" />
 </paths>
 

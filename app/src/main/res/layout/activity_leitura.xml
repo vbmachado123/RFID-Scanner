@@ -37,8 +37,16 @@
                 android:gravity="center"
             android:layout_marginTop="20dp"
             android:orientation="horizontal"
-            android:layout_height="30dp"
+            android:layout_height="match_parent"
             android:layout_width="match_parent">
+
+                <TextView
+                    android:textColor="@color/colorPrimary"
+                    android:textAlignment="textStart"
+                    android:textSize="18sp"
+                    android:text="Força"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
 
                 <SeekBar
                     android:id="@+id/sbPotencia"
@@ -50,8 +58,8 @@
                     android:paddingLeft="@dimen/distancia"
                     android:textColor="@color/colorPrimary"
                     android:gravity="center_vertical"
-                    android:textSize="@dimen/tamanhoTextoHome"
-                    android:text="0 db"
+                    android:textSize="20sp"
+                    android:text="2 dBm"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"/>
 

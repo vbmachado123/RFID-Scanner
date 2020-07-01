@@ -158,6 +158,7 @@ public class HomeActivity extends AppCompatActivity {
         trInventario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //  acessaActivity(InventarioActivity.class);
                 if (conexao == true)
                     acessaActivity(InventarioActivity.class);
                 else
@@ -190,14 +191,14 @@ public class HomeActivity extends AppCompatActivity {
         input.setInputType(InputType.TYPE_CLASS_NUMBER
                 | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
         input.setTextColor(R.color.colorPrimary);
-       // input.setHighlightColor(R.color.colorPrimary);
+        // input.setHighlightColor(R.color.colorPrimary);
         input.setLayoutParams(lp);
         builder.setView(input);
         builder.setPositiveButton("Prosseguir", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String m_text = input.getText().toString();
-                if(m_text != null && m_text.equals("00000")) {
+                if (m_text != null && m_text.equals("00000")) {
                     acessaActivity(ConfiguracaoActivity.class);
                 } else {
                     Toast.makeText(context, "Senha incorreta", Toast.LENGTH_SHORT).show();

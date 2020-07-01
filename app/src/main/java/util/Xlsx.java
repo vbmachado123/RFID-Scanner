@@ -301,7 +301,7 @@ public class Xlsx {
     public boolean exportarTabela(/*Context context*/) {
         boolean exporta = false;
 
-     /*   *//* Recuperando dados *//*
+        /*   *//* Recuperando dados *//*
         EquipamentoDao equipamentoDao = new EquipamentoDao(context);
         EquipamentoInventarioDao equipamentoInventarioDao = new EquipamentoInventarioDao(context);
         InventarioDao inventarioDao = new InventarioDao(context);
@@ -327,7 +327,7 @@ public class Xlsx {
         else
             nome = local.getDescricao();
 
-        File file = new File(exportDir, "Inventario - " + nome + ".xls");
+        File file = new File(exportDir, "Inventario - " + nome + dataFinal + ".xls");
 
         try {
             WorkbookSettings wbSettings = new WorkbookSettings();
@@ -347,7 +347,6 @@ public class Xlsx {
 
             /* EquipamentoInventario */
             ArrayList<EquipamentoInventario> eiList = (ArrayList<EquipamentoInventario>) equipamentoInventarioDao.obterTodos();
-
             for (int r = 2; r < eiList.size() + 2; r++) { /* Passando por todos os itens da lista */
                 int i = r - 2;
                 for (int c = 0; c < 6; c++) { /* Passando por todas as colunas */

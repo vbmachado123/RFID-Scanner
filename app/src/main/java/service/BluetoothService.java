@@ -8,11 +8,13 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
+import com.uk.tsl.rfid.asciiprotocol.commands.BarcodeCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.ReadTransponderCommand;
 import com.uk.tsl.rfid.asciiprotocol.responders.IAsciiCommandResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.LoggerResponder;
@@ -23,6 +25,7 @@ import java.util.UUID;
 
 import gen.FuncoesSOS;
 import bluetooth.BluetoothReceiver;
+import util.InventoryModel;
 import util.Preferencias;
 
 /* Responsavel por iniciar e tornar publica a conexão com o dispositivo */
@@ -43,13 +46,13 @@ public class BluetoothService extends Service {
     public  BluetoothService(){}
     public boolean conexao = false;
     private Preferencias preferencias;
-    private  ArrayList<String> validador = new ArrayList<>();
-    private  ArrayList<String> certifica = new ArrayList<>();
+    private int potencia = 30;
+    private boolean mudou = false;
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        MAC =(String) intent.getExtras().get("address");
+        MAC = (String) intent.getExtras().get("address");
         return null;
     }
 
@@ -67,6 +70,12 @@ public class BluetoothService extends Service {
         ArrayList<String> validador = new ArrayList<>();
         ArrayList<String> certifica = new ArrayList<>();
 
+        Preferencias preferencias = new Preferencias(getApplicationContext());
+        potencia = preferencias.getPotencia();
+        InventoryModel model = new InventoryModel();
+        model.setCommander(commander);
+        model.getCommand().setOutputPower(potencia);
+
         commander.addResponder(/*responder*/ new IAsciiCommandResponder() {
             @Override
             public boolean isResponseFinished() {
@@ -80,30 +89,19 @@ public class BluetoothService extends Service {
 
             @Override
             public boolean processReceivedLine(String s, boolean b) throws Exception {
+                Preferencias preferencias = new Preferencias(getApplicationContext());
+                potencia = preferencias.getPotencia();
+                /*InventoryModel model = new InventoryModel();
+                model.setCommander(commander);*/
+                model.getCommand().setOutputPower(potencia);
                 Log.i(tag, ">"+s+" - "+b);
-/*
-                if(validador.isEmpty()) validador.add(s);
 
-                for (int i = 0; i < validador.size(); i++){
-                    if(!validador.get(i).contains(s)){ //Não foi lido
-                        certifica.addAll(validador);
-
-                        for(int l = 0; l < certifica.size(); l++){
-                            if(s != certifica.get(i)){
-                                validador.add(s);
-                            }
-                        }
-                    }
-                }*/
                 LeituraTag = s;
                 enviarDadosActivity();
-
-           //     Toast.makeText(getApplicationContext(), "->"+s, Toast.LENGTH_LONG).show();
 
                 return false;
             }
         });
-
 
         preferencias = new Preferencias(getApplicationContext());
         conexao = true;
@@ -122,7 +120,6 @@ public class BluetoothService extends Service {
         enviar.setAction("GET_CONEXAO");
         enviar.putExtra( "conexao",conexao);
         enviar.putExtra( "resposta",LeituraTag);
-
         sendBroadcast(enviar);
     }
 
