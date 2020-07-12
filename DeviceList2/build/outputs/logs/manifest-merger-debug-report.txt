@@ -1,0 +1,41 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:1:1-16:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:1:1-16:12
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:1:1-16:12
+	package
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:3:5-41
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:2:5-63
+application
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:5:5-14:19
+	android:allowBackup
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:6:9-35
+activity#com.uk.tsl.rfid.DeviceListActivity
+ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:8:9-13:20
+	android:screenOrientation
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:12:13-49
+	android:label
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:11:14-51
+	android:configChanges
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:10:14-123
+	android:theme
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:9:14-70
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml:8:19-68
+uses-sdk
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+		ADDED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml
+		INJECTED from /home/victor/AndroidStudioProjects/RFIDScanner/DeviceList2/src/main/AndroidManifest.xml

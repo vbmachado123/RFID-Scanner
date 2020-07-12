@@ -43,7 +43,7 @@
                     android:textColor="@color/colorPrimary"
                     android:textAlignment="textStart"
                     android:textSize="18sp"
-                    android:text="Força"
+                    android:text="Sinal"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"/>
 

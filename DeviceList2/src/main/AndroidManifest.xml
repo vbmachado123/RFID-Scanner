@@ -1,0 +1,16 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.uk.tsl.rfid.devicelist"
+    >
+    <application
+        android:allowBackup="true"
+        >
+        <activity android:name="com.uk.tsl.rfid.DeviceListActivity"
+             android:theme="@android:style/Theme.DeviceDefault.Light"
+             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+             android:label="@string/select_reader"
+            android:screenOrientation="portrait">
+        </activity>
+    </application>
+
+</manifest>

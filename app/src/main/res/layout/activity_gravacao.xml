@@ -7,8 +7,7 @@
     android:background="@color/grey340"
     tools:context="telas.GravacaoActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,5 +19,179 @@
         app:titleTextColor="@color/branco">
 
     </androidx.appcompat.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etTag"
+                    android:layout_width="300dp"
+                    android:layout_height="match_parent"
+                    android:hint="TAG (Hex)"
+                    android:textColor="@color/colorPrimary"
+                    android:textColorHint="@color/greyHint" />
+
+                <ImageButton
+                    android:id="@+id/ibLimpar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/grey340"
+                    android:src="@drawable/ic_delete_verde" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etTextoSalvar"
+                    android:layout_width="300dp"
+                    android:layout_height="match_parent"
+                    android:hint="Dados a serem gravados (Hex)"
+                    android:inputType="number"
+                    android:textColor="@color/colorPrimary"
+                    android:textColorHint="@color/greyHint" />
+
+                <ImageButton
+                    android:id="@+id/ibSalvar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/grey340"
+                    android:src="@drawable/ic_save" />
+
+            </TableRow>
+
+            <Spinner
+                android:id="@+id/bankSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/targetTagEditText"
+                android:layout_alignLeft="@+id/wordAddressEditText"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="12dp"
+                android:forceDarkAllowed="true"
+                android:outlineAmbientShadowColor="@color/colorPrimary"
+                android:theme="@style/Spinner" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sinal"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <SeekBar
+                    android:id="@+id/sbPotencia"
+                    android:layout_width="200dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/tvPotencia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/distancia"
+                    android:text="2 dBm"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20sp" />
+
+            </TableRow>
+
+            <TextView
+                android:id="@+id/tvTagsLidas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:padding="8dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp" />
+
+            <ScrollView
+                android:id="@+id/resultScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/grey60"
+                android:fillViewport="true">
+
+                <TextView
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/resultTextView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true" />
+
+            </ScrollView>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/tvLer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Ler"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/tvLimpar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:padding="10dp"
+                    android:text="Limpar"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/tvEscrever"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Gravar"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="28sp" />
+
+            </TableRow>
+
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>
