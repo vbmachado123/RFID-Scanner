@@ -31,6 +31,9 @@ import androidx.core.content.ContextCompat;
 
 import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
+import com.uk.tsl.rfid.asciiprotocol.DeviceProperties;
+import com.uk.tsl.rfid.asciiprotocol.parameters.AntennaParameters;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ import model.Local;
 import model.Status;
 import model.SubLocal;
 import util.Data;
+import util.InventoryModel;
 import util.Preferencias;
 
 public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
@@ -89,13 +93,16 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
     private SeekBar sbPotencia;
     private TextView tvPotencia;
-    private int potencia;
 
     /* IDs */
     private int localId, sublocalId, equipamentoId, inventarioId, equipamentoInventarioId;
 
     /* Adapter */
     private EquipamentoAdapter adapter;
+
+    private InventoryModel mModel;
+    private AsciiCommander commander;
+    private int mPowerLevel = AntennaParameters.MaximumCarrierPower;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +111,9 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_equipamento_inventario);
 
+        mModel = new InventoryModel();
+        commander = getCommander();
+        mModel.setCommander(commander);
         Intent it = getIntent();
         Bundle extras = it.getExtras();
         local = (Local) extras.getSerializable("local");
@@ -119,6 +129,8 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
         validaCampo();
         inventario.setIdLocal(localId);
+        sbPotencia.setOnSeekBarChangeListener(mPowerSeekBarListener);
+        defineLimitesPotencia();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -139,6 +151,44 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         registrarBluetoothReceiver();
     }
 
+    /* SeekBar -> Alterar potencia */
+    private void defineLimitesPotencia() {
+        DeviceProperties deviceProperties = getCommander().getDeviceProperties();
+
+        sbPotencia.setMax(deviceProperties.getMaximumCarrierPower() - deviceProperties.getMinimumCarrierPower());
+        mPowerLevel = deviceProperties.getMaximumCarrierPower();
+        sbPotencia.setProgress(mPowerLevel - deviceProperties.getMinimumCarrierPower());
+    }
+
+    private SeekBar.OnSeekBarChangeListener mPowerSeekBarListener = new SeekBar.OnSeekBarChangeListener() {
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            // Nothing to do here
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+            // Update the reader's setting only after the user has finished changing the value
+            updatePowerSetting(getCommander().getDeviceProperties().getMinimumCarrierPower() + seekBar.getProgress());
+            mModel.getCommand().setOutputPower(mPowerLevel);
+            mModel.updateConfiguration();
+        }
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress,
+                                      boolean fromUser) {
+            updatePowerSetting(getCommander().getDeviceProperties().getMinimumCarrierPower() + progress);
+        }
+    };
+
+    private void updatePowerSetting(int level) {
+        mPowerLevel = level;
+        tvPotencia.setText(mPowerLevel + " dBm");
+    }
+
+
     @SuppressLint("NewApi")
     private void validaCampo() {
         trNaoEncontrado = (TableRow) findViewById(R.id.trNaoEncontrado);
@@ -156,26 +206,6 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         abrirListas();
         fabProsseguir.getBackground().mutate().setTint(ContextCompat.getColor(ListaEquipamentoInventarioActivity.this, R.color.vermelhodesativado));
 
-        sbPotencia.setMax(30);
-        sbPotencia.setMin(2);
-        sbPotencia.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tvPotencia.setText(progress + " dBm");
-                potencia = progress;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) { /* Passar para a service */
-                Preferencias preferencias = new Preferencias(ListaEquipamentoInventarioActivity.this);
-                preferencias.salvarPotencia(potencia);
-            }
-        });
     }
 
     private void recuperaEquipamentos() { /* Carrega Lista Primeira */
@@ -307,7 +337,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                 if (!listaEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
                     if (!listaNaoEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
                         listaNaoAtribuida.addAll(listaNaoEncontrado);
-                        for(int i = 0; i < listaNaoEncontrado.size(); i++){
+                        for (int i = 0; i < listaNaoEncontrado.size(); i++) {
                             latitudeNaoAtribuida.add(String.valueOf(latitude));
                             longitudeNaoAtribuida.add(String.valueOf(longitude));
                         }
@@ -328,7 +358,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                         inventarioNegado.setNumeroTag(e.getNumeroTag());
                         Long inventarioNegadoId = inventarioNegadoDao.inserir(inventarioNegado);
 
-                        progressDialog.setMessage("Salvando " + progresso + "%");
+                        progressDialog.setMessage("Salvando Inventario Negado");
                         progresso++;
                         i++;
                         Log.i("Salvando", "Salva - InventarioNegado: " + inventarioNegadoId);
@@ -354,7 +384,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                         Log.i("Salvando", "Salva - EquipamentoInventario: " + idEquipamento);
 
                         x++;
-                        progressDialog.setMessage("Salvando " + progresso + "%");
+                        progressDialog.setMessage("Salvando Equipamento Inventaio");
                         progresso++;
                     }
 
@@ -647,6 +677,10 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
             address = addresses.get(0);
         }
         return address;
+    }
+
+    public AsciiCommander getCommander() {
+        return AsciiCommander.sharedInstance();
     }
 
     @Override

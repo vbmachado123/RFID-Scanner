@@ -14,7 +14,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0.7"
+        versionName "1.0.9"
         missingDimensionStrategy 'classpath', 'gms17'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -42,8 +42,8 @@ dependencies {
     implementation 'com.opencsv:opencsv:4.6'
     implementation "com.android.support:support-compat:28.0.0"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.2.0"
-    implementation project(path: ':Rfid.AsciiProtocol-Library')
-    implementation project(path: ':DeviceList')
+    implementation project(path: ':Rfid.AsciiProtocol-Library2')
+    implementation project(path: ':DeviceList2')
     implementation project(path: ':sdk')
     implementation files('libs/jxl.jar')
     implementation 'com.karumi:dexter:6.0.2' /* PARA AS PERMISSÕES */

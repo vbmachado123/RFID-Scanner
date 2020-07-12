@@ -21,7 +21,7 @@ public class BluetoothReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        ((BluetoothHandler) new BluetoothHandler(intent)).execute();
+        ((BluetoothHandler) new BluetoothHandler(intent)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);;
     }
 
     public static void bindListener(BluetoothListener listener) {

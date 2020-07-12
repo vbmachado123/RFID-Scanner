@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Parcelable;
@@ -20,6 +21,7 @@ import com.uk.tsl.rfid.asciiprotocol.responders.IAsciiCommandResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.LoggerResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.TransponderResponder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -29,7 +31,7 @@ import util.InventoryModel;
 import util.Preferencias;
 
 /* Responsavel por iniciar e tornar publica a conexão com o dispositivo */
-public class BluetoothService extends Service {
+public class BluetoothService extends Service implements Serializable {
     private static String tag = BluetoothService.class.getName();
     private static String MAC = null;
     private AsciiCommander commander;
@@ -40,62 +42,45 @@ public class BluetoothService extends Service {
     private TransponderResponder transponderResponder;
     private LoggerResponder logger;
     private String LeituraTag = "";
+    private String nomeDispositivo = "";
 
     private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
-    public  BluetoothService(){}
+    public BluetoothService() {
+    }
+
     public boolean conexao = false;
     private Preferencias preferencias;
     private int potencia = 30;
     private boolean mudou = false;
+    private InventoryModel model;
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        MAC = (String) intent.getExtras().get("address");
+       nomeDispositivo = intent.getStringExtra("nome");
         return null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        logger = new LoggerResponder();
-
-        transponderResponder = new TransponderResponder();
-        responder = new ReadTransponderCommand();
-        commander = new AsciiCommander(getApplicationContext());
-        adapter = BluetoothAdapter.getDefaultAdapter();
-        MAC = (String) intent.getExtras().get("address");
-        device = adapter.getRemoteDevice(MAC);
-        commander.connect(device);
-        ArrayList<String> validador = new ArrayList<>();
-        ArrayList<String> certifica = new ArrayList<>();
-
-        Preferencias preferencias = new Preferencias(getApplicationContext());
-        potencia = preferencias.getPotencia();
-        InventoryModel model = new InventoryModel();
-        model.setCommander(commander);
-        model.getCommand().setOutputPower(potencia);
+        AsciiCommander commander = AsciiCommander.sharedInstance();
 
         commander.addResponder(/*responder*/ new IAsciiCommandResponder() {
             @Override
             public boolean isResponseFinished() {
+
                 return false;
             }
 
             @Override
             public void clearLastResponse() {
-
             }
 
             @Override
             public boolean processReceivedLine(String s, boolean b) throws Exception {
-                Preferencias preferencias = new Preferencias(getApplicationContext());
-                potencia = preferencias.getPotencia();
-                /*InventoryModel model = new InventoryModel();
-                model.setCommander(commander);*/
-                model.getCommand().setOutputPower(potencia);
-                Log.i(tag, ">"+s+" - "+b);
-
+                Log.i(tag, ">" + s + " - " + b);
+                Log.i("Device", String.valueOf(commander.getDeviceProperties().getMaximumCarrierPower()));
                 LeituraTag = s;
                 enviarDadosActivity();
 
@@ -103,23 +88,21 @@ public class BluetoothService extends Service {
             }
         });
 
-        preferencias = new Preferencias(getApplicationContext());
         conexao = true;
-        //preferencias.salvarConexao(conexao);
-        transponderResponder.setTransponderReceivedHandler(responder);
+
         enviarDadosActivity();
 
-        startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), device.getName()));
+        startForeground(FuncoesSOS.NOTIFICATION_ID_PADRAO, FuncoesSOS.sendNotificationPadrao(getApplicationContext(), commander.getConnectedDeviceName()));
         return START_REDELIVER_INTENT;
     }
 
     /* Teste de envio do estado da conexao para a home */
     private void enviarDadosActivity() { /* Teste de envio para as telas */
-
         Intent enviar = new Intent(this, BluetoothReceiver.class);
         enviar.setAction("GET_CONEXAO");
-        enviar.putExtra( "conexao",conexao);
-        enviar.putExtra( "resposta",LeituraTag);
+        enviar.putExtra("conexao", conexao);
+        enviar.putExtra("resposta", LeituraTag);
+
         sendBroadcast(enviar);
     }
 
@@ -127,7 +110,8 @@ public class BluetoothService extends Service {
     public void onCreate() {
         super.onCreate();
         preferencias = new Preferencias(getApplicationContext());
-        commander = new AsciiCommander(getApplicationContext());
+       commander = new AsciiCommander(getApplicationContext());
+        // commander = new Commander(getApplicationContext());
         adapter = BluetoothAdapter.getDefaultAdapter();
     }
 
@@ -135,7 +119,7 @@ public class BluetoothService extends Service {
     public void onDestroy() {
         super.onDestroy();
         preferencias = new Preferencias(getApplicationContext());
-        commander.disconnect();
+        //commander
         conexao = false;
         //preferencias.salvarConexao(conexao);
     }
@@ -147,5 +131,6 @@ public class BluetoothService extends Service {
     public void setConexao(boolean conexao) {
         this.conexao = conexao;
     }
+
 
 }

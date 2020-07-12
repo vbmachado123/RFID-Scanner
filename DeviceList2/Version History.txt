@@ -1,0 +1,15 @@
+Version History
+---------------
+
+05/12/2018      New implementation for v2.0 SDK
+                More details are provided for each reader:
+                    the identity of the Reader and a description
+                    the available transports and their connection state are shown
+                    an image of the reader.
+                Adding New Readers now uses the System Pairing screen.
+
+----------------------------------------------------------------------------------------------------
+
+11/11/2014		Updated to ensure the Scan button is always visible and to include the number of items paired and discovered.
+
+19/11/2013		Initial Creation

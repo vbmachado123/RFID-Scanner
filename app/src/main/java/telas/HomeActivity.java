@@ -1,6 +1,7 @@
 package telas;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -16,6 +17,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -31,12 +33,21 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.DeviceListActivity;
+import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
+import com.uk.tsl.rfid.asciiprotocol.DeviceProperties;
+import com.uk.tsl.rfid.asciiprotocol.device.Reader;
+import com.uk.tsl.rfid.asciiprotocol.device.ReaderManager;
+import com.uk.tsl.rfid.asciiprotocol.responders.LoggerResponder;
+import com.uk.tsl.utils.Observable;
 
 import bluetooth.BluetoothListener;
 import bluetooth.*;
 import service.BluetoothService;
 import util.Permissao;
 import util.Preferencias;
+
+import static com.uk.tsl.rfid.DeviceListActivity.EXTRA_DEVICE_ACTION;
+import static com.uk.tsl.rfid.DeviceListActivity.EXTRA_DEVICE_INDEX;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -58,6 +69,7 @@ public class HomeActivity extends AppCompatActivity {
     private TextView tvConectar, tvLeitura, tvGravacao;
 
     private String verificaConexao;
+    private Reader mReader = null;
 
     @SuppressLint({"ResourceAsColor", "NewApi", "HandlerLeak"})
     @Override
@@ -105,8 +117,61 @@ public class HomeActivity extends AppCompatActivity {
             /*Log.i(TAGLEITURA, commander.getLastCommandLine());*/
         }
 
+
+        // Ensure the shared instance of AsciiCommander exists
+        AsciiCommander.createSharedInstance(getApplicationContext());
+
+        AsciiCommander commander = getCommander();
+
+        // Ensure that all existing responders are removed
+        commander.clearResponders();
+
+        // Add the LoggerResponder - this simply echoes all lines received from the reader to the log
+        // and passes the line onto the next responder
+        // This is added first so that no other responder can consume received lines before they are logged.
+        commander.addResponder(new LoggerResponder());
+
+        // Add a synchronous responder to handle synchronous commands
+        commander.addSynchronousResponder();
+
+        // Create the single shared instance for this ApplicationContext
+        ReaderManager.create(getApplicationContext());
+
+        // Add observers for changes
+        ReaderManager.sharedInstance().getReaderList().readerAddedEvent().addObserver(mAddedObserver);
+        ReaderManager.sharedInstance().getReaderList().readerUpdatedEvent().addObserver(mUpdatedObserver);
+        ReaderManager.sharedInstance().getReaderList().readerRemovedEvent().addObserver(mRemovedObserver);
+
         registrarBluetoothReceiver();
     }
+
+    Observable.Observer<Reader> mAddedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+            // See if this newly added Reader should be used
+            //AutoSelectReader(true);
+        }
+    };
+
+    Observable.Observer<Reader> mUpdatedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+        }
+    };
+
+    Observable.Observer<Reader> mRemovedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+            mReader = null;
+            // Was the current Reader removed
+            if (reader == mReader) {
+                mReader = null;
+
+                // Stop using the old Reader
+                getCommander().setReader(mReader);
+            }
+        }
+    };
 
     private void validaCampo() {
         trConectar = (TableRow) findViewById(R.id.trConectar);
@@ -140,7 +205,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (conexao == true) {
                     acessaActivity(LeituraActivity.class);
-                    /*acessaActivity(LerActivity.class);*/
+                    /*acessaActivity(ProcurarTagActivity.class);*/
                 } else
                     Toast.makeText(context, "Conecte com o leitor para prosseguir", Toast.LENGTH_SHORT).show();
             }
@@ -221,8 +286,37 @@ public class HomeActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case SOLICITA_CONEXAO:
-                    MAC = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-                    Log.i(TAG, "> MAC foi recebido: " + MAC);
+                    if (resultCode == Activity.RESULT_OK) {
+                        int readerIndex = data.getExtras().getInt(EXTRA_DEVICE_INDEX);
+                        Reader chosenReader = ReaderManager.sharedInstance().getReaderList().list().get(readerIndex);
+
+                        int action = data.getExtras().getInt(EXTRA_DEVICE_ACTION);
+
+                        // If already connected to a different reader then disconnect it
+                        if (mReader != null) {
+                            if (action == DeviceListActivity.DEVICE_CHANGE || action == DeviceListActivity.DEVICE_DISCONNECT) {
+                                mReader.disconnect();
+                                if (action == DeviceListActivity.DEVICE_DISCONNECT) {
+                                    mReader = null;
+                                }
+                            }
+                        }
+
+                        // Use the Reader found
+                        if (action == DeviceListActivity.DEVICE_CHANGE || action == DeviceListActivity.DEVICE_CONNECT) {
+                            mReader = chosenReader;
+                            getCommander().setReader(mReader);
+                        }
+                        // displayReaderState();
+                    }
+
+                  /*  MAC = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    for(int i = 0; i < ReaderManager.sharedInstance().getReaderList().list().size(); i++){
+                        Reader r = ReaderManager.sharedInstance().getReaderList().list().get(i);
+                        //if(r.connect())
+                    }
+                   // Reader chosenReader = ReaderManager.sharedInstance().getReaderList().list();
+                    Log.i(TAG, "> MAC foi recebido: " + MAC);*/
                     validaConexao();
                     break;
                 case SOLICITA_BLUETOOTH:
@@ -237,18 +331,22 @@ public class HomeActivity extends AppCompatActivity {
     /* UTILIZANDO A API RFID */
     private void validaConexao() {
         iniciarServer();
-
+        mReader.connect();
+        //conexao = true;
+        //AsciiCommander.createSharedInstance(this);
         toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
         tvConectar.setText("Desconectar");
     }
 
     private void iniciarServer() {
         service = new Intent(this, BluetoothService.class);
-        service.putExtra("address", MAC);
+        service.putExtra("nome", mReader.getDisplayName());
+        //service.putExtra("address", MAC);
         startService(service);
     }
 
     private void pararServer() {
+        mReader.disconnect();
         stopService(new Intent(this, BluetoothService.class));
     }
 
@@ -261,6 +359,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void acessaActivity(Class c) {
         Intent it = new Intent(HomeActivity.this, c);
+        it.putExtra("service", bluetoothService);
         startActivity(it);
     }
 
@@ -285,5 +384,48 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                abrirDialog();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void abrirDialog() {
+        String versao = "";
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pInfo.versionName;
+            versao = "Versão " + version;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this, R.style.Dialog);
+        builder.setTitle("SOS RFiD");
+        builder.setMessage(versao);
+        builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * @return the current AsciiCommander
+     */
+    protected AsciiCommander getCommander() {
+        return AsciiCommander.sharedInstance();
+    }
+
 }
 

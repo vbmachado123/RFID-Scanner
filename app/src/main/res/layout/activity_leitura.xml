@@ -32,9 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <TableRow
-                android:gravity="center"
+            android:gravity="center"
             android:layout_marginTop="20dp"
             android:orientation="horizontal"
             android:layout_height="match_parent"
@@ -44,7 +43,7 @@
                     android:textColor="@color/colorPrimary"
                     android:textAlignment="textStart"
                     android:textSize="18sp"
-                    android:text="Força"
+                    android:text="Sinal"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"/>
 

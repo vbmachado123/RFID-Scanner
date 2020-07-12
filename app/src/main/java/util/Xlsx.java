@@ -313,7 +313,7 @@ public class Xlsx {
 
         String dataFinal = Data.getDataEHoraAual("ddMMyyyy_HHmm");
 
-        File exportDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SOSRFiD");
+        File exportDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SOSRFiD/Inventarios Realizados");
         if (!exportDir.exists()) exportDir.mkdirs();
 
         Inventario inventario = inventarioDao.recupera();
@@ -327,7 +327,7 @@ public class Xlsx {
         else
             nome = local.getDescricao();
 
-        File file = new File(exportDir, "Inventario - " + nome + dataFinal + ".xls");
+        File file = new File(exportDir, "Inventario - " + nome + dataFinal + ".xlsx");
 
         try {
             WorkbookSettings wbSettings = new WorkbookSettings();

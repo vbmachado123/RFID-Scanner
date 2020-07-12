@@ -41,7 +41,7 @@ public class Preferencias {
     }
 
     public void salvarPotencia(int potencia){
-        editor.putInt(String.valueOf(CHAVE_POTENCIA), 30);
+        editor.putInt(String.valueOf(CHAVE_POTENCIA), potencia);
         editor.commit();
     }
     public String getIdentificador(){

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/teal800</color>
+    <color name="dl_description">#888888</color>
+    <color name="dl_reader">#666666</color>
+    <color name="dl_row_normal">#fefefe</color>
+    <color name="dl_row_selected">#ccddff</color>
+    <color name="dl_transport_off">#888888</color>
+    <color name="dl_transport_on">#1361ff</color>
+    <item name="item_click_support" type="id"/>
+    <string name="action_add_new">Adicionar</string>
+    <string name="button_add_new">Adicionar</string>
+    <string name="description_1119">UHF RFID Reader for Motorola MC55/65/67</string>
+    <string name="description_1126">Desktop UHF RFID Reader</string>
+    <string name="description_1128">Bluetooth® UHF RFID Reader</string>
+    <string name="description_1153">Bluetooth® Wearable UHF RFID Reader</string>
+    <string name="description_1166">Bluetooth® Rugged UHF RFID Reader</string>
+    <string name="description_2128">Bluetooth® UHF RFID Reader</string>
+    <string name="description_ih21">Bluetooth® UHF RFID Reader</string>
+    <string name="description_unknown_device"/>
+    <string name="none_found">Nenhum Leitor encontrado</string>
+    <string name="scanning">Procurando Leitores…</string>
+    <string name="select_reader">Selecionar Leitor</string>
+    <string name="transport_ble">BLE</string>
+    <string name="transport_bt">BT</string>
+    <string name="transport_usb">USB</string>
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        
+    </style>
+    <style name="AppTheme" parent="AppBaseTheme">
+        
+    </style>
+</resources>

@@ -40,4 +40,10 @@
         <item name="colorControlHighlight">@android:color/white</item>
     </style>
 
+    <style name="Spinner">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="colorControlNormal">@color/colorPrimary</item>
+
+    </style>
+
 </resources>
