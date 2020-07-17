@@ -86,7 +86,13 @@ attr spanCount
 attr stackFromEnd
 attr statusBarBackground
 attr ttcIndex
+color branco
+color branco2
+color button_color
+color colorAccent
 color colorPrimary
+color colorPrimary1
+color colorPrimaryDark
 color dl_description
 color dl_reader
 color dl_row_normal
@@ -100,6 +106,7 @@ color primary_text_default_material_dark
 color ripple_material_light
 color secondary_text_default_material_dark
 color secondary_text_default_material_light
+color teal900
 dimen compat_button_inset_horizontal_material
 dimen compat_button_inset_vertical_material
 dimen compat_button_padding_horizontal_material

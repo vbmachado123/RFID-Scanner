@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TableRow;
@@ -159,6 +160,51 @@ public class LeituraActivity extends AppCompatActivity {
         fabAbrir = (FloatingActionButton) findViewById(R.id.botaoAbrir);
         sbPotencia = (SeekBar) findViewById(R.id.sbPotencia);
         tvPotencia = (TextView) findViewById(R.id.tvPotencia);
+
+        trLocalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!leituras.isEmpty()){ /* Já foi lido algo, pode iniciar a tela */
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LeituraActivity.this, R.style.Dialog);
+                    builder.setTitle("Selecione a TAG para localizar");
+
+                    builder.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int p) {
+                          if(p >= 0){ /* Foi selecionado */
+                               Leitura l = (Leitura) adapter.getItem(p);
+                                Intent it = new Intent(LeituraActivity.this, ProcurarTagActivity.class);
+                                it.putExtra("tagProura", l.getNumeroTag());
+                                startActivity(it);
+                          }
+                            //Toast.makeText(context, "Selecionado: " + p, Toast.LENGTH_SHORT).show();
+                           // Log.d(TAG,"The wrong button was tapped: " + fileList[whichButton]);
+                        }
+                    });
+
+                  //  builder.setAdapter(adapter, null);
+             /*       builder.setTitle("Selecione a TAG");
+
+                         builder.setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+
+                    builder.setPositiveButton("Procurar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
+                            Toast.makeText(context, "Selecionado: " + selectedPosition, Toast.LENGTH_SHORT).show();
+                        }
+                    });*/
+
+                    // builder.setView(v);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            }
+        });
 
         trExpandir.setOnClickListener(new View.OnClickListener() {
             @Override

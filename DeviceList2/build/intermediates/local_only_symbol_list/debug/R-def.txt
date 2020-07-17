@@ -1,12 +1,19 @@
 R_DEF: Internal format may change without notice
 local
+color branco
+color branco2
+color button_color
+color colorAccent
 color colorPrimary
+color colorPrimary1
+color colorPrimaryDark
 color dl_description
 color dl_reader
 color dl_row_normal
 color dl_row_selected
 color dl_transport_off
 color dl_transport_on
+color teal900
 drawable bt_off
 drawable bt_on
 drawable list_1128_a1

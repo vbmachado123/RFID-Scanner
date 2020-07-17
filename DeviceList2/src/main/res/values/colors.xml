@@ -11,6 +11,15 @@
     <color name="dl_row_normal">#fefefe</color>
     <color name="dl_row_selected">#ccddff</color>
 
+    <color name="branco">#ffffff</color>
+    <color name="branco2">#FFFFFF</color>
+
+    <color name="colorPrimary1">#00695C</color>
+    <color name="colorPrimaryDark">#949494</color>
+    <color name="colorAccent">#4CAF50</color>
+    <color name="button_color">#4CAF50</color>
+    <color name="teal900">#004D40</color>
+
     <color name="dl_transport_on">#1361ff</color>
     <color name="dl_transport_off">#888888</color>
 
