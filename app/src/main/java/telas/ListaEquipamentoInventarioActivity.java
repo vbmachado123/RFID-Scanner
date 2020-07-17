@@ -329,7 +329,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
                 progressDialog.setTitle("Salvando Listas...");
                 progressDialog.show();
-
+                progressDialog.setMessage("Aguarde...");
             }
 
             @Override
@@ -343,6 +343,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                         }
                     } /*else { *//* Salvar na InventarioNegado */
                     int i = 0;
+
                     for (Equipamento e : listaNaoAtribuida) {
                         InventarioNegado inventarioNegado = new InventarioNegado();
                         model.Status status = new model.Status();
@@ -358,14 +359,15 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                         inventarioNegado.setNumeroTag(e.getNumeroTag());
                         Long inventarioNegadoId = inventarioNegadoDao.inserir(inventarioNegado);
 
-                        progressDialog.setMessage("Salvando Inventario Negado");
-                        progresso++;
+
+                       // progresso++;
                         i++;
                         Log.i("Salvando", "Salva - InventarioNegado: " + inventarioNegadoId);
                     }
                     // } /* Salvar EquipamentoInventario */
 
                     int x = 0;
+                    //progressDialog.setMessage("Salvando Equipamento Inventaio");
                     for (Equipamento e : listaEncontrado) {
                         equipamentoInventario = new EquipamentoInventario();
                         model.Status status = new model.Status();
@@ -384,8 +386,8 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                         Log.i("Salvando", "Salva - EquipamentoInventario: " + idEquipamento);
 
                         x++;
-                        progressDialog.setMessage("Salvando Equipamento Inventaio");
-                        progresso++;
+
+                       // progresso++;
                     }
 
                     progressDialog.dismiss();

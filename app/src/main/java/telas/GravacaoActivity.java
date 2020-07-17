@@ -60,9 +60,6 @@ import util.WeakHandler;
 
 public class GravacaoActivity extends AppCompatActivity {
     private static final boolean D = BuildConfig.DEBUG;
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
-    private static final int REQUEST_ENABLE_BT = 3;
     private static final String TAG = "GravacaoActivity";
     private Toolbar toolbar;
     private EditText numeroTag, textoGravar;
@@ -116,6 +113,14 @@ public class GravacaoActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(mBankSelectedListener);
         spinner.setSelection(mDatabanks.length - 1);
 
+        /* NÃO FUNCIONA */
+       /* mResultTextView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                numeroTag.setText(mResultTextView.getText().toString());
+                return false;
+            }
+        });*/
     }
 
     /* SeekBar -> Alterar potencia */

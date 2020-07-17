@@ -5,8 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.DeviceListActivity;
@@ -17,8 +23,15 @@ import com.uk.tsl.rfid.asciiprotocol.device.ObservableReaderList;
 import com.uk.tsl.rfid.asciiprotocol.device.Reader;
 import com.uk.tsl.rfid.asciiprotocol.device.ReaderManager;
 import com.uk.tsl.rfid.asciiprotocol.device.TransportType;
+import com.uk.tsl.rfid.asciiprotocol.responders.ISignalStrengthReceivedDelegate;
 import com.uk.tsl.rfid.asciiprotocol.responders.LoggerResponder;
 import com.uk.tsl.utils.Observable;
+import com.uk.tsl.utils.StringHelper;
+
+import util.InventoryModel;
+import util.ModelBase;
+import util.SignalPercentageConverter;
+import util.WeakHandler;
 
 import static com.uk.tsl.rfid.DeviceListActivity.EXTRA_DEVICE_ACTION;
 import static com.uk.tsl.rfid.DeviceListActivity.EXTRA_DEVICE_INDEX;
@@ -26,204 +39,161 @@ import static com.uk.tsl.rfid.DeviceListActivity.EXTRA_DEVICE_INDEX;
 /* Classe criada para testar a conexao - 11/07/20 */
 public class TesteConexaoActivity extends AppCompatActivity {
 
-    private Button btConectar;
-    private Reader mReader;
+
+    private TextView potencia, tvPotenciaSubtitulo;
+    private EditText tag;
+
+    private InventoryModel mModel;
+
+    private SignalPercentageConverter mPercentageConverter = new SignalPercentageConverter();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teste_conexao);
 
-        // Ensure the shared instance of AsciiCommander exists
-        AsciiCommander.createSharedInstance(getApplicationContext());
+        mGenericModelHandler = new GenericHandler(this);
 
-        AsciiCommander commander = getCommander();
+        tag = (EditText) findViewById(R.id.tvTag);
+        potencia = (TextView) findViewById(R.id.tvPotencia);
+        tvPotenciaSubtitulo = (TextView) findViewById(R.id.tvPotenciaSubtitulo);
 
-        // Ensure that all existing responders are removed
-        commander.clearResponders();
+        String tagProcura = "2019022812776A031A70067A";
+        tag.setText(tagProcura);
 
-        // Add the LoggerResponder - this simply echoes all lines received from the reader to the log
-        // and passes the line onto the next responder
-        // This is added first so that no other responder can consume received lines before they are logged.
-        commander.addResponder(new LoggerResponder());
+        tag.addTextChangedListener(mTargetTagEditTextChangedListener);
+        tag.setOnFocusChangeListener(mTargetTagFocusChangedListener);
+        // Create a (custom) model and configure its commander and handler
+        mModel = new InventoryModel();
+        mModel.setCommander(getCommander());
+        mModel.setHandler(mGenericModelHandler);
 
-        // Add a synchronous responder to handle synchronous commands
-        commander.addSynchronousResponder();
-
-        // Create the single shared instance for this ApplicationContext
-        ReaderManager.create(getApplicationContext());
-
-        // Add observers for changes
-        ReaderManager.sharedInstance().getReaderList().readerAddedEvent().addObserver(mAddedObserver);
-        ReaderManager.sharedInstance().getReaderList().readerUpdatedEvent().addObserver(mUpdatedObserver);
-        ReaderManager.sharedInstance().getReaderList().readerRemovedEvent().addObserver(mRemovedObserver);
-
-
-        btConectar = (Button) findViewById(R.id.btConectar);
-        btConectar.setOnClickListener(new View.OnClickListener() {
+        mModel.setRawSignalDelegate(new ISignalStrengthReceivedDelegate() {
             @Override
-            public void onClick(View v) {
-                //mIsSelectingReader = true;
-                int index = -1;
-                if( mReader != null )
-                {
-                    index = ReaderManager.sharedInstance().getReaderList().list().indexOf(mReader);
-                }
-                Intent selectIntent = new Intent(TesteConexaoActivity.this, DeviceListActivity.class);
-                if( index >= 0 )
-                {
-                    selectIntent.putExtra(EXTRA_DEVICE_INDEX, index);
-                }
-                startActivityForResult(selectIntent, DeviceListActivity.SELECT_DEVICE_REQUEST);
+            public void signalStrengthReceived(Integer level) {
+                final String value = level == null ? "---" : String.format("%d %%", mPercentageConverter.asPercentage(level));
+                potencia.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        potencia.setText(mModel.isScanning() ? value : "---");
+                    }
+                });
             }
         });
 
+        mModel.setPercentageSignalDelegate(new ISignalStrengthReceivedDelegate() {
+            @Override
+            public void signalStrengthReceived(Integer level) {
+                final String value = level == null ? "---" : level.toString() + "%";
+                potencia.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        potencia.setText(mModel.isScanning() ? value : "---");
+                    }
+                });
+            }
+        });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case DeviceListActivity.SELECT_DEVICE_REQUEST:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    int readerIndex = data.getExtras().getInt(EXTRA_DEVICE_INDEX);
-                    Reader chosenReader = ReaderManager.sharedInstance().getReaderList().list().get(readerIndex);
 
-                    int action = data.getExtras().getInt(EXTRA_DEVICE_ACTION);
+    private TextWatcher mTargetTagEditTextChangedListener = new TextWatcher() {
 
-                    // If already connected to a different reader then disconnect it
-                    if (mReader != null) {
-                        if (action == DeviceListActivity.DEVICE_CHANGE || action == DeviceListActivity.DEVICE_DISCONNECT) {
-                            mReader.disconnect();
-                            if (action == DeviceListActivity.DEVICE_DISCONNECT) {
-                                mReader = null;
-                            }
-                        }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String value = s.toString();
+
+            mModel.setTargetTagEpc(value);
+            UpdateUI();
+        }
+    };
+
+    //----------------------------------------------------------------------------------------------
+    // Handler for when editing has finished on the target tag
+    //----------------------------------------------------------------------------------------------
+
+    private View.OnFocusChangeListener mTargetTagFocusChangedListener =
+            new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        mModel.setTargetTagEpc(tag.getText().toString());
+                        mModel.updateTarget();
                     }
-
-                    // Use the Reader found
-                    if (action == DeviceListActivity.DEVICE_CHANGE || action == DeviceListActivity.DEVICE_CONNECT) {
-                        mReader = chosenReader;
-                        getCommander().setReader(mReader);
-                    }
-                   // displayReaderState();
                 }
-                break;
+            };
+
+
+    private static class GenericHandler extends WeakHandler<TesteConexaoActivity> {
+        public GenericHandler(TesteConexaoActivity t) {
+            super(t);
+        }
+
+        @Override
+        public void handleMessage(Message msg, TesteConexaoActivity t) {
+            try {
+                switch (msg.what) {
+                    case ModelBase.BUSY_STATE_CHANGED_NOTIFICATION:
+                        if (t.mModel.error() != null) {
+                            //   t.appendMessage("\n Task failed:\n" + t.mModel.error().getMessage() + "\n\n");
+                            Toast.makeText(t, t.mModel.error().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                        t.UpdateUI();
+                        break;
+
+                    case ModelBase.MESSAGE_NOTIFICATION:
+                        String message = (String) msg.obj;
+                        //  t.appendMessage(message);
+                        Toast.makeText(t, message, Toast.LENGTH_SHORT).show();
+                        break;
+
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+            }
+
         }
     }
 
+    ;
 
-    /**
-     * @return the current AsciiCommander
-     */
-    protected AsciiCommander getCommander()
-    {
+    //
+    // Set the state for the UI controls
+    //
+    private void UpdateUI() {
+        boolean isConnected = getCommander().isConnected();
+        boolean canIssueCommand = isConnected & !mModel.isBusy();
+
+        tvPotenciaSubtitulo.setText(String.format("Using: %s ASCII command", mModel.isFindTagCommandAvailable() ? "\".ft\" - Find Tag" : "\".iv\" - Inventory"));
+        String instructions = "";
+        if (isConnected) {
+            if (StringHelper.isNullOrEmpty(mModel.getTargetTagEpc())) {
+                instructions = "Enter a full or partial EPC.";
+            } else {
+                instructions = "Pull trigger to scan";
+            }
+        } else {
+            instructions = "Connect a TSL Reader";
+        }
+        tvPotenciaSubtitulo.setText(instructions);
+
+    }
+
+
+    // The handler for model messages
+    private static GenericHandler mGenericModelHandler;
+
+    protected AsciiCommander getCommander() {
         return AsciiCommander.sharedInstance();
     }
-
-    //----------------------------------------------------------------------------------------------
-    // ReaderList Observers
-    //----------------------------------------------------------------------------------------------
-    Observable.Observer<Reader> mAddedObserver = new Observable.Observer<Reader>()
-    {
-        @Override
-        public void update(Observable<? extends Reader> observable, Reader reader)
-        {
-            // See if this newly added Reader should be used
-            AutoSelectReader(true);
-        }
-    };
-
-    Observable.Observer<Reader> mUpdatedObserver = new Observable.Observer<Reader>()
-    {
-        @Override
-        public void update(Observable<? extends Reader> observable, Reader reader)
-        {
-        }
-    };
-
-    Observable.Observer<Reader> mRemovedObserver = new Observable.Observer<Reader>()
-    {
-        @Override
-        public void update(Observable<? extends Reader> observable, Reader reader)
-        {
-            mReader = null;
-            // Was the current Reader removed
-            if( reader == mReader)
-            {
-                mReader = null;
-
-                // Stop using the old Reader
-                getCommander().setReader(mReader);
-            }
-        }
-    };
-
-    private void AutoSelectReader(boolean attemptReconnect)
-    {
-        ObservableReaderList readerList = ReaderManager.sharedInstance().getReaderList();
-        Reader usbReader = null;
-        if( readerList.list().size() >= 1)
-        {
-            // Currently only support a single USB connected device so we can safely take the
-            // first CONNECTED reader if there is one
-            for (Reader reader : readerList.list())
-            {
-                if (reader.hasTransportOfType(TransportType.USB))
-                {
-                    usbReader = reader;
-                    break;
-                }
-            }
-        }
-
-        if( mReader == null )
-        {
-            if( usbReader != null )
-            {
-                // Use the Reader found, if any
-                mReader = usbReader;
-                getCommander().setReader(mReader);
-            }
-        }
-        else
-        {
-            // If already connected to a Reader by anything other than USB then
-            // switch to the USB Reader
-            IAsciiTransport activeTransport = mReader.getActiveTransport();
-            if ( activeTransport != null && activeTransport.type() != TransportType.USB && usbReader != null)
-            {
-                mReader.disconnect();
-
-                mReader = usbReader;
-
-                // Use the Reader found, if any
-                getCommander().setReader(mReader);
-            }
-        }
-
-        // Reconnect to the chosen Reader
-        if( mReader != null
-                && !mReader.isConnecting()
-                && (mReader.getActiveTransport()== null || mReader.getActiveTransport().connectionStatus().value() == ConnectionState.DISCONNECTED))
-        {
-            // Attempt to reconnect on the last used transport unless the ReaderManager is cause of OnPause (USB device connecting)
-            if( attemptReconnect )
-            {
-                if( mReader.allowMultipleTransports() || mReader.getLastTransportType() == null )
-                {
-                    // Reader allows multiple transports or has not yet been connected so connect to it over any available transport
-                    mReader.connect();
-                }
-                else
-                {
-                    // Reader supports only a single active transport so connect to it over the transport that was last in use
-                    mReader.connect(mReader.getLastTransportType());
-                }
-            }
-        }
-    }
-
 
 }

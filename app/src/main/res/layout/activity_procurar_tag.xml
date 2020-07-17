@@ -7,8 +7,7 @@
     android:background="@color/grey340"
     tools:context="telas.ProcurarTagActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,19 +15,80 @@
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@mipmap/ic_sos"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Ler "
+        app:title="Localizar "
         app:titleTextColor="@color/branco">
 
     </androidx.appcompat.widget.Toolbar>
 
-        <LinearLayout
-            android:layout_below="@+id/toolbar"
-            android:padding="8dp"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:orientation="vertical">
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sinal"
+                android:textAlignment="textStart"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
+
+            <SeekBar
+                android:id="@+id/sbPotencia"
+                android:layout_width="200dp"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tvPotencia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/distancia"
+                android:text="2 dBm"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp" />
+
+        </TableRow>
+
+        <EditText
+            android:layout_marginTop="30dp"
+            android:id="@+id/tvTag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/colorPrimary"
+            android:selectAllOnFocus="true"
+            android:inputType="text"
+            android:textSize="22sp" />
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/forcaTag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="---"
+                android:textColor="@color/colorPrimary"
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

@@ -204,8 +204,8 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (conexao == true) {
-                    acessaActivity(LeituraActivity.class);
-                    /*acessaActivity(ProcurarTagActivity.class);*/
+                    /*acessaActivity(LeituraActivity.class);*/
+                    acessaActivity(TesteConexaoActivity.class);
                 } else
                     Toast.makeText(context, "Conecte com o leitor para prosseguir", Toast.LENGTH_SHORT).show();
             }

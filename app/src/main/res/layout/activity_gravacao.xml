@@ -64,7 +64,7 @@
                     android:layout_width="300dp"
                     android:layout_height="match_parent"
                     android:hint="Dados a serem gravados (Hex)"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:textColor="@color/colorPrimary"
                     android:textColorHint="@color/greyHint" />
 
