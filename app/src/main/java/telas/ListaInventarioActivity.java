@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rfidscanner.R;
@@ -59,6 +60,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
     private TableRow trAlterarDescricao, trExportar, trAbrirLista;
     private ListView listaEquipamentos;
     private FloatingActionButton fabSalvar;
+    private TextView tamanhoLista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,8 @@ public class ListaInventarioActivity extends AppCompatActivity {
         equipamentoDao = new EquipamentoDao(this);
 
         equipamentos = new ArrayList<>();
+
+        tamanhoLista = (TextView) findViewById(R.id.txtTamanhoLista);
 
         copulaLista();
         validaCampo();
@@ -189,5 +193,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
             Log.i("Salvando", "EquipamentoInventario - " + equipamento.getNumeroTag());
         }
+
+        tamanhoLista.setText(String.valueOf(equipamentoInventarioList.size()));
     }
 }

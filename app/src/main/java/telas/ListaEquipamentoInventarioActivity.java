@@ -336,10 +336,45 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
             protected Void doInBackground(Void... voids) {
                 if (!listaEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
                     if (!listaNaoEncontrado.isEmpty()) { /* Ainda existem itens nao encontrados */
-                        listaNaoAtribuida.addAll(listaNaoEncontrado);
+                        //listaNaoAtribuida.addAll(listaNaoEncontrado);
                         for (int i = 0; i < listaNaoEncontrado.size(); i++) {
-                            latitudeNaoAtribuida.add(String.valueOf(latitude));
+
+                            Equipamento e = listaNaoEncontrado.get(i);
+                            equipamentoInventario = new EquipamentoInventario();
+                            InventarioNegado inventarioNegado = new InventarioNegado();
+
+                            /*latitudeNaoAtribuida.add(String.valueOf(latitude));
                             longitudeNaoAtribuida.add(String.valueOf(longitude));
+*/
+                            /* INSERE EQUIPAMENTO NA TABELA INVENTARIONEGADO */
+             /*
+                            model.Status status = new model.Status();
+                            status.setStatus("Nao_Encontrado");
+                            Long statusId = statusDao.inserir(status);
+                            inventarioNegado.setIdStatus(Math.toIntExact(statusId));
+                            inventarioNegado.setIdInventario(inventarioId);
+                            inventarioNegado.setDataHora(dataSalvamento);
+                            inventarioNegado.setLatitude(String.valueOf(latitude));
+                            inventarioNegado.setLongitude(String.valueOf(longitude));
+                           *//* inventarioNegado.setLatitude(latitudeNaoAtribuida.get(i));
+                            inventarioNegado.setLongitude(longitudeNaoAtribuida.get(i));*//*
+                            inventarioNegado.setNumeroTag(e.getNumeroTag());
+                            inventarioNegadoDao.inserir(inventarioNegado);*/
+
+                            /* INSERE EQUIPAMENTO NA TABELA EQUIPAMENTOINVENTARIO */
+                            model.Status status = new model.Status();
+                            status.setStatus("Nao_Encontrado");
+                            Long statusId = statusDao.inserir(status);
+                            equipamentoInventario.setDataHora(dataSalvamento);
+                        /*equipamentoInventario.setLatitude(String.valueOf(latitude));
+                         equipamentoInventario.setLongitude(String.valueOf(longitude));*/
+                            equipamentoInventario.setLatitude(String.valueOf(latitude));
+                            equipamentoInventario.setLongitude(String.valueOf(longitude));
+                            equipamentoInventario.setIdInventario(inventarioId);
+                            equipamentoInventario.setIdEquipamento(e.getId());
+                            equipamentoInventario.setIdStatus(Math.toIntExact(statusId));
+                            Long idEquipamento = equipamentoInventarioDao.inserir(equipamentoInventario);
+
                         }
                     } /*else { *//* Salvar na InventarioNegado */
                     int i = 0;
@@ -360,7 +395,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                         Long inventarioNegadoId = inventarioNegadoDao.inserir(inventarioNegado);
 
 
-                       // progresso++;
+                        // progresso++;
                         i++;
                         Log.i("Salvando", "Salva - InventarioNegado: " + inventarioNegadoId);
                     }
@@ -387,7 +422,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
                         x++;
 
-                       // progresso++;
+                        // progresso++;
                     }
 
                     progressDialog.dismiss();

@@ -27,12 +27,24 @@ public class StatusDao {
         while (cursor.moveToNext()) {
             status = new Status();
             status.setId(cursor.getInt(0));
-            status.setStatus(cursor.getString(2));
+            status.setStatus(cursor.getString(1));
         }
         return status;
     }
 
-    public Cursor pegaCursor(){
+    public Status getById(int id) {
+        Cursor cursor = banco.rawQuery("SELECT * FROM status WHERE id=" + id, null);
+
+        if (cursor.moveToFirst()) {
+            status = new Status();
+            status.setId(cursor.getInt(0));
+            status.setStatus(cursor.getString(1));
+        }
+        return status;
+
+    }
+
+    public Cursor pegaCursor() {
         Cursor cursor = banco.rawQuery("SELECT * FROM status", null);
         return cursor;
     }
