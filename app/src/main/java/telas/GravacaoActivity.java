@@ -160,18 +160,41 @@ public class GravacaoActivity extends AppCompatActivity {
         tvPotencia.setText(mPowerLevel + " dBm");
     }
 
-    private AdapterView.OnItemSelectedListener mBankSelectedListener = new AdapterView.OnItemSelectedListener()
-    {
+    private static final String DEFAULT_PASSWORD = "00000000";
+    private static final String DEFAULT_PASSWORD_DATA = "0000000000000000";
+
+    private static final String ACCESS_PASSWORD = "FEDCBA90";
+    private static final String PASSWORD_DATA = "87654321FEDCBA90";
+
+    private AdapterView.OnItemSelectedListener mBankSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            Databank targetBank = (Databank)parent.getItemAtPosition(pos);
-            if( mModel.getReadCommand() != null ) {
-                mModel.getReadCommand().setBank(targetBank);
-            }
-            if( mModel.getWriteCommand() != null ) {
-                mModel.getWriteCommand().setBank(targetBank);
-            }
+            Databank targetBank = (Databank) parent.getItemAtPosition(pos);
 
+            if (mModel.getReadCommand() != null) {
+                mModel.getReadCommand().setBank(targetBank);
+              /*  if (targetBank.equals(Databank.ELECTRONIC_PRODUCT_CODE)) {
+                    try {
+                        mModel.getWriteCommand().setAccessPassword(ACCESS_PASSWORD);
+                      //  mModel.getWriteCommand().setAccessPassword(DEFAULT_PASSWORD_DATA);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.i("Gravacao", "Erro ao gravar EPC: " + e.getMessage());
+                    }
+                }*/
+            }
+            if (mModel.getWriteCommand() != null) {
+                mModel.getWriteCommand().setBank(targetBank);
+               /* if (targetBank.equals(Databank.ELECTRONIC_PRODUCT_CODE)) {
+                    try {
+                        mModel.getWriteCommand().setAccessPassword(ACCESS_PASSWORD);
+                        //mModel.getWriteCommand().setAccessPassword(DEFAULT_PASSWORD_DATA);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        Log.i("Gravacao", "Erro ao gravar EPC: " + e.getMessage());
+                    }
+                }*/
+            }
         }
 
         @Override
@@ -191,8 +214,8 @@ public class GravacaoActivity extends AppCompatActivity {
         tvEscrever = (TextView) findViewById(R.id.tvEscrever);
         ibLimpar = (ImageButton) findViewById(R.id.ibLimpar);
 
-        mResultTextView = (TextView)findViewById(R.id.resultTextView);
-        mResultScrollView = (ScrollView)findViewById(R.id.resultScrollView);
+        mResultTextView = (TextView) findViewById(R.id.resultTextView);
+        mResultScrollView = (ScrollView) findViewById(R.id.resultScrollView);
 
         numeroTag.addTextChangedListener(mTargetTagEditTextChangedListener);
         textoGravar.addTextChangedListener(mDataEditTextChangedListener);
@@ -205,7 +228,7 @@ public class GravacaoActivity extends AppCompatActivity {
             }
         });
 
-     //   tvTagsLidas = (TextView) findViewById(R.id.tvTagsLidas);
+        //   tvTagsLidas = (TextView) findViewById(R.id.tvTagsLidas);
 
       /*  lvLista.setAdapter(adapter);
         lvLista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -220,7 +243,7 @@ public class GravacaoActivity extends AppCompatActivity {
         tvLer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            mModel.read();
+                mModel.read();
             }
         });
 
@@ -251,11 +274,11 @@ public class GravacaoActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public AsciiCommander getCommander(){
+    public AsciiCommander getCommander() {
         return AsciiCommander.sharedInstance();
     }
 
-    public class ParameterEnumerationArrayAdapter<T extends EnumerationBase > extends ArrayAdapter<T> {
+    public class ParameterEnumerationArrayAdapter<T extends EnumerationBase> extends ArrayAdapter<T> {
         private final T[] mValues;
 
         public ParameterEnumerationArrayAdapter(Context context, int textViewResourceId, T[] objects) {
@@ -266,7 +289,7 @@ public class GravacaoActivity extends AppCompatActivity {
         @SuppressLint("ResourceAsColor")
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            TextView view = (TextView)super.getView(position, convertView, parent);
+            TextView view = (TextView) super.getView(position, convertView, parent);
             view.setTextColor(R.color.colorPrimary);
             view.setText(mValues[position].getDescription());
             return view;
@@ -275,14 +298,14 @@ public class GravacaoActivity extends AppCompatActivity {
         @SuppressLint("ResourceAsColor")
         @Override
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            TextView view = (TextView)super.getDropDownView(position, convertView, parent);
+            TextView view = (TextView) super.getDropDownView(position, convertView, parent);
             view.setTextColor(R.color.colorPrimary);
             view.setText(mValues[position].getDescription());
             return view;
         }
     }
 
-    private Databank[] mDatabanks = new Databank[] {
+    private Databank[] mDatabanks = new Databank[]{
             Databank.ELECTRONIC_PRODUCT_CODE,
             Databank.TRANSPONDER_IDENTIFIER,
             Databank.RESERVED,
@@ -296,18 +319,26 @@ public class GravacaoActivity extends AppCompatActivity {
             try {
                 switch (msg.what) {
                     case ModelBase.BUSY_STATE_CHANGED_NOTIFICATION:
-                        if( mModel.error() != null ) {
+                        if (mModel.error() != null) {
                             mResultTextView.append("\n Task failed:\n" + mModel.error().getMessage() + "\n\n");
-                            mResultScrollView.post(new Runnable() { public void run() { mResultScrollView.fullScroll(View.FOCUS_DOWN); } });
+                            mResultScrollView.post(new Runnable() {
+                                public void run() {
+                                    mResultScrollView.fullScroll(View.FOCUS_DOWN);
+                                }
+                            });
 
                         }
-                       // UpdateUI();
+                        // UpdateUI();
                         break;
 
                     case ModelBase.MESSAGE_NOTIFICATION:
-                        String message = (String)msg.obj;
+                        String message = (String) msg.obj;
                         mResultTextView.append(message);
-                        mResultScrollView.post(new Runnable() { public void run() { mResultScrollView.fullScroll(View.FOCUS_DOWN); } });
+                        mResultScrollView.post(new Runnable() {
+                            public void run() {
+                                mResultScrollView.fullScroll(View.FOCUS_DOWN);
+                            }
+                        });
                         break;
 
                     default:
@@ -323,18 +354,20 @@ public class GravacaoActivity extends AppCompatActivity {
     private TextWatcher mTargetTagEditTextChangedListener = new TextWatcher() {
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
         @Override
         public void afterTextChanged(Editable s) {
             String value = s.toString();
-            if( mModel.getReadCommand() != null ) {
+            if (mModel.getReadCommand() != null) {
                 mModel.getReadCommand().setSelectData(value);
             }
-            if( mModel.getWriteCommand() != null ) {
+            if (mModel.getWriteCommand() != null) {
                 mModel.getWriteCommand().setSelectData(value);
             }
         }
@@ -343,15 +376,17 @@ public class GravacaoActivity extends AppCompatActivity {
     private TextWatcher mDataEditTextChangedListener = new TextWatcher() {
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
         @Override
         public void afterTextChanged(Editable s) {
             String value = s.toString();
-            if( mModel.getWriteCommand() != null ) {
+            if (mModel.getWriteCommand() != null) {
                 byte[] data = null;
                 try {
                     data = HexEncoding.stringToBytes(value);

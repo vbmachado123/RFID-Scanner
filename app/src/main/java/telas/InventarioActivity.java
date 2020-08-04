@@ -29,7 +29,11 @@ import com.example.rfidscanner.R;
 import java.io.File;
 
 import dao.EquipamentoDao;
+import dao.EquipamentoInventarioDao;
+import dao.InventarioDao;
+import dao.InventarioNegadoDao;
 import model.Equipamento;
+import model.EquipamentoInventario;
 import model.Inventario;
 import util.Permissao;
 import util.RealPathUri;
@@ -80,9 +84,43 @@ public class InventarioActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EquipamentoDao dao = new EquipamentoDao(InventarioActivity.this);
                 Equipamento e = dao.recupera();
-                if (e != null)
-                    acessaActivity(EscolhaLocalActivity.class);
-                else {
+                if (e != null) {
+                    InventarioDao inventarioDao = new InventarioDao(InventarioActivity.this);
+                    EquipamentoInventarioDao equipamentoInventarioDao = new EquipamentoInventarioDao(InventarioActivity.this);
+                    InventarioNegadoDao inventarioNegadoDao = new InventarioNegadoDao(InventarioActivity.this);
+                    Inventario i = inventarioDao.recupera();
+                    if(i != null){
+
+                        AlertDialog dialog = new AlertDialog.Builder(InventarioActivity.this, R.style.Dialog)
+                                .setTitle("Atenção")
+                                .setMessage("Já existe um inventário em andamento, deseja continuar-lo?")
+                                .setNegativeButton("Limpar", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        inventarioDao.limparTabela();
+                                        equipamentoInventarioDao.limparTabela();
+                                        inventarioNegadoDao.limparTabela();
+                                        Toast.makeText(InventarioActivity.this, "Inventário limpo", Toast.LENGTH_SHORT).show();
+                                        acessaActivity(EscolhaLocalActivity.class);
+                                    }
+                                })
+                                .setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        /* Inserir lógica para continuar o inventário */
+                                        EquipamentoInventario ei = equipamentoInventarioDao.recupera();
+                                        if(ei != null) {
+                                            acessaActivity(ListaInventarioActivity.class);
+                                            Log.i("Inventario", "Tabela EquipamentoInventario não esta vazia");
+                                        } else {
+                                            acessaActivity(ListaEquipamentoInventarioActivity.class);
+                                            Log.i("Inventario", "Tabela EquipamentoInventario esta vazia");
+                                        }
+                                    }
+                                }).create();
+                        dialog.show();
+                    } else acessaActivity(EscolhaLocalActivity.class);
+                } else { /* Já possui equipamentos cadastrados */
                     AlertDialog dialog = new AlertDialog.Builder(InventarioActivity.this, R.style.Dialog)
                             .setTitle("Atenção")
                             .setMessage("O banco não possui registros! Deseja importá-los?")

@@ -270,15 +270,19 @@ public class EscolhaLocalActivity extends AppCompatActivity {
     private void selecionarLocal() { /* Inverter Edittext */
         etLocal.setText(local.getDescricao());
         etLocal.setEnabled(false);
-        listaLocal.clear();
         etSubLocal.setEnabled(true);
+        listaLocal.clear();
         fabProsseguir.getBackground().mutate().setTint(ContextCompat.getColor(this, R.color.colorPrimary));
 
+        //int count = 0;
         for (SubLocal l : listaSublocal) {
             if (l.getIdLocal() == local.getId()) {
                 filtroListaSubLocal.add(l);
+                //       count ++;
             }
         }
+
+        // Log.i("Escolha", "Contador Sublocal: " + count);
 
         fabProsseguir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -317,6 +321,9 @@ public class EscolhaLocalActivity extends AppCompatActivity {
             tvTextoEscolhido.setText(local.getDescricao() + " - Sublocal: ");
     }
 
+    private void verificaEquipamentos() {
+    }
+
     private void acessaActivity() {
         /* Intent it = new Intent(EscolhaLocalActivity.this, ListaInventarioActivity.class);*/
         Intent it = new Intent(EscolhaLocalActivity.this, ListaEquipamentoInventarioActivity.class);
@@ -331,6 +338,17 @@ public class EscolhaLocalActivity extends AppCompatActivity {
         listaLocal = (ArrayList<Local>) localDao.obterTodos();
         filtroListaLocal.addAll(listaLocal);
 
+        for(Local l : listaLocal){
+            Log.i("Escolha", "Local id: " + l.getId());
+            Log.i("Escolha", "Local Descricao: " + l.getDescricao());
+        }
+
         listaSublocal = (ArrayList<SubLocal>) subLocalDao.obterTodos();
+
+        for(SubLocal sl : listaSublocal){
+            Log.i("Escolha", "SubLocal Id: " + sl.getId());
+            Log.i("Escolha", "Local Id: " + sl.getIdLocal());
+            Log.i("Escolha", "SubLocal Descricao: " + sl.getDescricao());
+        }
     }
 }

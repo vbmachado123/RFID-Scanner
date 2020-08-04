@@ -68,7 +68,6 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "Bluetooth", TAGLEITURA = "Teste";
     private TextView tvConectar, tvLeitura, tvGravacao;
 
-    private String verificaConexao;
     private Reader mReader = null;
 
     @SuppressLint({"ResourceAsColor", "NewApi", "HandlerLeak"})
@@ -92,11 +91,10 @@ public class HomeActivity extends AppCompatActivity {
 
         validaCampo();
 
+        verificaConexao();
+
         Preferencias preferencias = new Preferencias(HomeActivity.this);
         // conexao = preferencias.getConexao();
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         bluetoothService = new BluetoothService();
 
@@ -108,41 +106,53 @@ public class HomeActivity extends AppCompatActivity {
             startActivityForResult(ativaIntent, SOLICITA_BLUETOOTH);
         } else { /* faz algo */ }
 
-        /* VERIFICANDO SE POSSUI CONEXÃO ATIVA COM O LEITOR */
-        if (!conexao)
-            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
-        else {
-            toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
-            tvConectar.setText("Desconectar");
-            /*Log.i(TAGLEITURA, commander.getLastCommandLine());*/
-        }
-
-
-        // Ensure the shared instance of AsciiCommander exists
         AsciiCommander.createSharedInstance(getApplicationContext());
 
         AsciiCommander commander = getCommander();
 
-        // Ensure that all existing responders are removed
         commander.clearResponders();
 
-        // Add the LoggerResponder - this simply echoes all lines received from the reader to the log
-        // and passes the line onto the next responder
-        // This is added first so that no other responder can consume received lines before they are logged.
         commander.addResponder(new LoggerResponder());
 
-        // Add a synchronous responder to handle synchronous commands
         commander.addSynchronousResponder();
 
-        // Create the single shared instance for this ApplicationContext
+        if(commander.isConnected()) conexao = true;
+
         ReaderManager.create(getApplicationContext());
 
-        // Add observers for changes
         ReaderManager.sharedInstance().getReaderList().readerAddedEvent().addObserver(mAddedObserver);
         ReaderManager.sharedInstance().getReaderList().readerUpdatedEvent().addObserver(mUpdatedObserver);
         ReaderManager.sharedInstance().getReaderList().readerRemovedEvent().addObserver(mRemovedObserver);
 
         registrarBluetoothReceiver();
+    }
+
+    private void verificaConexao() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        /* VERIFICANDO SE POSSUI CONEXÃO ATIVA COM O LEITOR */
+       if(getCommander() != null){
+           switch (getCommander().getConnectionState()) {
+               case CONNECTED:
+                   toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+                   tvConectar.setText("Desconectar");
+                   conexao = true;
+                   break;
+               case CONNECTING:
+                   toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.amareloconectando)));
+                   tvConectar.setText("Conectando....");
+                   break;
+               case DISCONNECTED:
+                   toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
+                   conexao = false;
+                   break;
+               default:
+                   toolbar.setBackground(new ColorDrawable(getResources().getColor(R.color.vermelhodesativado)));
+                   conexao = false;
+           }
+       }
+
     }
 
     Observable.Observer<Reader> mAddedObserver = new Observable.Observer<Reader>() {
@@ -188,6 +198,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) { //listar
 
                 if (conexao) { //conexao ativa -> desconectar
+                    verificaConexao();
                     conexao = false;
                     bluetoothService.setConexao(conexao);
                     pararServer();
@@ -223,7 +234,7 @@ public class HomeActivity extends AppCompatActivity {
         trInventario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 //acessaActivity(InventarioActivity.class);
+                //acessaActivity(InventarioActivity.class);
                 if (conexao == true)
                     acessaActivity(InventarioActivity.class);
                 else
