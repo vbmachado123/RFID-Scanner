@@ -7,6 +7,7 @@ import com.uk.tsl.rfid.asciiprotocol.commands.BarcodeCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.FactoryDefaultsCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.FindTagCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.InventoryCommand;
+import com.uk.tsl.rfid.asciiprotocol.commands.LockCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.ReadTransponderCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.SwitchActionCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.WriteTransponderCommand;
@@ -39,7 +40,10 @@ public class InventoryModel extends ModelBase {
     // The instances used to issue commands
     private final ReadTransponderCommand mReadCommand = ReadTransponderCommand.synchronousCommand();
     private final WriteTransponderCommand mWriteCommand = WriteTransponderCommand.synchronousCommand();
+    private final LockCommand mLockCommand = LockCommand.synchronousCommand();
     private int mTransponderCount;
+
+    private static final String ACCESS_PASSWORD = "FEDCBA90";
 
     // The inventory command configuration
     public ReadTransponderCommand getReadCommand() {
@@ -116,6 +120,13 @@ public class InventoryModel extends ModelBase {
     }
 
     public InventoryModel() {
+
+        mLockCommand.setTakeNoAction(TriState.YES);
+        mLockCommand.setResetParameters(TriState.YES);
+        mLockCommand.setReadParameters(TriState.YES);
+        // sendMessageNotification("\nQuerying lock command for default parameters...");
+        // sendMessageNotification("\nCarga Útil: " + command.getLockPayload());
+
 
         mReadCommand.setOffset(0);
         mReadCommand.setLength(1);
@@ -213,7 +224,6 @@ public class InventoryModel extends ModelBase {
             }
         });
 
-
     }
 
     //
@@ -274,6 +284,7 @@ public class InventoryModel extends ModelBase {
     // Set the parameters that are not user-specified
     private void setFixedReadParameters() {
         mReadCommand.setResetParameters(TriState.YES);
+        mCommander.executeCommand(mLockCommand);
 
         // Configure the select to match the given EPC
         // EPC is in hex and length is in bits
@@ -400,6 +411,8 @@ public class InventoryModel extends ModelBase {
         mWriteCommand.setQuerySelect(QuerySelect.ALL);
         mWriteCommand.setQuerySession(QuerySession.SESSION_2);
         mWriteCommand.setQueryTarget(QueryTarget.TARGET_B);
+        mWriteCommand.setAccessPassword(ACCESS_PASSWORD);
+
 
         mWriteCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
 

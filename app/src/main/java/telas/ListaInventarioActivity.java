@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import adapter.EquipamentoAdapter;
 import dao.EquipamentoDao;
 import dao.EquipamentoInventarioDao;
+import dao.InventarioDao;
+import dao.InventarioNegadoDao;
 import model.Equipamento;
 import model.EquipamentoInventario;
 import model.Inventario;
@@ -56,11 +58,15 @@ public class ListaInventarioActivity extends AppCompatActivity {
     private EquipamentoInventarioDao equipamentoInventarioDao;
     private EquipamentoDao equipamentoDao;
     private EquipamentoAdapter adapter;
+    private InventarioDao inventarioDao;
+    private InventarioNegadoDao inventarioNegadoDao;
 
     private TableRow trAlterarDescricao, trExportar, trAbrirLista;
     private ListView listaEquipamentos;
     private FloatingActionButton fabSalvar;
     private TextView tamanhoLista;
+
+    private int backButtonCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +77,8 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
         equipamentoInventarioDao = new EquipamentoInventarioDao(this);
         equipamentoDao = new EquipamentoDao(this);
+        inventarioDao = new InventarioDao(this);
+        inventarioNegadoDao = new InventarioNegadoDao(this);
 
         equipamentos = new ArrayList<>();
 
@@ -78,6 +86,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
         copulaLista();
         validaCampo();
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
     }
 
@@ -196,4 +205,38 @@ public class ListaInventarioActivity extends AppCompatActivity {
 
         tamanhoLista.setText(String.valueOf(equipamentoInventarioList.size()));
     }
+
+
+    @Override
+    public void onBackPressed() {
+
+        if (backButtonCount >= 1) {
+            AlertDialog dialog = new AlertDialog.Builder(ListaInventarioActivity.this, R.style.Dialog)
+                    .setTitle("Atenção")
+                    .setMessage("Deseja realmente sair? as informações serão perdidas!")
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setPositiveButton("Sair", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            inventarioDao.limparTabela();
+                            equipamentoInventarioDao.limparTabela();
+                            inventarioNegadoDao.limparTabela();
+
+                            Intent intent = new Intent(ListaInventarioActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }).create();
+            dialog.show();
+        } else {
+            Toast.makeText(this, "Pressione novamente para sair do inventário.", Toast.LENGTH_SHORT).show();
+            backButtonCount++;
+        }
+    }
+
 }

@@ -46,7 +46,9 @@ import dao.EquipamentoDao;
 import dao.EquipamentoInventarioDao;
 import dao.InventarioDao;
 import dao.InventarioNegadoDao;
+import dao.LocalDao;
 import dao.StatusDao;
+import dao.SubLocalDao;
 import model.Equipamento;
 import model.EquipamentoInventario;
 import model.Inventario;
@@ -70,8 +72,8 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
     ArrayList<String> latitudeEncontrada, longitudeEncontrada, latitudeNaoAtribuida, longitudeNaoAtribuida;
 
     private Equipamento equipamento = new Equipamento();
-    private Local local = new Local();
-    private SubLocal subLocal = new SubLocal();
+    private Local local;
+    private SubLocal subLocal;
     private Inventario inventario = new Inventario();
     private EquipamentoInventario equipamentoInventario = new EquipamentoInventario();
 
@@ -90,6 +92,8 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
     private InventarioDao inventarioDao;
     private InventarioNegadoDao inventarioNegadoDao;
     private StatusDao statusDao;
+    private LocalDao localDao;
+    private SubLocalDao subLocalDao;
 
     private SeekBar sbPotencia;
     private TextView tvPotencia;
@@ -104,6 +108,9 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
     private AsciiCommander commander;
     private int mPowerLevel = AntennaParameters.MaximumCarrierPower;
 
+    private int backButtonCount = 0;
+    private boolean inventarioI = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -111,24 +118,36 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_equipamento_inventario);
 
-        mModel = new InventoryModel();
-        commander = getCommander();
-        mModel.setCommander(commander);
-        Intent it = getIntent();
-        Bundle extras = it.getExtras();
-        local = (Local) extras.getSerializable("local");
-        subLocal = (SubLocal) extras.getSerializable("sublocal");
-
-        localId = local.getId();
+        local = new Local();
+        subLocal = new SubLocal();
 
         equipamentoDao = new EquipamentoDao(this);
         equipamentoInventarioDao = new EquipamentoInventarioDao(this);
         inventarioDao = new InventarioDao(this);
         inventarioNegadoDao = new InventarioNegadoDao(this);
         statusDao = new StatusDao(this);
+        localDao = new LocalDao(this);
+        subLocalDao = new SubLocalDao(this);
+
+        mModel = new InventoryModel();
+        commander = getCommander();
+        mModel.setCommander(commander);
+        Intent it = getIntent();
+        Bundle extras = it.getExtras();
+        if (extras != null) {
+            local = (Local) extras.getSerializable("local");
+            subLocal = (SubLocal) extras.getSerializable("sublocal");
+            localId = local.getId();
+        } else {
+            Inventario i = inventarioDao.recupera();
+            local = localDao.getById(i.getIdLocal());
+            subLocal = subLocalDao.getById(i.getIdSubLocal());
+            localId = local.getId();
+         //   sublocalId = subLocal.getId();
+            inventarioI = true;
+        }
 
         validaCampo();
-        inventario.setIdLocal(localId);
         sbPotencia.setOnSeekBarChangeListener(mPowerSeekBarListener);
         defineLimitesPotencia();
 
@@ -136,16 +155,19 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (subLocal != null) {/* Foi escolhido na tela anterior */
-            sublocalId = subLocal.getId();
-            inventario.setIdSubLocal(subLocal.getIdLocal());
-            boolean iniciado = iniciarInventario();
-            if (iniciado)
-                Toast.makeText(this, "O inventário " + local.getDescricao() + " - " + subLocal.getDescricao() + " foi iniciado em: " + data, Toast.LENGTH_LONG).show();
-        } else { /* Não foi escolhido na tela anterior */
-            boolean iniciado = iniciarInventario();
-            if (iniciado)
-                Toast.makeText(this, "O inventário " + local.getDescricao() + " foi iniciado em: " + data, Toast.LENGTH_LONG).show();
+        if (!inventarioI) {
+            inventario.setIdLocal(localId);
+            if (subLocal != null) {/* Foi escolhido na tela anterior */
+                sublocalId = subLocal.getId();
+                inventario.setIdSubLocal(subLocal.getIdLocal());
+                boolean iniciado = iniciarInventario();
+                if (iniciado)
+                    Toast.makeText(this, "O inventário " + local.getDescricao() + " - " + subLocal.getDescricao() + " foi iniciado em: " + data, Toast.LENGTH_LONG).show();
+            } else { /* Não foi escolhido na tela anterior */
+                boolean iniciado = iniciarInventario();
+                if (iniciado)
+                    Toast.makeText(this, "O inventário " + local.getDescricao() + " foi iniciado em: " + data, Toast.LENGTH_LONG).show();
+            }
         }
 
         registrarBluetoothReceiver();
@@ -206,6 +228,38 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
         abrirListas();
         fabProsseguir.getBackground().mutate().setTint(ContextCompat.getColor(ListaEquipamentoInventarioActivity.this, R.color.vermelhodesativado));
 
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (backButtonCount >= 1) {
+            AlertDialog dialog = new AlertDialog.Builder(ListaEquipamentoInventarioActivity.this, R.style.Dialog)
+                    .setTitle("Atenção")
+                    .setMessage("Deseja realmente sair? as informações serão perdidas!")
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setPositiveButton("Sair", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            inventarioDao.limparTabela();
+                            equipamentoInventarioDao.limparTabela();
+                            inventarioNegadoDao.limparTabela();
+
+                            Intent intent = new Intent(ListaEquipamentoInventarioActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }).create();
+            dialog.show();
+        } else {
+            Toast.makeText(this, "Pressione novamente para sair do inventário.", Toast.LENGTH_SHORT).show();
+            backButtonCount++;
+        }
     }
 
     private void recuperaEquipamentos() { /* Carrega Lista Primeira */
