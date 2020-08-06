@@ -277,10 +277,10 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
 
         if (subLocal != null) {/* SubLocal Anteriormente Selecionado*/
             for (Equipamento e : listaPrimeira) {
-                Log.i("Copulando", String.valueOf(e.getLocalId()) + " " + e.getSubLocalId());
+                Log.i("Copulando", String.valueOf(e.getLocalId()) + " 1 " + e.getSubLocalId());
                 if (e.getSubLocalId() == subLocal.getId()) {
                     listaNaoEncontrado.add(e);
-                    Log.i("Copulando", String.valueOf(e.getLocalId()) + " " + e.getSubLocalId());
+                    Log.i("Copulando-Filtro", String.valueOf(e.getLocalId()) + " " + e.getSubLocalId());
                 }
             }
         } else
@@ -428,6 +428,8 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                             equipamentoInventario.setIdEquipamento(e.getId());
                             equipamentoInventario.setIdStatus(Math.toIntExact(statusId));
                             Long idEquipamento = equipamentoInventarioDao.inserir(equipamentoInventario);
+                            Log.i("Salvando", "Salva - EquipamentoInventario: " + idEquipamento);
+                            Log.i("Salvando", "Salva - EquipamentoInventario idStatus: " + statusId);
 
                         }
                     } /*else { *//* Salvar na InventarioNegado */
@@ -473,6 +475,7 @@ public class ListaEquipamentoInventarioActivity extends AppCompatActivity {
                         Long idEquipamento = equipamentoInventarioDao.inserir(equipamentoInventario);
 
                         Log.i("Salvando", "Salva - EquipamentoInventario: " + idEquipamento);
+                        Log.i("Salvando", "Salva - EquipamentoInventario idStatus: " + statusId);
 
                         x++;
 

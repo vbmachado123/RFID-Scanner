@@ -37,9 +37,11 @@ import dao.EquipamentoDao;
 import dao.EquipamentoInventarioDao;
 import dao.InventarioDao;
 import dao.InventarioNegadoDao;
+import dao.StatusDao;
 import model.Equipamento;
 import model.EquipamentoInventario;
 import model.Inventario;
+import model.Status;
 import model.Lista;
 import model.Local;
 import model.SubLocal;
@@ -57,6 +59,8 @@ public class ListaInventarioActivity extends AppCompatActivity {
     private EquipamentoInventario equipamentoInventario = new EquipamentoInventario();
     private EquipamentoInventarioDao equipamentoInventarioDao;
     private EquipamentoDao equipamentoDao;
+    private Status status;
+    private StatusDao statusDao;
     private EquipamentoAdapter adapter;
     private InventarioDao inventarioDao;
     private InventarioNegadoDao inventarioNegadoDao;
@@ -79,6 +83,7 @@ public class ListaInventarioActivity extends AppCompatActivity {
         equipamentoDao = new EquipamentoDao(this);
         inventarioDao = new InventarioDao(this);
         inventarioNegadoDao = new InventarioNegadoDao(this);
+        statusDao = new StatusDao(this);
 
         equipamentos = new ArrayList<>();
 
@@ -197,13 +202,16 @@ public class ListaInventarioActivity extends AppCompatActivity {
         for (int i = 0; i < equipamentoInventarioList.size(); i++) {
             EquipamentoInventario ei = equipamentoInventarioList.get(i);
             Equipamento equipamento = equipamentoDao.getById(ei.getIdEquipamento());
-            if (equipamento != null)
-                equipamentos.add(equipamento);
+            Status status = statusDao.getById(ei.getIdStatus());
+            if(status.getStatus().equals("Encontrada")){
+                if (equipamento != null)
+                    equipamentos.add(equipamento);
+            }
 
             Log.i("Salvando", "EquipamentoInventario - " + equipamento.getNumeroTag());
         }
 
-        tamanhoLista.setText(String.valueOf(equipamentoInventarioList.size()));
+        tamanhoLista.setText(String.valueOf(equipamentos.size()));
     }
 
 
