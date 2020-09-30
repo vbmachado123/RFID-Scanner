@@ -12,6 +12,7 @@ import com.uk.tsl.rfid.asciiprotocol.commands.ReadTransponderCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.SwitchActionCommand;
 import com.uk.tsl.rfid.asciiprotocol.commands.WriteTransponderCommand;
 import com.uk.tsl.rfid.asciiprotocol.device.Reader;
+import com.uk.tsl.rfid.asciiprotocol.enumerations.Databank;
 import com.uk.tsl.rfid.asciiprotocol.enumerations.QuerySelect;
 import com.uk.tsl.rfid.asciiprotocol.enumerations.QuerySession;
 import com.uk.tsl.rfid.asciiprotocol.enumerations.QueryTarget;
@@ -42,8 +43,6 @@ public class InventoryModel extends ModelBase {
     private final WriteTransponderCommand mWriteCommand = WriteTransponderCommand.synchronousCommand();
     private final LockCommand mLockCommand = LockCommand.synchronousCommand();
     private int mTransponderCount;
-
-    private static final String ACCESS_PASSWORD = "FEDCBA90";
 
     // The inventory command configuration
     public ReadTransponderCommand getReadCommand() {
@@ -85,6 +84,8 @@ public class InventoryModel extends ModelBase {
         return mEnabled;
     }
 
+  //  private String value = "2019022812776A031A700661";
+
     public void setEnabled(boolean state) {
         boolean oldState = mEnabled;
         mEnabled = state;
@@ -124,9 +125,9 @@ public class InventoryModel extends ModelBase {
         mLockCommand.setTakeNoAction(TriState.YES);
         mLockCommand.setResetParameters(TriState.YES);
         mLockCommand.setReadParameters(TriState.YES);
+        mLockCommand.setAccessPassword("12345678");
         // sendMessageNotification("\nQuerying lock command for default parameters...");
         // sendMessageNotification("\nCarga Útil: " + command.getLockPayload());
-
 
         mReadCommand.setOffset(0);
         mReadCommand.setLength(1);
@@ -201,24 +202,18 @@ public class InventoryModel extends ModelBase {
         mSwitchResponder = new SwitchResponder();
         mSwitchResponder.setSwitchStateReceivedDelegate(new ISwitchStateReceivedDelegate() {
             @Override
-            public void switchStateReceived(SwitchState switchState)
-            {
+            public void switchStateReceived(SwitchState switchState) {
                 // When trigger released
-                if( switchState == SwitchState.OFF )
-                {
+                if (switchState == SwitchState.OFF) {
                     mScanning = false;
                     // Fake a signal report for both percentage and RSSI to indicate action stopped
-                    if( mSignalStrengthResponder.getRawSignalStrengthReceivedDelegate() != null )
-                    {
+                    if (mSignalStrengthResponder.getRawSignalStrengthReceivedDelegate() != null) {
                         mSignalStrengthResponder.getRawSignalStrengthReceivedDelegate().signalStrengthReceived(null);
                     }
-                    if( mSignalStrengthResponder.getPercentageSignalStrengthReceivedDelegate() != null )
-                    {
+                    if (mSignalStrengthResponder.getPercentageSignalStrengthReceivedDelegate() != null) {
                         mSignalStrengthResponder.getPercentageSignalStrengthReceivedDelegate().signalStrengthReceived(null);
                     }
-                }
-                else if( switchState == SwitchState.SINGLE )
-                {
+                } else if (switchState == SwitchState.SINGLE) {
                     mScanning = true;
                 }
             }
@@ -276,7 +271,6 @@ public class InventoryModel extends ModelBase {
 
 
     /* GRAVAÇÃO */
-
     //----------------------------------------------------------------------------------------------
     // LEITURA
     //----------------------------------------------------------------------------------------------
@@ -284,21 +278,17 @@ public class InventoryModel extends ModelBase {
     // Set the parameters that are not user-specified
     private void setFixedReadParameters() {
         mReadCommand.setResetParameters(TriState.YES);
-        mCommander.executeCommand(mLockCommand);
 
-        // Configure the select to match the given EPC
-        // EPC is in hex and length is in bits
         String epcHex = mReadCommand.getSelectData();
 
         if (epcHex == null || epcHex.length() == 0) {
-            // Match anything by not selecting tags and querying the default A state
+
             mReadCommand.setInventoryOnly(TriState.YES);
 
             mReadCommand.setQuerySelect(QuerySelect.ALL);
             mReadCommand.setQuerySession(QuerySession.SESSION_0);
             mReadCommand.setQueryTarget(QueryTarget.TARGET_A);
 
-            // Reset other properties used when matching
             mReadCommand.setSelectData(null);
             mReadCommand.setSelectOffset(-1);
             mReadCommand.setSelectLength(-1);
@@ -327,15 +317,15 @@ public class InventoryModel extends ModelBase {
             public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
                 byte[] data = transponder.getReadData();
                 String dataMessage = (data == null) ? "No data!" : HexEncoding.bytesToString(data);
-                String eaMsg = transponder.getAccessErrorCode() == null ? "" : "\n" + transponder.getAccessErrorCode().getDescription() + " (EA)";
-                String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : "\n" + transponder.getBackscatterErrorCode().getDescription() + " (EB)";
+                String eaMsg = transponder.getAccessErrorCode() == null ? "" : transponder.getAccessErrorCode().getDescription() + " (EA)";
+                String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : transponder.getBackscatterErrorCode().getDescription() + " (EB)";
                 String errorMsg = eaMsg + ebMsg;
                 if (errorMsg.length() > 0) {
-                    errorMsg = "Error: " + errorMsg + "\n";
+                    errorMsg = "Error: " + errorMsg + "";
                 }
 
                 sendMessageNotification(String.format(
-                        "\nEPC: %s\nData: %s\n%s",
+                        "EPC: %s\nData: %s\n%s",
                         transponder.getEpc(),
                         dataMessage,
                         errorMsg
@@ -352,7 +342,7 @@ public class InventoryModel extends ModelBase {
 
     public void read() {
         try {
-            sendMessageNotification("\nReading...\n");
+            sendMessageNotification("Reading...");
 
             setFixedReadParameters();
             mTransponderCount = 0;
@@ -363,7 +353,7 @@ public class InventoryModel extends ModelBase {
 
                     getCommander().executeCommand(mReadCommand);
 
-                    sendMessageNotification("\nTransponders seen: " + mTransponderCount + "\n");
+                    sendMessageNotification("Transponders seen: " + mTransponderCount);
                     reportErrors(mReadCommand);
                     sendMessageNotification(String.format("Time taken: %.2fs", getTaskExecutionDuration()));
 
@@ -413,56 +403,545 @@ public class InventoryModel extends ModelBase {
         mWriteCommand.setQueryTarget(QueryTarget.TARGET_B);
         mWriteCommand.setAccessPassword(ACCESS_PASSWORD);
 
+        Log.i("Teste", "Gravando: " + mWriteCommand.getData() + " na TAG: " + mWriteCommand.getSelectData() + " no Banco: " + mWriteCommand.getBank());
+        //Log.i("Teste", "Data: " + mWriteCommand.getData());
 
         mWriteCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
 
             @Override
             public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
-                String eaMsg = transponder.getAccessErrorCode() == null ? "" : "\n" + transponder.getAccessErrorCode().getDescription() + " (EA)";
-                String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : "\n" + transponder.getBackscatterErrorCode().getDescription() + " (EB)";
+                String eaMsg = transponder.getAccessErrorCode() == null ? "" : transponder.getAccessErrorCode().getDescription() + " (EA)";
+                String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : transponder.getBackscatterErrorCode().getDescription() + " (EB)";
                 String errorMsg = eaMsg + ebMsg;
                 if (errorMsg.length() > 0) {
-                    errorMsg = "Error: " + errorMsg + "\n";
+                    errorMsg = "Error: " + errorMsg;
                 }
 
                 sendMessageNotification(String.format(
-                        "\nEPC: %s\nWords Written: %d of %d\n%s",
+                        "EPC: %s\nWords Written: %d of %d\n%s",
                         transponder.getEpc(),
                         transponder.getWordsWritten(), mWriteCommand.getLength(),
                         errorMsg
                 ));
                 ++mTransponderCount;
 
-                if (!moreAvailable) {
-                    sendMessageNotification("\n");
-                }
             }
         });
     }
 
     public void write() {
         try {
-            sendMessageNotification("\nWriting...\n");
 
-            setFixedWriteParameters();
-            mTransponderCount = 0;
+            try {
+                // usingEPCMemory();
 
-            performTask(new Runnable() {
-                @Override
-                public void run() {
+                sendMessageNotification("Gravando...");
 
-                    getCommander().executeCommand(mWriteCommand);
+                setFixedWriteParameters();
+                mTransponderCount = 0;
 
-                    sendMessageNotification("\nTransponders seen: " + mTransponderCount + "\n");
-                    reportErrors(mWriteCommand);
-                    sendMessageNotification(String.format("Time taken: %.2fs", getTaskExecutionDuration()));
+                Log.i("Teste", "TAG: " + mWriteCommand.getSelectData());
+                performTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWriteCommand.setAccessPassword(PASSWORD_DATA);
+                        mCommander.executeCommand(mWriteCommand);
 
-                }
-            });
+                        //sendMessageNotification(mWriteCommand.getAccessPassword());
+                        //sendMessageNotification(mWriteCommand.getCommandLine());
+                        Log.i("Teste", "Linha de Comando: " + mWriteCommand.getCommandLine());
+                        sendMessageNotification("Transponders seen: " + mTransponderCount);
+                        reportErrors(mWriteCommand);
+                        sendMessageNotification(String.format("Time taken: %.2fs", getTaskExecutionDuration()));
 
-        } catch (ModelException e) {
-            sendMessageNotification("Unable to perform action: " + e.getMessage());
+                    }
+                });
+
+            } catch (ModelException e) {
+                sendMessageNotification("Unable to perform action: " + e.getMessage());
+                Log.i("Teste", "Erro: " + e.getMessage());
+            }
+        } catch(Exception e) {
+            Log.i("Teste", "Erro: " + e.getMessage());
         }
+    }
+
+    // Default passwords
+    private static final String DEFAULT_PASSWORD = "00000000";
+    private static final String DEFAULT_PASSWORD_DATA = "0000000000000000";
+
+    // Test passwords
+    private static final String ACCESS_PASSWORD = "FEDCBA90";
+    private static final String PASSWORD_DATA = "87654321FEDCBA90";
+
+    private static final String WRITE_DATA_EXPECTED_OK = "FADEBEEFC0DEFEED";
+    private static final String WRITE_DATA_EXPECTED_FAIL = "DEADFACEF00DFAD5";
+    private static final String WRITE_BLANK_EXPECTED_OK = "0000000000000000";
+    private int mUserDataLength;
+
+    public void lockTest() throws ModelException {
+        performTask(new Runnable() {
+            @Override
+            public void run() {
+                //
+                // Query current lock payload
+                //
+                LockCommand command = LockCommand.synchronousCommand();
+                command.setTakeNoAction(TriState.YES);
+                command.setResetParameters(TriState.YES);
+                command.setReadParameters(TriState.YES);
+                sendMessageNotification("Querying lock command for default parameters...");
+                mCommander.executeCommand(command);
+                sendMessageNotification("Payload: " + command.getLockPayload());
+
+                //
+                // Read the current passwords
+                //
+                //  ReadTransponderCommand rCommand = ReadTransponderCommand.synchronousCommand();
+                mReadCommand.setSelectBank(Databank.ELECTRONIC_PRODUCT_CODE);
+                //   mReadCommand.setSelectData("111122223333444455556666");
+                mReadCommand.setSelectOffset(0x20);
+                mReadCommand.setSelectLength(0x60);
+
+                mReadCommand.setSelectAction(SelectAction.DEASSERT_SET_B_NOT_ASSERT_SET_A);
+                mReadCommand.setSelectTarget(SelectTarget.SESSION_0);
+
+                // Set up the query for the target transponder
+                mReadCommand.setQuerySelect(QuerySelect.ALL);
+                mReadCommand.setQuerySession(QuerySession.SESSION_0);
+                mReadCommand.setQueryTarget(QueryTarget.TARGET_B);
+
+                // Set up the data to be read
+                mReadCommand.setBank(Databank.RESERVED);
+                mReadCommand.setOffset(0x0);
+                mReadCommand.setLength(0x4);
+
+                // Set up the transponder delegate
+                mReadCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
+
+                    @Override
+                    public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
+
+                        byte[] data = transponder.getReadData();
+                        String dataMessage = (data == null) ? "No data!" : HexEncoding.bytesToString(data);
+                        String accessPassword = dataMessage.substring(8);
+                        String killPassword = dataMessage.substring(0, 8);
+
+                        sendMessageNotification(
+                                String.format("%-6s%s%-4s%-8s    %-4s%-8s",
+                                        "EPC:", transponder.getEpc(),
+                                        "AP:", accessPassword,
+                                        "KP:", killPassword
+                                )
+                        );
+
+                    }
+                });
+
+                // Don't indicate successful reads initially
+//          rCommand.setUseAlert(TriState.NO);
+
+                sendMessageNotification("Querying current passwords...");
+                mCommander.executeCommand(mReadCommand);
+
+                //
+                // Set the passwords
+                //
+                //  WriteTransponderCommand wrPasswordCommand = WriteTransponderCommand.synchronousCommand();
+                mWriteCommand.setResetParameters(TriState.YES);
+
+                mWriteCommand.setSelectBank(Databank.ELECTRONIC_PRODUCT_CODE);
+                mWriteCommand.setSelectOffset(0x20);
+                mWriteCommand.setSelectLength(0x60);   // Write to any tags matching up to the last bit
+                //mWriteCommand.setSelectData(mWriteCommand.getSelectData());
+
+                mWriteCommand.setSelectAction(SelectAction.DEASSERT_SET_B_NOT_ASSERT_SET_A);
+                mWriteCommand.setSelectTarget(SelectTarget.SESSION_2);
+
+                mWriteCommand.setQuerySelect(QuerySelect.ALL);
+                mWriteCommand.setQuerySession(QuerySession.SESSION_2);
+                mWriteCommand.setQueryTarget(QueryTarget.TARGET_B);
+
+                mWriteCommand.setAccessPassword("00000000");
+
+                mWriteCommand.setBank(Databank.RESERVED);
+                mWriteCommand.setOffset(0x0);
+                mWriteCommand.setLength(PASSWORD_DATA.length() / 4);
+                mWriteCommand.setData(HexEncoding.stringToBytes(PASSWORD_DATA));
+
+                mWriteCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
+                    public int transponderCount = 0;
+
+                    @Override
+                    public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
+                        String eaMsg = transponder.getAccessErrorCode() == null ? "" : transponder.getAccessErrorCode().getDescription();
+                        String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : transponder.getBackscatterErrorCode().getDescription();
+
+                        sendMessageNotification(String.format(
+                                "\nE: %s\nWW: %d\nEA: %s\nEB: %s",
+                                transponder.getEpc(),
+                                transponder.getWordsWritten(),
+                                eaMsg,
+                                ebMsg
+                        ));
+                        ++transponderCount;
+
+                        if (!moreAvailable) {
+                            sendMessageNotification("Transponders seen: " + transponderCount);
+                            transponderCount = 0;
+                        }
+                    }
+                });
+
+                sendMessageNotification("Setting new passwords...");
+                mCommander.executeCommand(mWriteCommand);
+                sendMessageNotification(String.format("\nTime taken: %.2fs", getTaskExecutionDuration()));
+
+
+                //
+                // Read back the new passwords
+                //
+                sendMessageNotification("Querying current passwords...");
+                mCommander.executeCommand(mReadCommand);
+
+                // Pause
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //
+                // Lock the User Memory
+                //
+                LockCommand lCommand = LockCommand.synchronousCommand();
+                lCommand.setResetParameters(TriState.YES);
+
+                lCommand.setSelectBank(Databank.ELECTRONIC_PRODUCT_CODE);
+                lCommand.setSelectOffset(0x20);
+                lCommand.setSelectLength(0x60);    // Write to any tags matching up to the last bit
+
+                lCommand.setSelectAction(SelectAction.DEASSERT_SET_B_NOT_ASSERT_SET_A);
+                lCommand.setSelectTarget(SelectTarget.SESSION_2);
+
+                lCommand.setQuerySession(QuerySession.SESSION_2);
+                lCommand.setQueryTarget(QueryTarget.TARGET_B);
+
+                lCommand.setAccessPassword(ACCESS_PASSWORD);
+
+                lCommand.setLockPayload("00802");
+
+                lCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
+                    public int transponderCount = 0;
+
+                    @Override
+                    public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
+                        String eaMsg = transponder.getAccessErrorCode() == null ? "" : transponder.getAccessErrorCode().getDescription();
+                        String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : transponder.getBackscatterErrorCode().getDescription();
+
+                        sendMessageNotification(String.format(
+                                "E: %s\nEA: %s\nEB: %s\nLS: %s",
+                                transponder.getEpc(),
+                                eaMsg,
+                                ebMsg,
+                                transponder.didLock() ? "Yes" : "No"
+                        ));
+                        ++transponderCount;
+
+                        if (!moreAvailable) {
+                            sendMessageNotification("Transponders seen: " + transponderCount);
+                            transponderCount = 0;
+                        }
+                    }
+                });
+
+                sendMessageNotification("Locking User memory...");
+                mCommander.executeCommand(lCommand);
+                sendMessageNotification(String.format("\nTime taken: %.2fs", getTaskExecutionDuration()));
+
+
+                //
+                // Read the current User memory
+                //
+                //  ReadTransponderCommand rUserCommand = ReadTransponderCommand.synchronousCommand();
+                mReadCommand.setSelectBank(Databank.ELECTRONIC_PRODUCT_CODE);
+                // rUserCommand.setSelectData("111122223333444455556666");
+                mReadCommand.setSelectOffset(0x20);
+                mReadCommand.setSelectLength(0x60);
+
+                mReadCommand.setSelectAction(SelectAction.DEASSERT_SET_B_NOT_ASSERT_SET_A);
+                mReadCommand.setSelectTarget(SelectTarget.SESSION_2);
+
+                // Set up the query for the target transponder
+                mReadCommand.setQuerySelect(QuerySelect.ALL);
+                mReadCommand.setQuerySession(QuerySession.SESSION_2);
+                mReadCommand.setQueryTarget(QueryTarget.TARGET_B);
+
+                // Set up the data to be read
+                mReadCommand.setBank(Databank.USER);
+                mReadCommand.setOffset(0x0);
+                mReadCommand.setLength(WRITE_DATA_EXPECTED_OK.length() / 4);
+
+                // Set up the transponder delegate
+                mReadCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
+
+                    @Override
+                    public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
+                        byte[] data = transponder.getReadData();
+                        String dataMessage = (data == null) ? "No data!" : HexEncoding.bytesToString(data);
+
+                        sendMessageNotification(
+                                String.format("%-6s%s%-18s%s",
+                                        "EPC:", transponder.getEpc(),
+                                        "User data:", dataMessage
+                                )
+                        );
+                    }
+                });
+
+                // Don't indicate successful reads initially
+//          rTestCommand.setUseAlert(TriState.NO);
+
+                sendMessageNotification("Reading User data...");
+                mCommander.executeCommand(mReadCommand);
+
+                // Pause
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+                //
+                // Attempt to write the user memory with an incorrect password
+                //
+                // WriteTransponderCommand wrUserCommand = WriteTransponderCommand.synchronousCommand();
+                mWriteCommand.setResetParameters(TriState.YES);
+
+                mWriteCommand.setSelectBank(Databank.ELECTRONIC_PRODUCT_CODE);
+                mWriteCommand.setSelectOffset(0x20);
+                mWriteCommand.setSelectLength(0x60);   // Write to any tags matching up to the last bit
+
+                mWriteCommand.setSelectAction(SelectAction.DEASSERT_SET_B_NOT_ASSERT_SET_A);
+                mWriteCommand.setSelectTarget(SelectTarget.SESSION_2);
+
+                mWriteCommand.setQuerySelect(QuerySelect.ALL);
+                mWriteCommand.setQuerySession(QuerySession.SESSION_2);
+                mWriteCommand.setQueryTarget(QueryTarget.TARGET_B);
+
+                mWriteCommand.setAccessPassword(DEFAULT_PASSWORD);
+
+                mWriteCommand.setBank(Databank.USER);
+                mWriteCommand.setOffset(0x0);
+                mWriteCommand.setData(HexEncoding.stringToBytes(WRITE_DATA_EXPECTED_OK));
+                mUserDataLength = mWriteCommand.getData().length / 2;
+                mWriteCommand.setLength(mUserDataLength);
+
+                mWriteCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
+                    public int transponderCount = 0;
+
+                    @Override
+                    public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
+                        String eaMsg = transponder.getAccessErrorCode() == null ? "" : transponder.getAccessErrorCode().getDescription();
+                        String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : transponder.getBackscatterErrorCode().getDescription();
+
+                        sendMessageNotification(String.format(
+                                "E: %s\nEA: %s\nEB: %s\nWW: %d (%s)",
+                                transponder.getEpc(),
+                                eaMsg,
+                                ebMsg,
+                                transponder.getWordsWritten(), transponder.getWordsWritten() != mUserDataLength ? "FAILED" : "Succeeded"
+                        ));
+                        ++transponderCount;
+
+                        if (!moreAvailable) {
+                            sendMessageNotification("Transponders seen: " + transponderCount);
+                            transponderCount = 0;
+                        }
+                    }
+                });
+
+                sendMessageNotification("Writing User memory with incorrect passwords...");
+                sendMessageNotification(String.format("Data: %s", HexEncoding.bytesToString(mWriteCommand.getData())));
+                mCommander.executeCommand(mWriteCommand);
+                sendMessageNotification(String.format("Time taken: %.2fs", getTaskExecutionDuration()));
+
+
+                //
+                // Show the result
+                //
+                sendMessageNotification("Reading User memory...");
+                mCommander.executeCommand(mWriteCommand);
+
+                // Pause
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+                //
+                // Attempt to write the User memory with the correct password
+                //
+                mWriteCommand.setAccessPassword(ACCESS_PASSWORD);
+
+                sendMessageNotification("Writing User memory with CORRECT passwords...");
+                sendMessageNotification(String.format("Data: %s", HexEncoding.bytesToString(mWriteCommand.getData())));
+                mCommander.executeCommand(mWriteCommand);
+                sendMessageNotification(String.format("Time taken: %.2fs", getTaskExecutionDuration()));
+
+                //
+                // Show the result
+                //
+                sendMessageNotification("Reading User memory...");
+                mCommander.executeCommand(mWriteCommand);
+
+                // Pause
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+                //
+                // Unlock the user memory
+                //
+                lCommand.setLockPayload("00800");
+                sendMessageNotification("Unlocking User memory...");
+                mCommander.executeCommand(lCommand);
+
+                // Pause
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+                //
+                // Attempt to write the User memory with the default password
+                //
+                mWriteCommand.setAccessPassword(DEFAULT_PASSWORD);
+                mWriteCommand.setData(HexEncoding.stringToBytes(WRITE_DATA_EXPECTED_FAIL));
+
+                sendMessageNotification("Writing User memory with DEFAULT passwords...");
+                sendMessageNotification(String.format("Data: %s", HexEncoding.bytesToString(mWriteCommand.getData())));
+                mCommander.executeCommand(mWriteCommand);
+                sendMessageNotification(String.format("Time taken: %.2fs", getTaskExecutionDuration()));
+
+                //
+                // Show the result
+                //
+                sendMessageNotification("Reading User memory...");
+                mCommander.executeCommand(mReadCommand);
+
+                // Pause
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //
+                // Reset the passwords to default
+                //
+                mWriteCommand.setData(HexEncoding.stringToBytes(DEFAULT_PASSWORD_DATA));
+                sendMessageNotification("Resetting passwords...");
+                mCommander.executeCommand(mWriteCommand);
+
+                //
+                // Read back the new passwords
+                //
+                sendMessageNotification("Querying current passwords...");
+                mCommander.executeCommand(mReadCommand);
+
+                //
+                // Attempt to write the user memory with default password
+                //
+                mWriteCommand.setAccessPassword(DEFAULT_PASSWORD);
+                mWriteCommand.setData(HexEncoding.stringToBytes(WRITE_BLANK_EXPECTED_OK));
+
+                sendMessageNotification("Clearing User memory with default passwords...");
+                sendMessageNotification(String.format("\nData: %s", HexEncoding.bytesToString(mWriteCommand.getData())));
+                mCommander.executeCommand(mWriteCommand);
+                sendMessageNotification(String.format("\nTime taken: %.2fs", getTaskExecutionDuration()));
+
+                // Pause
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //
+                // Show the result
+                //
+                sendMessageNotification("Reading User memory...");
+                mCommander.executeCommand(mWriteCommand);
+                sendMessageNotification(String.format("\nTime taken: %.2fs", getTaskExecutionDuration()));
+            }
+        });
+    }
+
+    private void usingEPCMemory() {
+        mWriteCommand.setSelectOffset(0x20);
+        mWriteCommand.setSelectLength(0x60);   // Write to any tags matching up to the last bit
+        // wrUserCommand.setSelectData("111122223333444455556666");
+
+        mWriteCommand.setSelectAction(SelectAction.DEASSERT_SET_B_NOT_ASSERT_SET_A);
+        mWriteCommand.setSelectTarget(SelectTarget.SESSION_2);
+
+        mWriteCommand.setQuerySelect(QuerySelect.ALL);
+        mWriteCommand.setQuerySession(QuerySession.SESSION_2);
+        mWriteCommand.setQueryTarget(QueryTarget.TARGET_B);
+
+        mWriteCommand.setAccessPassword(DEFAULT_PASSWORD);
+
+        mWriteCommand.setBank(Databank.ELECTRONIC_PRODUCT_CODE);
+        mWriteCommand.setOffset(0x0);
+        mWriteCommand.setData(HexEncoding.stringToBytes(WRITE_DATA_EXPECTED_OK));
+        mUserDataLength = mWriteCommand.getData().length / 4;
+        mWriteCommand.setLength(mUserDataLength);
+
+        mWriteCommand.setTransponderReceivedDelegate(new ITransponderReceivedDelegate() {
+            public int transponderCount = 0;
+
+            @Override
+            public void transponderReceived(TransponderData transponder, boolean moreAvailable) {
+                String eaMsg = transponder.getAccessErrorCode() == null ? "" : transponder.getAccessErrorCode().getDescription();
+                String ebMsg = transponder.getBackscatterErrorCode() == null ? "" : transponder.getBackscatterErrorCode().getDescription();
+
+                sendMessageNotification(String.format(
+                        "E: %s\nEA: %s\nEB: %s\nWW: %d (%s)",
+                        transponder.getEpc(),
+                        eaMsg,
+                        ebMsg,
+                        transponder.getWordsWritten(), transponder.getWordsWritten() != mUserDataLength ? "FAILED" : "Succeeded"
+                ));
+                ++transponderCount;
+
+                if (!moreAvailable) {
+                    sendMessageNotification("Transponders seen: " + transponderCount);
+                    transponderCount = 0;
+                }
+            }
+        });
+
+        sendMessageNotification("Writing User memory with incorrect passwords...");
+        sendMessageNotification(String.format("Data: %s", HexEncoding.bytesToString(mWriteCommand.getData())));
+        mCommander.executeCommand(mWriteCommand);
+        sendMessageNotification(String.format("Time taken: %.2fs", getTaskExecutionDuration()));
+
+
+        //
+        // Show the result
+        //
+        sendMessageNotification("Reading User memory...");
+        mCommander.executeCommand(mWriteCommand);
+
     }
 
     /* TAGFINDER */
@@ -575,9 +1054,9 @@ public class InventoryModel extends ModelBase {
             }
 
             if (succeeded) {
-                sendMessageNotification("updated\n");
+                sendMessageNotification("updated");
             } else {
-                sendMessageNotification("\n !!! update failed - ensure only hex characters used !!!\n");
+                sendMessageNotification("!!! update failed - ensure only hex characters used !!!\n");
             }
         }
     }
@@ -585,7 +1064,7 @@ public class InventoryModel extends ModelBase {
     public void updateTarget() {
         if (!this.isBusy()) {
             try {
-                sendMessageNotification("\nUpdating target...");
+                sendMessageNotification("Updating target...");
 
                 performTask(new Runnable() {
                     @Override
@@ -613,9 +1092,9 @@ public class InventoryModel extends ModelBase {
     private void reportErrors(AsciiSelfResponderCommandBase command) {
         if (!command.isSuccessful()) {
             sendMessageNotification(String.format(
-                    "%s failed!\nError code: %s\n", command.getClass().getSimpleName(), command.getErrorCode()));
+                    "%s failed! Error code: %s", command.getClass().getSimpleName(), command.getErrorCode()));
             for (String message : command.getMessages()) {
-                sendMessageNotification(message + "\n");
+                sendMessageNotification(message);
             }
         }
 

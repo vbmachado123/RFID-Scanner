@@ -131,23 +131,13 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="12sp" />
 
-            <ScrollView
-                android:id="@+id/resultScrollView"
+            <ListView
+                android:background="@color/grey60"
+                android:textColor="@color/colorPrimary"
+                android:id="@+id/resultTextView"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/grey60"
-                android:fillViewport="true">
-
-                <TextView
-                    android:textColor="@color/colorPrimary"
-                    android:id="@+id/resultTextView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textIsSelectable="true" />
-
-            </ScrollView>
+                android:textIsSelectable="true" />
 
             <TableRow
                 android:layout_width="match_parent"

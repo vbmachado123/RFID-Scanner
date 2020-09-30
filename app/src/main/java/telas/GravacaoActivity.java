@@ -15,6 +15,8 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,17 +38,21 @@ import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
 import com.example.rfidscanner.R;
 import com.uk.tsl.rfid.asciiprotocol.DeviceProperties;
 import com.uk.tsl.rfid.asciiprotocol.commands.ReadTransponderCommand;
+import com.uk.tsl.rfid.asciiprotocol.device.Reader;
+import com.uk.tsl.rfid.asciiprotocol.device.ReaderManager;
 import com.uk.tsl.rfid.asciiprotocol.enumerations.Databank;
 import com.uk.tsl.rfid.asciiprotocol.enumerations.EnumerationBase;
 import com.uk.tsl.rfid.asciiprotocol.parameters.AntennaParameters;
 import com.uk.tsl.rfid.asciiprotocol.responders.LoggerResponder;
 import com.uk.tsl.rfid.asciiprotocol.responders.TransponderResponder;
 import com.uk.tsl.utils.HexEncoding;
+import com.uk.tsl.utils.Observable;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+import adapter.GravacaoAdapter;
 import adapter.LeituraAdapter;
 import bluetooth.Bluetooth;
 import bluetooth.BluetoothListener;
@@ -56,6 +62,7 @@ import service.BluetoothService;
 import util.Data;
 import util.InventoryModel;
 import util.ModelBase;
+import util.ModelException;
 import util.WeakHandler;
 
 public class GravacaoActivity extends AppCompatActivity {
@@ -66,7 +73,7 @@ public class GravacaoActivity extends AppCompatActivity {
     private SeekBar sbPotencia;
     private TextView tvPotencia, tvLer, tvLimpar, tvEscrever, tvTagsLidas;
     private ListView lvLista;
-    private LeituraAdapter adapter;
+    private GravacaoAdapter adapter;
     private Leitura l = new Leitura();
     private String textoTag = "", dataFinal = "";
     private String dados;
@@ -77,9 +84,7 @@ public class GravacaoActivity extends AppCompatActivity {
     private ParameterEnumerationArrayAdapter<Databank> mDatabankArrayAdapter;
     private int mPowerLevel = AntennaParameters.MaximumCarrierPower;
 
-    private TextView mResultTextView;
-    private ScrollView mResultScrollView;
-
+    private Reader mReader = null;
     private ImageButton ibLimpar;
 
     @Override
@@ -95,8 +100,10 @@ public class GravacaoActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       /* leituras = new ArrayList<>();
-        adapter = new LeituraAdapter(this, leituras);*/
+
+        leituras = new ArrayList<>();
+        adapter = new GravacaoAdapter(this, leituras);
+
         validaCampo();
         sbPotencia.setOnSeekBarChangeListener(mPowerSeekBarListener);
         defineLimitesPotencia();
@@ -122,6 +129,39 @@ public class GravacaoActivity extends AppCompatActivity {
             }
         });*/
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ReaderManager.sharedInstance().getReaderList().readerAddedEvent().removeObserver(mAddedObserver);
+        ReaderManager.sharedInstance().getReaderList().readerUpdatedEvent().removeObserver(mUpdatedObserver);
+        ReaderManager.sharedInstance().getReaderList().readerRemovedEvent().removeObserver(mRemovedObserver);
+    }
+
+    Observable.Observer<Reader> mAddedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+            // See if this newly added Reader should be used
+            //AutoSelectReader(true);
+        }
+    };
+
+    Observable.Observer<Reader> mUpdatedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+        }
+    };
+
+    Observable.Observer<Reader> mRemovedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+            mReader = null;
+            if (reader == mReader) {
+                mReader = null;
+                getCommander().setReader(mReader);
+            }
+        }
+    };
 
     /* SeekBar -> Alterar potencia */
     private void defineLimitesPotencia() {
@@ -160,11 +200,6 @@ public class GravacaoActivity extends AppCompatActivity {
         tvPotencia.setText(mPowerLevel + " dBm");
     }
 
-    private static final String DEFAULT_PASSWORD = "00000000";
-    private static final String DEFAULT_PASSWORD_DATA = "0000000000000000";
-
-    private static final String ACCESS_PASSWORD = "FEDCBA90";
-    private static final String PASSWORD_DATA = "87654321FEDCBA90";
 
     private AdapterView.OnItemSelectedListener mBankSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -173,27 +208,9 @@ public class GravacaoActivity extends AppCompatActivity {
 
             if (mModel.getReadCommand() != null) {
                 mModel.getReadCommand().setBank(targetBank);
-              /*  if (targetBank.equals(Databank.ELECTRONIC_PRODUCT_CODE)) {
-                    try {
-                        mModel.getWriteCommand().setAccessPassword(ACCESS_PASSWORD);
-                      //  mModel.getWriteCommand().setAccessPassword(DEFAULT_PASSWORD_DATA);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.i("Gravacao", "Erro ao gravar EPC: " + e.getMessage());
-                    }
-                }*/
             }
             if (mModel.getWriteCommand() != null) {
                 mModel.getWriteCommand().setBank(targetBank);
-               /* if (targetBank.equals(Databank.ELECTRONIC_PRODUCT_CODE)) {
-                    try {
-                        mModel.getWriteCommand().setAccessPassword(ACCESS_PASSWORD);
-                        //mModel.getWriteCommand().setAccessPassword(DEFAULT_PASSWORD_DATA);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        Log.i("Gravacao", "Erro ao gravar EPC: " + e.getMessage());
-                    }
-                }*/
             }
         }
 
@@ -214,8 +231,8 @@ public class GravacaoActivity extends AppCompatActivity {
         tvEscrever = (TextView) findViewById(R.id.tvEscrever);
         ibLimpar = (ImageButton) findViewById(R.id.ibLimpar);
 
-        mResultTextView = (TextView) findViewById(R.id.resultTextView);
-        mResultScrollView = (ScrollView) findViewById(R.id.resultScrollView);
+        lvLista = (ListView) findViewById(R.id.resultTextView);
+       // mResultScrollView = (ScrollView) findViewById(R.id.resultScrollView);
 
         numeroTag.addTextChangedListener(mTargetTagEditTextChangedListener);
         textoGravar.addTextChangedListener(mDataEditTextChangedListener);
@@ -230,15 +247,18 @@ public class GravacaoActivity extends AppCompatActivity {
 
         //   tvTagsLidas = (TextView) findViewById(R.id.tvTagsLidas);
 
-      /*  lvLista.setAdapter(adapter);
+        lvLista.setAdapter(adapter);
         lvLista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Leitura l = leituras.get(position);
-
-                numeroTag.setText(l.getNumeroTag());
+                if(l.getNumeroTag().contains("EPC:")) {
+                    textoTag = l.getNumeroTag().replaceAll("EPC: ", "");
+                    numeroTag.setText(textoTag);
+                } else
+                    Toast.makeText(GravacaoActivity.this, "Selecione uma TAG para gravar", Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
 
         tvLer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,28 +270,28 @@ public class GravacaoActivity extends AppCompatActivity {
         tvLimpar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                numeroTag.setText("");
-                textoGravar.setText("");
-                mResultTextView.setText("");
+              limpar();
             }
         });
 
         tvEscrever.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mModel.write();
+                try {
+                   // mModel.lockTest();
+                    mModel.write();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    private void limpar() {
+        numeroTag.setText("");
+        textoGravar.setText("");
+        leituras.clear();
+        adapter.notifyDataSetChanged();
     }
 
     public AsciiCommander getCommander() {
@@ -320,12 +340,13 @@ public class GravacaoActivity extends AppCompatActivity {
                 switch (msg.what) {
                     case ModelBase.BUSY_STATE_CHANGED_NOTIFICATION:
                         if (mModel.error() != null) {
-                            mResultTextView.append("\n Task failed:\n" + mModel.error().getMessage() + "\n\n");
-                            mResultScrollView.post(new Runnable() {
+                            preencheLista("Task failed:" + mModel.error().getMessage(), "");
+                           // mResultTextView.append("\n Task failed:\n" + mModel.error().getMessage() + "\n\n");
+                           /* mResultScrollView.post(new Runnable() {
                                 public void run() {
                                     mResultScrollView.fullScroll(View.FOCUS_DOWN);
                                 }
-                            });
+                            });*/
 
                         }
                         // UpdateUI();
@@ -333,12 +354,19 @@ public class GravacaoActivity extends AppCompatActivity {
 
                     case ModelBase.MESSAGE_NOTIFICATION:
                         String message = (String) msg.obj;
-                        mResultTextView.append(message);
-                        mResultScrollView.post(new Runnable() {
+                       if(message.contains("EPC")) {
+
+                           String[] tagRecebida = message.split("\n");
+                           preencheLista(tagRecebida[0], tagRecebida[1]);
+                       }
+                       else if(!(message.equals("")))
+                           preencheLista(message, "");
+                        // mResultTextView.append(message);
+                 /*       mResultScrollView.post(new Runnable() {
                             public void run() {
                                 mResultScrollView.fullScroll(View.FOCUS_DOWN);
                             }
-                        });
+                        });*/
                         break;
 
                     default:
@@ -350,6 +378,13 @@ public class GravacaoActivity extends AppCompatActivity {
         }
     };
 
+    private void preencheLista(String linha1, String linha2){
+        Leitura l = new Leitura();
+        l.setNumeroTag(linha1);
+        l.setDataHora(linha2);
+        leituras.add(l);
+        adapter.notifyDataSetChanged();
+    }
 
     private TextWatcher mTargetTagEditTextChangedListener = new TextWatcher() {
 
@@ -386,7 +421,7 @@ public class GravacaoActivity extends AppCompatActivity {
         @Override
         public void afterTextChanged(Editable s) {
             String value = s.toString();
-            if (mModel.getWriteCommand() != null) {
+            if( mModel.getWriteCommand() != null ) {
                 byte[] data = null;
                 try {
                     data = HexEncoding.stringToBytes(value);
@@ -399,5 +434,33 @@ public class GravacaoActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.unlock_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                finish();
+                return true;
+            case R.id.item_destrava:
+                try {
+
+                    mModel.lockTest();
+                    limpar();
+                    mModel.read();
+
+                } catch (ModelException e) {
+                    e.printStackTrace();
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }
