@@ -16,6 +16,10 @@ import android.widget.Toast;
 
 import com.example.rfidscanner.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.uk.tsl.rfid.asciiprotocol.AsciiCommander;
+import com.uk.tsl.rfid.asciiprotocol.device.Reader;
+import com.uk.tsl.rfid.asciiprotocol.device.ReaderManager;
+import com.uk.tsl.utils.Observable;
 
 import dao.EquipamentoDao;
 import dao.EquipamentoInventarioDao;
@@ -40,6 +44,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
     private SubLocalDao subLocalDao;
     private Context context;
     private FloatingActionButton fabSalvar;
+    private Reader mReader = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +68,44 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         validaCampo();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ReaderManager.sharedInstance().getReaderList().readerAddedEvent().removeObserver(mAddedObserver);
+        ReaderManager.sharedInstance().getReaderList().readerUpdatedEvent().removeObserver(mUpdatedObserver);
+        ReaderManager.sharedInstance().getReaderList().readerRemovedEvent().removeObserver(mRemovedObserver);
+    }
+
+    Observable.Observer<Reader> mAddedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+            // See if this newly added Reader should be used
+            //AutoSelectReader(true);
+        }
+    };
+
+    Observable.Observer<Reader> mUpdatedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+        }
+    };
+
+    Observable.Observer<Reader> mRemovedObserver = new Observable.Observer<Reader>() {
+        @Override
+        public void update(Observable<? extends Reader> observable, Reader reader) {
+            mReader = null;
+            if (reader == mReader) {
+                mReader = null;
+                getCommander().setReader(mReader);
+            }
+        }
+    };
+
+    public AsciiCommander getCommander() {
+        return AsciiCommander.sharedInstance();
     }
 
     private void validaCampo() {
